@@ -698,7 +698,12 @@ m.style.color="";m.textContent="กำลังอ่านสลิป…";
 try{const q=await slipQR(f);
 if(!q){m.textContent="อ่าน QR บนสลิปไม่ได้ ลองใช้สลิปต้นฉบับที่ไม่ครอบตัด หรือกด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ";return}
 m.textContent="กำลังตรวจกับธนาคาร…";
-const d=await J("/slip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,payload:q,baht:CFG.packs[pk].b,ref})});
+const d = await J("https://contract-checker-cerg.onrender.com/slip", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ uid, payload: q, baht: CFG.packs[pk].b, ref })
+});
+
 if(d.ok){cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;showCr();m.textContent=d.days?"✅ เปิดแพ็กเกจรายเดือนแล้ว ใช้ได้ถึง "+new Date(d.passUntil).toLocaleDateString("th-TH"):"✅ เติมเครดิตสำเร็จ +"+d.added+" เครดิต";setTimeout(()=>{if($("pay").open)$("pay").close()},1800)}
 else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ")+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")
 }catch(x){m.textContent="เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง"}});

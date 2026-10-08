@@ -601,7 +601,7 @@ function progHide(){if(pg){cancelAnimationFrame(pg.raf);pg=null}$("prog").hidden
 
 /* ===== ระบบเครดิต + เติมเงิน ===== */
 /* ✏️ แก้ค่าตรงนี้ให้เป็นของคุณ */
-const MINB=50,MAXB=5000,RATE=b=>b>=500?13:b>=200?14:15,credOf=b=>Math.floor(b/RATE(b)); // ต้องตรงกับเซิร์ฟเวอร์
+const credOf=b=>Math.floor(b/(b>=500?14:b>=200?15:16)); // ต้องตรงกับ TIERS ในเซิร์ฟเวอร์ (index.js)
 const CFG={cost:1,free:1,
 promptpay:"0800000000",            // เบอร์พร้อมเพย์ / เลขบัตร ปชช. 13 หลัก
 bank:{name:"ธนาคารกสิกรไทย",no:"000-0-00000-0",acct:"ชื่อบัญชีของคุณ"},
@@ -609,8 +609,8 @@ truemoney:"0800000000",            // เบอร์ TrueMoney Wallet
 contact:"https://line.me/ti/p/~ไอดีไลน์ของคุณ", // ช่องทางส่งสลิป
 api:/claude/i.test(location.hostname)?"":(/^https?:$/.test(location.protocol)?(/(^|\.)onrender\.com$|^localhost$|^127\./i.test(location.hostname)?location.origin:"https://contract-checker-cerg.onrender.com"):""),                            // URL หลังบ้าน (เปิดจาก onrender.com/localhost ใช้โดเมนเดียวกัน / เปิดจากที่อื่น เช่น github.io ชี้ไป https://contract-checker-cerg.onrender.com ต้องตั้ง ALLOWED_ORIGIN บน Render) เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
 seller:{name:"ชื่อผู้ขาย/ร้านของคุณ",addr:"ที่อยู่ผู้ขาย",tax:""},
-packs:[{b:50,c:credOf(50)},{b:100,c:credOf(100)},{b:200,c:credOf(200)},{b:500,c:credOf(500)},{b:300,c:credOf(300),custom:1},{b:399,c:0,days:30}], // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
-passDaily:5};
+packs:[50,100,200,300,500,1000].map(b=>({b,c:credOf(b)})).concat([{b:790,c:0,days:30}]), // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
+passDaily:2};
 let cred=0,uid="",pk=1,mt=0,ref="",passUntil=0;
 try{uid=localStorage.getItem("uid")||"";if(!uid){uid=Math.random().toString(36).slice(2,10);localStorage.setItem("uid",uid)}}catch(e){uid="guest"}
 const lget=()=>{try{const v=localStorage.getItem("cr");if(v===null){localStorage.setItem("cr",CFG.free);return CFG.free}return+v||0}catch(e){return 0}};
@@ -620,7 +620,7 @@ async function JR(u,o,n=0){let r;try{r=await fetch(CFG.api+u,o)}catch(e){if(n<2)
 if([502,503,504].includes(r.status)&&n<2){await new Promise(s=>setTimeout(s,5000));return JR(u,o,n+1)}
 const d=await r.json().catch(()=>({}));if(!d.ok&&!d.error)d.error="http_"+r.status;return d}
 const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
-function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?"∞":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id=\"crc\">"+CFG.cost+"</b> เครดิต";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
+function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id=\"crc\">"+CFG.cost+"</b> เครดิต";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
 async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}
 async function spend(){if(CFG.api){try{cred=(await J("/spend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,n:CFG.cost})})).credits}catch(e){}}else{cred=Math.max(0,cred-CFG.cost);lset(cred)}showCr();$("cr").classList.remove("pop");void $("cr").offsetWidth;$("cr").classList.add("pop")}
 function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
@@ -628,13 +628,13 @@ const tl=(i,v)=>i+String(v.length).padStart(2,"0")+v;
 function ppay(id,amt){id=id.replace(/\D/g,"");const t=id.length>=15?"03":id.length>=13?"02":"01",v=t==="01"?"0066"+id.slice(1):id;const p=tl("00","01")+tl("01","12")+tl("29",tl("00","A000000677010111")+tl(t,v))+tl("53","764")+tl("54",amt.toFixed(2))+tl("58","TH")+"6304";return p+crc(p)}
 function drawPay(){
 const P=CFG.packs[pk];
-$("packs").innerHTML=CFG.packs.map((x,i)=>`<button type="button" data-p="${i}" aria-pressed="${i===pk}"${x.days?' style="grid-column:1/-1"':""}><b>${x.custom?"กรอกเอง (ขั้นต่ำ "+MINB+" ฿)":x.b+" ฿"+(x.days?" / "+x.days+" วัน":"")}</b><span>${x.days?"แพ็กเกจรายเดือน ตรวจได้วันละ "+CFG.passDaily+" ครั้ง":x.c+" เครดิต"}</span></button>`).join("")+(P.custom?`<div style="grid-column:1/-1"><input id="amt" type="number" inputmode="numeric" min="${MINB}" max="${MAXB}" step="1" value="${P.b}" aria-label="จำนวนเงินที่ต้องการเติม (บาท)" style="width:100%;padding:12px;font-size:18px;border-radius:12px;box-sizing:border-box"><p style="margin:6px 0 0;font-size:13px">เติม ${P.b} ฿ ได้ ${P.c} เครดิต (${RATE(P.b)} ฿/ครั้ง) · เติมมากขึ้นราคาต่อครั้งถูกลง</p></div>`:"");
+$("packs").innerHTML=CFG.packs.map((x,i)=>`<button type="button" data-p="${i}" aria-pressed="${i===pk}"${x.days?' style="grid-column:1/-1"':""}><b>${x.b} ฿${x.days?" / "+x.days+" วัน":""}</b><span>${x.days?"แพ็กเกจรายเดือน ตรวจได้วันละ "+CFG.passDaily+" ครั้ง นาน "+x.days+" วัน":x.c+" เครดิต"}</span></button>`).join("");
 $("meth").innerHTML=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney"].map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===mt}">${m}</button>`).join("");
 const mn=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney Wallet"][mt];
 let h="";
 if(mt===1)h=`<div class="acc"><p>${esc(CFG.bank.name)}</p><p><b>${esc(CFG.bank.no)}</b> <button class="link" style="display:inline;margin:0" type="button" data-cp="${esc(CFG.bank.no.replace(/\D/g,""))}">คัดลอก</button></p><p>ชื่อบัญชี ${esc(CFG.bank.acct)}</p><p>ยอดที่ต้องโอน <b>${P.b} บาท</b></p></div>`;
 else h=`<div class="qr" id="qr"></div><p class="hint" style="text-align:center">${mt===2?`สแกนด้วยแอป TrueMoney หรือโอนเข้าเบอร์ <b>${esc(CFG.truemoney)}</b>`:"สแกนด้วยแอปธนาคารใดก็ได้"} · ยอด ${P.b} บาท</p>`;
-if(P.days)h+=`<p class="hint">*ใช้งานเป็นธรรม สูงสุด ${CFG.passDaily} ครั้งต่อวัน ไม่ต่ออายุอัตโนมัติ เมื่อครบ ${P.days} วันจะกลับไปใช้เครดิตตามปกติ</p>`;
+if(P.days)h+=`<p class="hint">*ตรวจได้สูงสุด ${CFG.passDaily} ครั้งต่อวัน (รีเซ็ตเที่ยงคืน) ไม่ต่ออายุอัตโนมัติ เมื่อครบ ${P.days} วันจะกลับไปใช้เครดิตตามปกติ</p>`;
 h+=`<p class="ref">รหัสอ้างอิง <b>${ref}</b></p><a class="go" id="paid" href="${esc(CFG.contact)}" target="_blank" rel="noopener">โอนแล้ว ส่งสลิปยืนยัน</a>`;
 if(CFG.api)h+=`<label class="go" id="slipb" style="display:block;text-align:center;cursor:pointer;margin-top:10px">แนบสลิป · เติมเครดิตอัตโนมัติ<input type="file" id="slipf" accept="image/*" hidden></label><p class="hint" style="text-align:center">ใช้รูปสลิปต้นฉบับจากแอปธนาคาร (ไม่ครอบตัด) เห็น QR เล็กบนสลิปชัดเจน</p>`;
 if(!CFG.api)h+=`<button class="link" id="dpay" type="button">โหมดทดสอบ: จำลองว่าชำระแล้ว</button>`;
@@ -653,7 +653,6 @@ else if(b.dataset.cp){navigator.clipboard&&navigator.clipboard.writeText(b.datas
 else if(b.id==="paid"){const P=CFG.packs[pk],m=`${P.days?"สั่งซื้อแพ็กเกจรายเดือน "+P.days+" วัน":"สั่งซื้อเครดิต "+P.c+" เครดิต"} (${P.b} บาท) รหัส ${ref} ผู้ใช้ ${uid} ช่องทาง ${$("pay").dataset.mn}`;try{navigator.clipboard.writeText(m)}catch(e){}$("pmsg").textContent="คัดลอกข้อความสั่งซื้อแล้ว วางส่งพร้อมสลิปได้เลย";if(CFG.api)J("/order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref,baht:P.b,credits:P.c,method:$("pay").dataset.mn})}).catch(()=>{})}
 else if(b.id==="dpay"){cred+=CFG.packs[pk].c;if(CFG.packs[pk].days)passUntil=Date.now()+CFG.packs[pk].days*864e5;lset(cred);showCr();$("pmsg").textContent="";$("pay").close()}});
 
-document.addEventListener("change",e=>{if(e.target.id!=="amt")return;let v=Math.trunc(+e.target.value)||MINB;v=Math.max(MINB,Math.min(MAXB,v));if(CFG.packs.some(x=>x.days&&x.b===v))v++;const P=CFG.packs[pk];P.b=v;P.c=credOf(v);drawPay()});
 /* ===== ฟังสรุปเสียง: มีเซิร์ฟเวอร์ = เสียงคนจริงจาก Google ถ้าไม่มี = เสียงอ่านในเครื่อง (ไม่เสียเครดิต) ===== */
 let ttsOn=false,ttsA=null;
 const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";

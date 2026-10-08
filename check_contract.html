@@ -504,7 +504,7 @@ const mm=res.text.replace(/```json|```/g,"");
 const r=JSON.parse(mm.slice(mm.indexOf("{"),mm.lastIndexOf("}")+1));
 await progFinish();
 if(CFG.api)showCr();else await spend();render(r,t);if(MK2.n)$("ocrst").textContent="🔒 ปิดบังข้อมูลส่วนตัว "+MK2.n+" จุดก่อนส่งให้ AI";setM("hop","ตรวจเสร็จแล้ว! ดูผลด้านล่าง");
-}catch(e){$("err").textContent=e&&e.code==="rate_limited"?"ใช้งานถี่เกินไป รอสักครู่แล้วลองใหม่":e&&e.code==="pass_cap"?"วันนี้ใช้ครบโควตาแพ็กเกจรายเดือนแล้ว ("+CFG.passDaily+" ครั้ง/วัน) พรุ่งนี้ใช้ได้ใหม่ หรือเติมเครดิตเพิ่ม":e&&e.code==="too_long"?"สัญญายาวเกินไป ลองตรวจทีละส่วน":e&&e.code==="not_granted"?"ต้องอนุญาตให้หน้านี้ใช้ Claude ก่อนจึงจะตรวจสัญญาได้":"ตรวจไม่สำเร็จ ลองกดตรวจอีกครั้ง"}
+}catch(e){$("err").textContent=e&&e.code==="rate_limited"?"ใช้งานถี่เกินไป รอสักครู่แล้วลองใหม่":e&&e.code==="pass_cap"?"วันนี้ใช้ครบโควตาแพ็กเกจรายเดือนแล้ว ("+CFG.passDaily+" ครั้ง/วัน) พรุ่งนี้ใช้ได้ใหม่ หรือเติมเครดิตเพิ่ม":e&&e.code==="too_long"?"สัญญายาวเกินไป ลองตรวจทีละส่วน":e&&e.code==="not_granted"?"ต้องอนุญาตให้หน้านี้ใช้ Claude ก่อนจึงจะตรวจสัญญาได้":e&&e.code==="no_key"?"ระบบ AI ยังไม่พร้อมใช้งาน (เจ้าของเว็บยังไม่ได้ตั้งค่าคีย์ AI บนเซิร์ฟเวอร์)":e&&e.code==="ai_failed"?"AI ตอบไม่ได้ชั่วคราว เครดิตไม่ถูกหัก ลองกดตรวจอีกครั้ง":e&&e.code==="too_short"?"ข้อความสั้นเกินไป วางสัญญาให้ยาวขึ้นอีกหน่อย":"ตรวจไม่สำเร็จ ลองกดตรวจอีกครั้ง"}
 finally{progHide();if($("mascot").classList.contains("busy"))setM("","ลองกดตรวจอีกครั้งนะ");btn.disabled=false;btn.textContent=GO()}
 };
 

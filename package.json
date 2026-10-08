@@ -1,8 +1,8 @@
 {
   "name": "contract-checker",
   "version": "1.0.0",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {}
+  "private": true,
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "engines": { "node": ">=18" }
 }

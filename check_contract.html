@@ -603,7 +603,7 @@ promptpay:"0800000000",            // เบอร์พร้อมเพย์
 bank:{name:"ธนาคารกสิกรไทย",no:"000-0-00000-0",acct:"ชื่อบัญชีของคุณ"},
 truemoney:"0800000000",            // เบอร์ TrueMoney Wallet
 contact:"https://line.me/ti/p/~ไอดีไลน์ของคุณ", // ช่องทางส่งสลิป
-api:(/^https?:$/.test(location.protocol)&&!/claude/i.test(location.hostname))?location.origin:"",                            // URL หลังบ้าน เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
+api:/claude/i.test(location.hostname)?"":(/github\.io$/i.test(location.hostname)?"https://contract-checker-cerg.onrender.com":(/^https?:$/.test(location.protocol)?location.origin:"")),                            // URL หลังบ้าน (เปิดจาก onrender.com ใช้โดเมนเดียวกัน / เปิดจาก github.io ชี้ไป https://contract-checker-cerg.onrender.com) เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
 seller:{name:"ชื่อผู้ขาย/ร้านของคุณ",addr:"ที่อยู่ผู้ขาย",tax:""},
 packs:[{b:20,c:5},{b:50,c:15},{b:100,c:35},{b:199,c:0,days:30}], // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
 passDaily:30};

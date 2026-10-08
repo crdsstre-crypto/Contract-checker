@@ -3,21 +3,23 @@
 // ไฟล์ที่ต้องอยู่โฟลเดอร์เดียวกัน: check_contract.html, admin.html
 // ตัวเลือก (env): PORT, MODEL, FREE(เครดิตฟรี=1), COST(=1), FORCE_HTTPS=1, TRUST_PROXY=1, DATA_DIR,
 //   GOOGLE_TTS_KEY(เปิดเสียงอ่านสรุปแบบเสียงคนจริง) ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID (เสียง ElevenLabs ใช้ก่อน Google) ELEVENLABS_MODEL(=eleven_v3) หน้าเลือกเสียง ElevenLabs: /admin/el-voices?key=รหัสแอดมิน หน้าลองฟังเสียง Google ทุกเสียง: /admin/voices?key=รหัสแอดมิน | TTS_RATE(=1 ความเร็วเสียง 0.8-1.2) TTS_GENDER(=f เสียงหญิง "ค่ะ" / m เสียงชาย "ครับ" ต้องตรงกับเสียงที่เลือก) GOOGLE_TTS_VOICE(=th-TH-Chirp3-HD-Achernar) TTS_DAILY(=10 ครั้ง/คน/วัน),
-//   PASS_BAHT(=199) PASS_DAYS(=30) PASS_DAILY(=30 ครั้ง/วัน) แพ็กเกจรายเดือน,
+//   PASS_BAHT(=790) PASS_DAYS(=30) PASS_DAILY(=2 ครั้ง/วัน) แพ็กเกจรายเดือน,
 //   SLIPOK_BRANCH, SLIPOK_KEY, SLIP_RECV, TOS_VERSION(=1.1), REF_BONUS(=1), REF_MAX(=10), NEW_PER_IP(=5), ALLOWED_ORIGIN (หลายโดเมนคั่นด้วย , เช่น https://me.github.io,https://mydomain.com)
 "use strict";
 const http=require("http"),fs=require("fs"),path=require("path"),crypto=require("crypto");
 const E=process.env,DIR=E.DATA_DIR||__dirname,fp=n=>path.join(DIR,n);
-const PORT=+E.PORT||3000,RAWKEY=E.ANTHROPIC_API_KEY||"",KEY=RAWKEY.trim().replace(/^['"“”]+|['"“”]+$/g,"").replace(/\s+/g,""),ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
+const PORT=+E.PORT||3000,KEY=E.ANTHROPIC_API_KEY||"",ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
 const API_URL=E.API_URL||"https://api.anthropic.com/v1/messages",SLIP_URL=E.SLIPOK_URL||"https://api.slipok.com/api/line/apikey/";
 const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==undefined?+E.REF_BONUS:1,REF_MAX=+E.REF_MAX||10,NEW_PER_IP=+E.NEW_PER_IP||5;
 const TOSV=E.TOS_VERSION||"1.1",TOS_REQ=E.TOS_REQUIRED!=="0";
-const PASS_BAHT=+E.PASS_BAHT||399,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||5; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
+const PASS_BAHT=+E.PASS_BAHT||790,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||2; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
 const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";
 console.log("เสียงอ่าน:",EL_KEY&&EL_VOICE?"ElevenLabs ("+EL_MODEL+")":EL_KEY?"⚠️ ตั้ง ELEVENLABS_API_KEY แล้ว แต่ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID":"ยังไม่ได้ตั้ง ElevenLabs",TTS_KEY?"| สำรอง: Google":"| ไม่มี Google สำรอง");
 const SLIP_BRANCH=E.SLIPOK_BRANCH||"",SLIP_KEY=E.SLIPOK_KEY||"",SLIP_RECV=E.SLIP_RECV||"";
-let PACKS={29:2,69:5,129:10};try{if(E.PACKS)PACKS=JSON.parse(E.PACKS)}catch(e){} // ต้องตรงกับ CFG.packs ในหน้าเว็บ (บาท:เครดิต)
+let TIERS=[[500,14],[200,15],[50,16]];try{if(E.TIERS)TIERS=JSON.parse(E.TIERS)}catch(e){} // เรทเติมเงิน [ยอดขั้นต่ำ(บาท), บาทต่อเครดิต] เรียงจากมากไปน้อย ต้องตรงกับ credOf ในหน้าเว็บ
+const MIN_TOPUP=Math.min(...TIERS.map(t=>t[0])),MAX_TOPUP=10000;
+const credOf=b=>{const t=TIERS.find(t=>b>=t[0]);return t?Math.floor(b/t[1]):0};
 const DB_FILE=fp("data.json"),PAY=fp("payments.jsonl"),ORD=fp("orders.jsonl"),FB=fp("feedback.jsonl"),LAW=fp("lawyer_requests.jsonl"),USED=fp("slips_used.json");
 const PAGE=path.join(__dirname,"check_contract.html"),ADMINPAGE=path.join(__dirname,"admin.html");
 
@@ -33,8 +35,7 @@ const today=()=>new Date(Date.now()+7*36e5).toISOString().slice(0,10);
 function getUser(id,ip){id=cid(id);if(!id||id.startsWith("__"))return null;let x=db[id];if(x)return x;
   const m=db.__ipn=db.__ipn||{},k=hash(ip),d=today();if(!m[k]||m[k].d!==d)m[k]={d,n:0};m[k].n++;
   x=db[id]={credits:m[k].n<=NEW_PER_IP?FREE:0,created:Date.now()};save();return x}
-const MINB=+E.MIN_TOPUP||50,MAXB=+E.MAX_TOPUP||5000,RATE=b=>b>=500?13:b>=200?14:15; // บาทต่อ 1 เครดิต (ต้องตรงกับหน้าเว็บ)
-const packOf=b=>b===PASS_BAHT?{credits:0,days:PASS_DAYS}:(Number.isInteger(b)&&b>=MINB&&b<=MAXB&&Math.floor(b/RATE(b))>0)?{credits:Math.floor(b/RATE(b)),days:0}:null;
+const packOf=b=>b===PASS_BAHT?{credits:0,days:PASS_DAYS}:(Number.isInteger(b)&&b>=MIN_TOPUP&&b<=MAX_TOPUP&&credOf(b)>0)?{credits:credOf(b),days:0}:null;
 const passOn=x=>(x.passUntil||0)>Date.now();
 function take(x){if(passOn(x)){const d=today();if(!x.pd||x.pd.d!==d)x.pd={d,n:0};if(x.pd.n>=PASS_DAILY)return"cap";x.pd.n++;save();return"pass"}
   if(x.credits<COST)return"none";x.credits-=COST;save();return"credit"}
@@ -208,7 +209,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});return send(res,200,{credits:x.credits})}
     if(P==="/admin/feedback")return send(res,200,{items:rd(FB).slice(-100).reverse()});
     if(P==="/admin/lawyer")return send(res,200,{items:rd(LAW).slice(-100).reverse()});
-    if(P==="/admin/ai-test"){const o={api_key:!!KEY,model:MODEL,key_len:KEY.length,key_start:KEY.slice(0,7),key_had_extra_chars:RAWKEY!==KEY,api_host:(()=>{try{return new URL(API_URL).host}catch(_){return"?"}})()};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
+    if(P==="/admin/ai-test"){const o={api_key:!!KEY,model:MODEL};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
     if(P==="/admin/tts-test"){const o={elevenlabs:{api_key:!!EL_KEY,voice_id:!!EL_VOICE,model:EL_MODEL},google:{api_key:!!TTS_KEY}};
       if(EL_KEY&&EL_VOICE){try{await eltts("สวัสดีครับ ทดสอบเสียงครับ");o.elevenlabs.result="ok"}catch(e){o.elevenlabs.result="ล้มเหลว: "+e.message}}else o.elevenlabs.result="ตั้งค่าไม่ครบ";
       return send(res,200,o)}

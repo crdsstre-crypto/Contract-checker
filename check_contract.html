@@ -603,7 +603,7 @@ promptpay:"0800000000",            // เบอร์พร้อมเพย์
 bank:{name:"ธนาคารกสิกรไทย",no:"000-0-00000-0",acct:"ชื่อบัญชีของคุณ"},
 truemoney:"0800000000",            // เบอร์ TrueMoney Wallet
 contact:"https://line.me/ti/p/~ไอดีไลน์ของคุณ", // ช่องทางส่งสลิป
-api:/claude/i.test(location.hostname)?"":(/github\.io$/i.test(location.hostname)?"https://contract-checker-cerg.onrender.com":(/^https?:$/.test(location.protocol)?location.origin:"")),                            // URL หลังบ้าน (เปิดจาก onrender.com ใช้โดเมนเดียวกัน / เปิดจาก github.io ชี้ไป https://contract-checker-cerg.onrender.com) เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
+api:/claude/i.test(location.hostname)?"":(/^https?:$/.test(location.protocol)?(/(^|\.)onrender\.com$|^localhost$|^127\./i.test(location.hostname)?location.origin:"https://contract-checker-cerg.onrender.com"):""),                            // URL หลังบ้าน (เปิดจาก onrender.com/localhost ใช้โดเมนเดียวกัน / เปิดจากที่อื่น เช่น github.io ชี้ไป https://contract-checker-cerg.onrender.com ต้องตั้ง ALLOWED_ORIGIN บน Render) เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
 seller:{name:"ชื่อผู้ขาย/ร้านของคุณ",addr:"ที่อยู่ผู้ขาย",tax:""},
 packs:[{b:20,c:5},{b:50,c:15},{b:100,c:35},{b:199,c:0,days:30}], // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
 passDaily:30};
@@ -612,6 +612,9 @@ try{uid=localStorage.getItem("uid")||"";if(!uid){uid=Math.random().toString(36).
 const lget=()=>{try{const v=localStorage.getItem("cr");if(v===null){localStorage.setItem("cr",CFG.free);return CFG.free}return+v||0}catch(e){return 0}};
 const lset=v=>{try{localStorage.setItem("cr",v)}catch(e){}};
 const J=(u,o)=>fetch(CFG.api+u,o).then(r=>r.json());
+async function JR(u,o,n=0){let r;try{r=await fetch(CFG.api+u,o)}catch(e){if(n<2){await new Promise(s=>setTimeout(s,4000));return JR(u,o,n+1)}throw e}
+if([502,503,504].includes(r.status)&&n<2){await new Promise(s=>setTimeout(s,5000));return JR(u,o,n+1)}
+const d=await r.json().catch(()=>({}));if(!d.ok&&!d.error)d.error="http_"+r.status;return d}
 const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
 function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?"∞":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id=\"crc\">"+CFG.cost+"</b> เครดิต";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
 async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}
@@ -687,7 +690,7 @@ ttsOn=false;b.textContent="🔊 ฟังสรุปเสียง AI";
 if(rr.status===429&&d.error==="tts_cap"){$("ttsn").textContent=" วันนี้ฟังเสียงครบโควตาแล้ว ลองใหม่พรุ่งนี้";return}
 browserTTS(r,b);if(d.detail)$("ttsn").textContent+=" — เสียงเซิร์ฟเวอร์ใช้ไม่ได้: "+d.detail}catch(e){ttsOn=false;browserTTS(r,b)}}}
 /* ===== ตรวจสลิปอัตโนมัติ (อ่าน QR บนสลิปในเครื่อง ส่งเฉพาะข้อความ QR ให้เซิร์ฟเวอร์) ===== */
-const SLIPERR={tos:"กรุณายอมรับข้อกำหนดการใช้งานก่อน",amount_mismatch:"ยอดบนสลิปไม่ตรงกับแพ็กเกจที่เลือก",duplicate:"สลิปนี้ถูกใช้เติมเครดิตไปแล้ว",recv_mismatch:"สลิปนี้ไม่ได้โอนเข้าบัญชีของร้าน",bad_slip:"ตรวจสลิปไม่ผ่าน",not_configured:"ระบบตรวจสลิปอัตโนมัติยังไม่เปิดใช้ กด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ",upstream:"ระบบตรวจสลิปขัดข้อง ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่"};
+const SLIPERR={tos:"กรุณายอมรับข้อกำหนดการใช้งานก่อน",amount_mismatch:"ยอดบนสลิปไม่ตรงกับแพ็กเกจที่เลือก",duplicate:"สลิปนี้ถูกใช้เติมเครดิตไปแล้ว",recv_mismatch:"สลิปนี้ไม่ได้โอนเข้าบัญชีของร้าน",bad_slip:"ตรวจสลิปไม่ผ่าน",not_configured:"ระบบตรวจสลิปอัตโนมัติยังไม่เปิดใช้ กด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ",upstream:"ระบบตรวจสลิปขัดข้อง ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่",bad_request:"ข้อมูลสลิปไม่ถูกต้อง ลองใช้รูปสลิปต้นฉบับที่ไม่ครอบตัด หรือเลือกแพ็กเกจใหม่",not_found:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_404:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_502:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_503:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_504:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่"};
 async function slipQR(f){const url=URL.createObjectURL(f),im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url});
 const sc=Math.min(1,3000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
 const g=c.getContext("2d");g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
@@ -697,16 +700,11 @@ if(e.target.id!=="slipf"||!e.target.files[0])return;const f=e.target.files[0],m=
 m.style.color="";m.textContent="กำลังอ่านสลิป…";
 try{const q=await slipQR(f);
 if(!q){m.textContent="อ่าน QR บนสลิปไม่ได้ ลองใช้สลิปต้นฉบับที่ไม่ครอบตัด หรือกด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ";return}
-m.textContent="กำลังตรวจกับธนาคาร…";
-const d = await J("https://contract-checker-cerg.onrender.com/slip", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ uid, payload: q, baht: CFG.packs[pk].b, ref })
-});
-
+m.textContent="กำลังตรวจกับธนาคาร… (ถ้าเซิร์ฟเวอร์เพิ่งตื่นอาจใช้เวลาประมาณ 1 นาที)";
+const d=await JR("/slip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,payload:q,baht:CFG.packs[pk].b,ref})});
 if(d.ok){cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;showCr();m.textContent=d.days?"✅ เปิดแพ็กเกจรายเดือนแล้ว ใช้ได้ถึง "+new Date(d.passUntil).toLocaleDateString("th-TH"):"✅ เติมเครดิตสำเร็จ +"+d.added+" เครดิต";setTimeout(()=>{if($("pay").open)$("pay").close()},1800)}
-else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ")+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")
-}catch(x){m.textContent="เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง"}});
+else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ"+(d.error?" (รหัส: "+d.error+")":""))+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")
+}catch(x){console.error("slip",x);m.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ รอสักครู่แล้วลองใหม่อีกครั้ง"}});
 loadCr();
 if(CFG.api){$("refb").style.display="inline-block";$("rcpb").style.display="inline-block"}
 try{if(localStorage.getItem("tos")===TOSV)claimRef()}catch(e){}

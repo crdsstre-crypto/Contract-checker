@@ -1,0 +1,8 @@
+{
+  "name": "contract-checker",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}

@@ -1,123 +1,710 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Checker</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 500px;
-        }
-        h2 {
-            margin-top: 0;
-            color: #38bdf8;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        textarea, input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #334155;
-            background-color: #0f172a;
-            color: #fff;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        textarea:focus, input:focus {
-            outline: none;
-            border-color: #38bdf8;
-        }
-        button {
-            background-color: #0284c7;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #0369a1;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #0f172a;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            white-space: pre-wrap;
-            word-break: break-all;
-            display: none;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เช็กสัญญา — ตรวจความเสี่ยงสัญญาฟรีแลนซ์และกู้ยืมเงิน</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1b2433;--mute:#5b6577;--line:#d9d6cc;--stamp:#b3261e;--ok:#1f7a4d;--warn:#b26a00;--soft:#ecebe4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--card:#1a202a;--ink:#e8e6df;--mute:#9aa3b2;--line:#2c3441;--stamp:#ef6b61;--ok:#4cc38a;--warn:#e6a23c;--soft:#222a36}}
+:root[data-theme="dark"]{--bg:#12161d;--card:#1a202a;--ink:#e8e6df;--mute:#9aa3b2;--line:#2c3441;--stamp:#ef6b61;--ok:#4cc38a;--warn:#e6a23c;--soft:#222a36}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif;line-height:1.7}
+main{position:relative;max-width:720px;margin:0 auto;padding:28px 18px 60px}
+h1{font-family:"Noto Serif Thai",serif;font-size:clamp(28px,7vw,40px);line-height:1.3;margin:0 0 10px}
+.lead{color:var(--mute);margin:0 0 24px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.types button{font:inherit;font-size:14px;padding:6px 14px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:99px;cursor:pointer}
+.types button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+textarea{width:100%;min-height:220px;resize:vertical;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+.go{font:inherit;font-weight:600;background:var(--stamp);color:#fff;border:0;border-radius:8px;padding:11px 22px;cursor:pointer}
+.go:disabled{opacity:.5;cursor:wait}
+.link{font:inherit;font-size:14px;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;padding:0}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+#out{margin-top:26px}
+.head{display:flex;gap:18px;align-items:center;margin-bottom:18px}
+.stamp{flex:none;width:104px;height:104px;border:3px solid var(--c);color:var(--c);border-radius:50%;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);font-family:"Noto Serif Thai",serif;line-height:1.1}
+.stamp b{font-size:34px;display:block}.stamp span{font-size:12px}
+.sum{margin:0;font-size:16px}
+h2{font-family:"Noto Serif Thai",serif;font-size:20px;margin:26px 0 10px}
+.flag{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:14px;margin-bottom:12px}
+.flag q{display:block;font-family:"Noto Serif Thai",serif;font-size:15px;quotes:none;margin-bottom:8px}
+.flag p{margin:4px 0;font-size:15px}
+.fix{background:var(--soft);border-radius:6px;padding:8px 10px;margin-top:8px!important}
+.tag{font-weight:600;font-size:13px;color:var(--c)}
+.note{color:var(--mute);font-size:13px;margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+.err{color:var(--stamp);margin-top:12px}
+.doc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;white-space:pre-wrap;font-size:15px;line-height:2;word-break:break-word}
+mark{background:linear-gradient(transparent 20%,rgba(255,221,64,.27) 20%,rgba(255,221,64,.27) 90%,transparent 90%);color:inherit;padding:0 2px;border-radius:3px;cursor:pointer;font-weight:inherit;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+mark sup{font-size:10px;font-weight:600;color:var(--mute);margin-left:1px}
+.warn{margin:12px 0 0;padding:8px 12px;font-size:14px;border:1px solid var(--warn);border-left:5px solid var(--warn);border-radius:8px;background:var(--soft)}
+.chip{display:block;width:100%;text-align:left;font:inherit;font-weight:600;font-size:15px;padding:10px 14px;margin:0 0 10px;border:1.5px solid var(--warn);background:var(--soft);color:var(--ink);border-radius:10px;cursor:pointer}
+.tw{position:relative}.tw textarea{padding-top:38px}
+.clr{position:absolute;top:8px;right:8px;font:inherit;font-size:13px;padding:3px 10px;border:1px solid var(--line);background:var(--card);color:var(--mute);border-radius:99px;cursor:pointer}
+.clr[hidden]{display:none}
+.row .go{margin-left:auto}
+.hs{padding-left:20px;margin:12px 0}.hs li{margin-bottom:10px}
+.sl{display:block;width:100%;text-align:left;font:inherit;font-size:15px;padding:9px 12px;margin:0 0 8px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;cursor:pointer}
+.hint{color:var(--mute);font-size:13px;margin:6px 0 0}
+.flag{scroll-margin-top:16px}
+.flag.pulse{animation:pl 1.2s}@keyframes pl{0%,60%{box-shadow:0 0 0 4px #ffd400}100%{box-shadow:none}}
+.num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-size:12px;font-weight:700;margin-right:6px}
+.how{border-left:3px solid var(--ok);padding:4px 0 4px 10px;margin-top:10px!important}
+.steps{list-style:none;padding:0;margin:0}.steps li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px 10px 38px;margin-bottom:8px;position:relative}
+.steps li::before{content:"✓";position:absolute;left:12px;color:var(--ok);font-weight:700}
+.top{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.top h1{margin:0}
+#theme{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;font:inherit;font-size:13px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer}
+.mwrap{flex:none;display:flex;flex-direction:column;align-items:center;width:112px}
+.bubble{font-size:12px;line-height:1.4;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 8px;margin-bottom:4px;color:var(--mute)}
+.mascot{width:96px;height:auto;overflow:visible}
+.mascot .s{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.mascot .paper{fill:var(--card)}.mascot .ink{fill:var(--ink)}.mascot .glass{fill:rgba(255,221,64,.3)}
+.mascot .cheek{fill:#f08a80;opacity:.55}.mascot .seal{stroke:var(--stamp)}
+@media(prefers-reduced-motion:no-preference){
+.mascot{animation:bob 2.6s ease-in-out infinite}
+.mascot .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.2s infinite}
+.mascot .lens{transform-origin:92px 68px;animation:sway 3s ease-in-out infinite}
+.mascot.busy{animation-duration:.7s}.mascot.busy .lens{animation:scan .8s ease-in-out infinite}
+.mascot.hop{animation:hop .6s ease-out 2}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
+@keyframes scan{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
+@keyframes hop{40%{transform:translateY(-16px) rotate(-5deg)}}
+}
+@media(prefers-reduced-motion:no-preference){.stamp{animation:st .5s ease-out}@keyframes st{from{transform:rotate(-8deg) scale(1.6);opacity:0}}}
+
+/* ===== พื้นหลังสัญญา ===== */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:
+radial-gradient(900px 520px at 85% -5%,color-mix(in srgb,var(--stamp) 9%,transparent),transparent 70%),
+radial-gradient(800px 600px at -10% 105%,color-mix(in srgb,var(--ok) 8%,transparent),transparent 70%),
+repeating-linear-gradient(transparent 0 33px,color-mix(in srgb,var(--line) 55%,transparent) 33px 34px)}
+.sheet{position:absolute;left:var(--x);top:var(--y);width:var(--w,150px);aspect-ratio:3/4;background:var(--card);border:1px solid var(--line);border-radius:6px;opacity:.55;transform:rotate(var(--r));padding:14px 12px}
+.sheet::before{content:"";display:block;height:7px;width:55%;background:var(--line);border-radius:4px;margin-bottom:12px}
+.sheet::after{content:"";position:absolute;left:12px;right:12px;top:34px;bottom:34px;background:repeating-linear-gradient(transparent 0 9px,var(--line) 9px 10px);opacity:.8}
+.sheet i{position:absolute;left:12px;bottom:12px;width:38%;border-bottom:1.5px solid var(--mute)}
+.sign{position:absolute;right:max(3vw,12px);bottom:max(3vh,16px);width:min(52vw,270px);opacity:.5}
+.sign svg{width:100%;height:auto;overflow:visible}
+.sign path{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sign .ring{stroke:var(--stamp);stroke-width:2.5}
+.sign .rg{transform-box:fill-box;transform-origin:center;transform:rotate(-10deg)}
+@media(prefers-reduced-motion:no-preference){
+.sheet{animation:fl var(--d) ease-in-out infinite alternate}
+@keyframes fl{to{transform:translateY(-34px) rotate(calc(var(--r) + 4deg))}}
+.sign .pen{stroke-dasharray:1;stroke-dashoffset:1;animation:wr 11s ease-in-out infinite}
+.sign .pen.u{animation-name:wr2}
+@keyframes wr{0%{stroke-dashoffset:1;opacity:1}32%,82%{stroke-dashoffset:0;opacity:1}96%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes wr2{0%,30%{stroke-dashoffset:1;opacity:1}42%,82%{stroke-dashoffset:0;opacity:1}96%,100%{stroke-dashoffset:0;opacity:0}}
+.sign .rg{animation:sp 11s ease-out infinite}
+@keyframes sp{0%,46%{opacity:0;transform:rotate(-10deg) scale(1.7)}54%{opacity:1;transform:rotate(-10deg) scale(1)}82%{opacity:1;transform:rotate(-10deg) scale(1)}96%,100%{opacity:0;transform:rotate(-10deg) scale(1)}}
+}
+@media(prefers-reduced-motion:reduce){.sign .pen{stroke-dasharray:none}}
+@media(max-width:600px){.sheet:nth-child(n+4){display:none}}
+
+.cap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.cap button{font:inherit;font-size:14px;padding:8px 14px;border:1px dashed var(--mute);background:transparent;color:var(--ink);border-radius:10px;cursor:pointer}
+.cap button:disabled{opacity:.5;cursor:wait}
+.cap .stop{border-style:solid;border-color:var(--stamp);color:var(--stamp)}
+#ocrst{font-size:13px;color:var(--mute);min-height:0;margin:0 0 8px}
+.cap[hidden],.stop[hidden]{display:none}
+
+.prog{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.prog[hidden]{display:none}
+.pr-top{display:flex;align-items:center;gap:14px}
+.pr-n{font-family:"Noto Serif Thai",serif;font-size:34px;min-width:84px;color:var(--stamp);font-variant-numeric:tabular-nums;line-height:1}
+.pr-bar{flex:1;height:12px;border-radius:99px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
+.pr-bar i{display:block;height:100%;width:0;background:var(--stamp);border-radius:99px}
+.pr-now{margin:12px 0 10px;font-size:15px}
+.pr-steps{list-style:none;margin:0;padding:0;font-size:14px;color:var(--mute)}
+.pr-steps li{padding:3px 0 3px 26px;position:relative}
+.pr-steps li::before{content:"○";position:absolute;left:4px}
+.pr-steps li.done{color:var(--ink)}.pr-steps li.done::before{content:"✓";color:var(--ok);font-weight:700}
+.pr-steps li.cur{color:var(--ink);font-weight:600}.pr-steps li.cur::before{content:"●";color:var(--stamp)}
+.pr-est{margin:10px 0 0;font-size:12px;color:var(--mute)}
+@media(prefers-reduced-motion:no-preference){
+.pr-bar i{background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.28) 0 8px,transparent 8px 16px);background-size:22px 100%;animation:ps 1s linear infinite}
+@keyframes ps{to{background-position:22px 0}}
+.pr-steps li.cur::before{animation:pu 1.1s ease-in-out infinite}
+@keyframes pu{50%{opacity:.25}}}
+
+.crbar{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--warn);border-radius:12px;padding:10px 14px;margin:0 0 14px}
+.crbar .coin{font-size:30px;line-height:1}
+.crbar .num2{font-size:30px;font-weight:700;line-height:1;font-family:"Noto Serif Thai",serif}
+.crbar .cap2{flex:1;font-size:13px;color:var(--mute);line-height:1.4}.crbar .cap2 b{color:var(--ink)}
+.crbar button{font:inherit;font-weight:600;font-size:14px;background:var(--stamp);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+.crbar.low{border-color:var(--stamp)}.crbar.low .num2{color:var(--stamp)}
+.crbar.pop{animation:pl 1.2s}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:0;width:calc(100% - 24px);max-width:440px;max-height:90vh}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.pw{padding:16px}.ph{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-family:"Noto Serif Thai",serif}
+.packs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.packs button{font:inherit;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.packs button span{font-size:12px;color:var(--mute)}
+.packs button[aria-pressed="true"]{border:2px solid var(--stamp)}
+.qr{background:#fff;padding:10px;display:block;width:fit-content;margin:12px auto;border-radius:10px}
+.acc{background:var(--soft);border-radius:8px;padding:10px 12px;margin:12px 0}.acc p{margin:2px 0}
+.ref{text-align:center;margin:6px 0}
+a.go{display:block;text-align:center;text-decoration:none;margin-top:10px}
+.pw .link{display:block;margin:10px auto 0}
+.tldr{background:var(--soft);border-radius:10px;padding:12px 16px;margin:0 0 18px}.tldr ul{margin:6px 0 0;padding-left:20px}
+details.neg{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px}details.neg summary{cursor:pointer;font-weight:600}details.neg p{margin:6px 0}
+pre.draft{white-space:pre-wrap;word-break:break-word;font:inherit;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin:8px 0}
+.df{border-radius:8px;padding:8px 12px;margin:8px 0;font-size:15px}.df.a{background:rgba(31,122,77,.14);border-left:4px solid var(--ok)}.df.d{background:rgba(179,38,30,.12);border-left:4px solid var(--stamp)}.df.c{background:var(--soft);border-left:4px solid var(--warn)}
+.df s{background:rgba(179,38,30,.2);color:var(--stamp)}.df b.nn{background:rgba(31,122,77,.2);color:var(--ok)}.df .o{color:var(--mute)}
+#cmpt{min-height:140px}
+.dlg{max-width:640px;width:calc(100% - 24px);max-height:90vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:16px}.dlg::backdrop{background:rgba(0,0,0,.5)}
+.dlg label{display:block;font-weight:600;margin:10px 0 4px}.dlg input,.dlg textarea,.dlg select,#cn,#ch_in,.cnote{width:100%;font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.g2c{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tn{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.tn button,.acts2 button,.acts2 a{font:inherit;font-size:14px;padding:7px 12px;border:1px solid var(--line);border-radius:99px;background:var(--soft);color:var(--ink);cursor:pointer;text-decoration:none}
+.chatlog{max-height:320px;overflow:auto;margin:8px 0}.bb{padding:8px 12px;border-radius:12px;margin:6px 0;max-width:88%}.bb.ai{background:var(--soft)}.bb.me{background:var(--ink);color:var(--bg);margin-left:auto}.bb small{display:block;color:var(--ok);margin-top:4px}
+.warnb{background:rgba(179,38,30,.12);border-left:4px solid var(--stamp);padding:10px 14px;border-radius:8px;margin:0 0 14px}
+.gauge{height:12px;background:var(--soft);border-radius:99px;overflow:hidden;margin:6px 0}.gauge i{display:block;height:100%;border-radius:99px}.rk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 16px}.rk b.big{font-size:26px}
+.vk{color:var(--ok)}.vw{color:var(--warn);font-weight:600}.lb,.qt{margin:4px 0;font-size:14px}.qt{color:var(--mute)}.fbk{margin-top:6px}.fbk button{font:inherit;font-size:13px;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;padding:0}
+.tosl{display:block;font-size:14px;margin:8px 0;padding:8px 10px;background:var(--soft);border-radius:8px}.gate #packs,.gate #meth,.gate #pbody{opacity:.35;pointer-events:none}#tos_b ol{padding-left:20px}#tos_b li{margin:8px 0}
+.pl{display:none}.plainon .pl{display:block}.plainon .why{display:none}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>Contract Checker</h2>
-        <div class="form-group">
-            <label for="contractText">วางโค้ดสัญญาหรือข้อมูลที่ต้องการตรวจสอบ:</label>
-            <textarea id="contractText" rows="6" placeholder="กรอกข้อมูลสัญญาที่นี่..."></textarea>
-        </div>
-        <button onclick="checkContract()">ตรวจสอบสัญญา</button>
-        <div id="result"></div>
-    </div>
+<div class="bg" aria-hidden="true">
+<div class="sheet" style="--x:4%;--y:62%;--r:-9deg;--d:9s"><i></i></div>
+<div class="sheet" style="--x:78%;--y:8%;--r:7deg;--d:12s;--w:130px"><i></i></div>
+<div class="sheet" style="--x:88%;--y:44%;--r:-4deg;--d:10s;--w:110px"><i></i></div>
+<div class="sheet" style="--x:-2%;--y:12%;--r:5deg;--d:13s;--w:120px"><i></i></div>
+<div class="sheet" style="--x:46%;--y:84%;--r:-6deg;--d:11s;--w:120px"><i></i></div>
+<div class="sign"><svg viewBox="0 0 200 100">
+<g class="rg"><circle class="ring" cx="165" cy="48" r="26" fill="none" stroke="var(--stamp)" stroke-width="2.5"/><circle cx="165" cy="48" r="20" fill="none" stroke="var(--stamp)" stroke-width="1"/></g>
+<path class="pen" pathLength="1" d="M8 62 C22 8 42 8 36 46 S22 84 52 40 C62 24 72 26 66 52 S88 58 104 36 C114 22 118 52 134 46 S160 34 178 50"/>
+<path class="pen u" pathLength="1" d="M6 82 C70 72 130 78 192 68"/>
+</svg></div></div>
+<main>
+<button id="theme" type="button" aria-label="สลับโหมดมืดหรือสว่าง"></button>
+<div class="top">
+<div class="mwrap"><div class="bubble" id="bub">วางสัญญามาได้เลย</div>
+<svg class="mascot" id="mascot" viewBox="0 0 125 118" aria-hidden="true">
+<rect class="s paper" x="26" y="8" width="60" height="82" rx="9"/>
+<circle class="eye ink" cx="46" cy="38" r="5"/><circle class="eye ink" cx="66" cy="38" r="5"/>
+<circle class="cheek" cx="38" cy="50" r="5"/><circle class="cheek" cx="74" cy="50" r="5"/>
+<path class="s" d="M50 52 Q56 59 62 52"/>
+<circle class="s seal" cx="56" cy="72" r="8"/>
+<path class="s" d="M26 62 L14 74"/>
+<path class="s" d="M44 94 V104 M68 94 V104"/>
+<g class="lens"><path class="s" d="M86 64 L92 68 L99 58"/><circle class="s glass" cx="106" cy="48" r="12"/></g>
+</svg></div>
+<h1>เช็กสัญญา</h1>
+</div>
+<p class="lead">วางข้อความสัญญาจ้างงานหรือสัญญากู้ยืมเงิน แล้วดูว่าข้อไหนเสี่ยง ข้อไหนเอาเปรียบ พร้อมคำแนะนำในการแก้ประโยคให้แฟร์ขึ้น</p>
 
-    <script>
-        async function checkContract() {
-            const text = document.getElementById('contractText').value;
-            const resultDiv = document.getElementById('result');
-            
-            if (!text.trim()) {
-                alert('กรุณากรอกข้อมูลสัญญาก่อนตรวจสอบ');
-                return;
-            }
+<button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button>
+<div class="crbar" id="cr"><span class="coin" aria-hidden="true">🪙</span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button></div>
+<section class="panel">
+<div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
+<div class="cap" id="cap">
+<button type="button" id="bcam">📷 ถ่ายรูปสัญญา</button>
+<button type="button" id="bpick">📎 เลือกรูป / PDF / Word / ไฟล์ข้อความ</button>
+<button type="button" id="bstop" class="stop" hidden>หยุดอ่าน</button>
+<input type="file" id="fcam" accept="image/*" capture="environment" hidden>
+<input type="file" id="fpick" accept="image/*,.pdf,application/pdf,.txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
+</div>
+<p id="ocrst" role="status"></p>
+<button type="button" class="chip" id="demo">⚡ ลองกดดูตัวอย่างสัญญาฟรีแลนซ์โดนเอาเปรียบ</button>
+<input id="cn" placeholder="ชื่อลูกค้า/บริษัท (ไม่บังคับ — ใช้เช็กสมุดบันทึกลูกค้าของคุณ)" style="margin-bottom:8px"><button type="button" class="chip" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button>
+<div class="tw"><textarea id="txt" placeholder="วางข้อความสัญญาที่นี่ หรือถ่ายรูป/อัปโหลดไฟล์ด้านบน…"></textarea><button type="button" id="clr" class="clr" aria-label="ล้างข้อความ" hidden>✕ ล้าง</button></div>
+<p class="warn">⚠️ <b>เว็บนี้เป็นเครื่องมือช่วยอำนวยความสะดวกด้วย AI เท่านั้น ไม่ใช่สำนักงานกฎหมาย และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต</b> ผลวิเคราะห์ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น</p>
+<label class="note" style="display:block;margin:8px 0"><input type="checkbox" id="mk" checked> 🔒 ปิดบังข้อมูลส่วนตัว (เลขบัตร เบอร์โทร เลขบัญชี อีเมล) ก่อนส่งให้ AI<br><small>รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังข้อมูลส่วนตัวก่อนถ่ายหรืออัปโหลด</small></label>
+<div class="row">
+<button class="go" id="go" type="button">ตรวจสัญญา · ใช้ 1 เครดิต</button>
+</div>
+<div class="err" id="err" role="alert"></div>
+</section>
 
-            resultDiv.style.display = 'block';
-            resultDiv.innerText = 'กำลังตรวจสอบ...';
+<div id="prog" class="prog" hidden></div>
+<div id="out" aria-live="polite"></div>
+<p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและข้อจำกัดความรับผิด (เวอร์ชัน 1.0)</button></p>
+</main>
+<dialog id="how"><div class="pw">
+<div class="ph"><b>วิธีใช้งาน</b><button class="link" id="hx" type="button">ปิด</button></div>
+<ol class="hs"><li><b>เลือกประเภทสัญญา</b><br>จ้างฟรีแลนซ์ กู้ยืมเงิน เช่า หรืออื่น ๆ เพื่อให้ตรวจตรงจุด</li>
+<li><b>วางข้อความหรือถ่ายรูป</b><br>วางข้อความ ถ่ายรูป อัปโหลด PDF หรือกด “ลองดูตัวอย่างสัญญา” เพื่อลองก่อน</li>
+<li><b>กดตรวจสัญญา</b><br>ได้คะแนนความปลอดภัย จุดน่ากลัวที่ไฮไลต์ในสัญญา วิธีแก้ประโยค และวิธีเจรจา</li></ol>
+<p class="hint">ตรวจ 1 ครั้งใช้ 1 เครดิต ผลเป็นข้อมูลประกอบเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>
+<button class="go" id="hok" type="button" style="width:100%;margin-top:10px">เข้าใจแล้ว เริ่มเลย</button>
+</div></dialog>
+<dialog id="smp"><div class="pw">
+<div class="ph"><b>ตัวอย่างสัญญา</b><button class="link" id="sx" type="button">ปิด</button></div>
+<p class="hint">เลือกหมวด แล้วกดตัวอย่างที่ใกล้เคียงกับสัญญาของคุณ</p>
+<div class="types" id="scat"></div><div id="slist"></div>
+</div></dialog>
+<dialog id="pay"><div class="pw">
+<div class="ph"><b>เติมเครดิต</b><button class="link" id="px" type="button">ปิด</button></div>
+<p class="hint" id="pbal"></p><p class="err" id="pmsg"></p>
+<button class="link" id="rcpb" type="button" style="display:none">🧾 ใบเสร็จของฉัน</button>
+<label class="tosl"><input type="checkbox" id="pay_cb"> ฉันยอมรับ<a href="#" id="pay_tos">ข้อกำหนดการใช้งาน</a> รวมถึงข้อจำกัดความรับผิด (สูงสุดไม่เกินจำนวนเงินที่ชำระในช่วง 30 วันก่อนเกิดเหตุ) และเครดิตไม่สามารถขอคืนเงินได้ เว้นแต่ระบบขัดข้อง</label>
+<div class="packs" id="packs"></div>
+<div class="types" id="meth"></div>
+<div id="pbody"></div>
+</div></dialog>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<dialog id="dsc" class="dlg"><h2 style="margin-top:0">⚖️ ข้อกำหนดการใช้งาน โปรดอ่านก่อน</h2><ul><li><b>เว็บนี้เป็นเครื่องมือช่วยอำนวยความสะดวกด้วย AI เท่านั้น</b> ไม่ใช่สำนักงานกฎหมาย และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต</li><li>ผลวิเคราะห์ <b>ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล</b> หรือต่อหน่วยงานรัฐ</li><li>AI อาจผิดพลาดหรือแต่งข้อมูลได้ คุณต้องตรวจสอบเองและปรึกษาทนายความสำหรับเรื่องสำคัญ</li><li>ผู้ให้บริการจำกัดความรับผิดเท่าที่กฎหมายอนุญาต โดยสูงสุดไม่เกินจำนวนเงินที่คุณชำระในช่วง 30 วันก่อนเกิดเหตุ</li></ul><button type="button" class="link" id="tos_open">อ่านข้อกำหนดฉบับเต็ม</button><label style="display:block;margin:12px 0"><input type="checkbox" id="dsc_cb"> ฉันอ่านและยอมรับข้อกำหนดการใช้งาน</label><button type="button" class="go" id="dsc_ok" disabled>ยอมรับและใช้งานต่อ</button></dialog>
+<dialog id="tos" class="dlg"><div id="tos_b"></div><button type="button" class="go" id="tos_x">ปิด</button></dialog>
+<dialog id="hist" class="dlg"><h2 style="margin-top:0">🕘 ประวัติการตรวจ</h2><p class="hint">เก็บเฉพาะสรุปผลความเสี่ยงในเครื่องของคุณ ไม่เก็บเนื้อหาสัญญา</p><div id="hist_l"></div><div class="row"><button type="button" class="link" id="hist_c">ล้างทั้งหมด</button><button type="button" class="go" id="hist_x">ปิด</button></div></dialog>
+<dialog id="law" class="dlg"><h2 style="margin-top:0">👩‍⚖️ ขอให้ทนายความตรวจซ้ำ</h2><p>ส่งคำขอให้ทีมงานติดต่อกลับเพื่อประสานทนายความตรวจสัญญาแบบละเอียด (มีค่าใช้จ่าย ตกลงราคากันก่อน) บริการนี้ไม่ใช่การตรวจด้วย AI</p><p class="hint" id="law_d"></p><label>ชื่อ</label><input id="law_n"><label>ช่องทางติดต่อ (LINE / เบอร์ / อีเมล)</label><input id="law_c"><label>รายละเอียดเพิ่มเติม</label><textarea id="law_t" rows="2"></textarea><label style="font-weight:400"><input type="checkbox" id="law_s"> แนบสรุปผลการตรวจ (คะแนนและจุดเสี่ยง)</label><label style="font-weight:400"><input type="checkbox" id="law_x"> แนบข้อความสัญญา (ปิดบังข้อมูลส่วนตัวแล้วถ้าเปิดตัวเลือกไว้)</label><label style="font-weight:400"><input type="checkbox" id="law_cb"> ฉันยินยอมให้ส่งข้อมูลที่เลือกไว้ข้างต้นให้ทีมงานและทนายความที่ทีมงานประสาน เพื่อติดต่อกลับเรื่องนี้เท่านั้น</label><p class="err" id="law_msg"></p><div class="row"><button type="button" class="go" id="law_go">ส่งคำขอ</button><button type="button" class="link" id="law_x2">ปิด</button></div></dialog>
+<dialog id="rcp" class="dlg"><h2 style="margin-top:0">🧾 ใบเสร็จรับเงิน</h2><label>ชื่อผู้ซื้อ (ถ้าต้องการให้ออกในนาม)</label><input id="rcp_b"><div id="rcp_l"></div><p class="hint">เป็นใบเสร็จรับเงิน ไม่ใช่ใบกำกับภาษี</p><button type="button" class="go" id="rcp_x">ปิด</button></dialog>
+<dialog id="gen" class="dlg"><h2 style="margin-top:0">🧾 สร้างสัญญาฉบับแฟร์</h2>
+<label>ประเภทสัญญา</label><select id="g_t"><option value="f">จ้างทำของ / ฟรีแลนซ์</option><option value="l">กู้ยืมเงิน</option><option value="r">เช่าห้องพัก / อสังหาริมทรัพย์</option></select><div id="g_fs"></div>
+<div class="row"><button type="button" class="go" id="g_go">สร้างสัญญา</button><button type="button" class="link" id="g_x">ปิด</button></div>
+<pre class="draft" id="g_out" hidden></pre><div class="acts2" id="g_ac" hidden><button type="button" id="g_cp">📋 คัดลอก</button><a id="g_dl" download="สัญญาจ้างทำของ.doc">⬇️ ดาวน์โหลด Word</a></div>
+<p class="hint">แม่แบบทั่วไป ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจ</p></dialog>
+<script>
+const TYPES=["สัญญาจ้างฟรีแลนซ์","สัญญากู้ยืมเงิน","สัญญาเช่า","อื่น ๆ"];
+let type=TYPES[0];
+const $=id=>document.getElementById(id);
+const tw=$("types");
+function drawTypes(){tw.innerHTML="";TYPES.forEach(t=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.setAttribute("aria-pressed",t===type);b.onclick=()=>{type=t;drawTypes()};tw.appendChild(b)})}
+drawTypes();
+const DEMO=`สัญญาจ้างทำของ\nข้อ 1 ผู้รับจ้างต้องส่งมอบงานออกแบบโลโก้และชุดแบรนด์ภายใน 7 วัน นับจากวันลงนาม\nข้อ 2 ค่าจ้าง 30,000 บาท จ่ายเมื่อผู้ว่าจ้างพอใจในผลงานและอนุมัติแล้วเท่านั้น\nข้อ 3 หากส่งงานล่าช้า ผู้รับจ้างต้องชำระค่าปรับวันละ 5,000 บาท\nข้อ 4 ผู้ว่าจ้างมีสิทธิ์ให้แก้ไขงานได้ไม่จำกัดจำนวนครั้งโดยไม่คิดค่าใช้จ่ายเพิ่ม\nข้อ 5 ลิขสิทธิ์และสิทธิ์ในผลงานทั้งหมด รวมถึงงานต้นแบบที่ไม่ได้ใช้ เป็นของผู้ว่าจ้างโดยสมบูรณ์\nข้อ 6 ผู้ว่าจ้างยกเลิกสัญญาเมื่อใดก็ได้โดยไม่ต้องชำระค่าตอบแทนใด ๆ`;
+const sync=()=>{$("clr").hidden=!$("txt").value;const g=$("go");if(g&&!g.disabled&&typeof GO==="function"&&typeof CFG!=="undefined"){const l=GO();if(g.textContent!==l)g.textContent=l}};
+$("clr").onclick=()=>{$("txt").value="";$("out").innerHTML="";$("err").textContent="";$("ocrst").textContent="";sync();$("txt").focus()};
+$("txt").addEventListener("input",sync);setInterval(sync,400);
+const SAMPLES={
+"สัญญาจ้างฟรีแลนซ์":[
+["ออกแบบโลโก้ (ค่าปรับ+แก้ไม่จำกัด)",DEMO],
+["ถ่ายภาพงานอีเวนต์","สัญญาจ้างถ่ายภาพ\nข้อ 1 ผู้รับจ้างต้องถ่ายภาพงานอีเวนต์เต็มวัน และส่งไฟล์ภาพที่แต่งแล้วทั้งหมดภายใน 24 ชั่วโมงหลังงานจบ\nข้อ 2 ค่าจ้าง 15,000 บาท ชำระภายใน 90 วันหลังผู้ว่าจ้างตรวจรับงานครบถ้วน\nข้อ 3 ผู้ว่าจ้างมีสิทธิ์ขอแก้ไขภาพได้ทุกเมื่อโดยไม่คิดค่าใช้จ่าย\nข้อ 4 ภาพทั้งหมดรวมถึงไฟล์ RAW เป็นลิขสิทธิ์ของผู้ว่าจ้าง ผู้รับจ้างห้ามนำไปแสดงในผลงานของตนเอง\nข้อ 5 หากผู้ว่าจ้างไม่พอใจ มีสิทธิ์ไม่จ่ายค่าจ้างได้"],
+["ตัดต่อวิดีโอรายเดือน","สัญญาจ้างตัดต่อวิดีโอ\nข้อ 1 ผู้รับจ้างตัดต่อวิดีโอให้ผู้ว่าจ้างเดือนละไม่เกิน 20 คลิป โดยผู้ว่าจ้างเป็นผู้กำหนดปริมาณงานเพิ่มได้\nข้อ 2 ค่าจ้างเหมาเดือนละ 12,000 บาท จ่ายเมื่อผู้ว่าจ้างเก็บเงินจากลูกค้าได้แล้ว\nข้อ 3 ผู้รับจ้างห้ามรับงานให้ธุรกิจที่คล้ายกันเป็นเวลา 5 ปีหลังเลิกสัญญา\nข้อ 4 ผู้ว่าจ้างบอกเลิกสัญญาได้ทันที ผู้รับจ้างต้องแจ้งล่วงหน้า 90 วัน"]],
+"สัญญากู้ยืมเงิน":[
+["กู้เงินจากคนรู้จัก (ดอกเบี้ยสูง)","สัญญากู้ยืมเงิน\nข้อ 1 ผู้กู้ยืมเงิน 50,000 บาท ดอกเบี้ยร้อยละ 5 ต่อเดือน ชำระภายใน 3 เดือน\nข้อ 2 หากผิดนัดชำระงวดใดงวดหนึ่ง ผู้ให้กู้เรียกเงินคืนทั้งหมดทันที พร้อมค่าปรับวันละ 500 บาท และค่าทวงถามครั้งละ 1,000 บาท\nข้อ 3 ผู้กู้ยินยอมให้ผู้ให้กู้ยึดทรัพย์สินใดก็ได้ของผู้กู้โดยไม่ต้องฟ้องศาล"],
+["มีผู้ค้ำประกัน","สัญญากู้ยืมเงินพร้อมค้ำประกัน\nข้อ 1 ผู้กู้ 200,000 บาท ผ่อนเดือนละ 10,000 บาท ดอกเบี้ยร้อยละ 24 ต่อปี\nข้อ 2 ผู้ค้ำประกันยอมรับผิดร่วมกับผู้กู้ไม่จำกัดจำนวน และสละสิทธิ์ทุกประการที่กฎหมายให้ไว้แก่ผู้ค้ำประกัน\nข้อ 3 ผู้ให้กู้เปลี่ยนแปลงอัตราดอกเบี้ยได้ฝ่ายเดียวโดยไม่ต้องแจ้งล่วงหน้า"],
+["ผ่อนรายเดือน ยึดหลักประกัน","สัญญากู้ยืมเงินโดยมีรถเป็นหลักประกัน\nข้อ 1 ผู้กู้ 80,000 บาท ผ่อน 12 งวด งวดละ 9,000 บาท\nข้อ 2 ผู้กู้ส่งมอบเล่มทะเบียนรถไว้ หากขาดชำระ 1 งวด ผู้ให้กู้มีสิทธิ์ยึดรถและไม่ต้องคืนเงินที่ผ่อนมาแล้ว\nข้อ 3 ผู้กู้ต้องชำระค่าธรรมเนียมจัดทำสัญญา 5,000 บาท ไม่คืนไม่ว่ากรณีใด"]],
+"สัญญาเช่า":[
+["เช่าคอนโด/ห้องพัก","สัญญาเช่าห้องพัก\nข้อ 1 ค่าเช่าเดือนละ 12,000 บาท เงินประกัน 3 เดือน ผู้ให้เช่าไม่ต้องคืนหากผู้เช่าย้ายออกก่อนครบ 1 ปี\nข้อ 2 ผู้ให้เช่าขึ้นค่าเช่าได้ทุกเมื่อโดยแจ้งล่วงหน้า 7 วัน\nข้อ 3 ผู้ให้เช่าเข้าห้องได้ทุกเมื่อโดยไม่ต้องแจ้ง\nข้อ 4 ผู้เช่าต้องจ่ายค่าทาสีและทำความสะอาดทั้งห้องตอนย้ายออก เหมาจ่าย 8,000 บาท"],
+["เช่าพื้นที่ร้านค้า","สัญญาเช่าพื้นที่ร้านค้า\nข้อ 1 ค่าเช่าเดือนละ 30,000 บาท และเก็บส่วนแบ่งร้อยละ 10 ของยอดขายด้วย\nข้อ 2 ผู้เช่าลงทุนตกแต่งเอง ผู้ให้เช่าได้งานตกแต่งทั้งหมดเมื่อสัญญาสิ้นสุด\nข้อ 3 ผู้ให้เช่าบอกเลิกสัญญาได้ทุกเมื่อ ผู้เช่าเลิกก่อนครบ 3 ปีต้องจ่ายค่าเช่าที่เหลือทั้งหมด"],
+["เช่ารถ","สัญญาเช่ารถยนต์\nข้อ 1 ค่าเช่าวันละ 1,500 บาท มัดจำ 20,000 บาท\nข้อ 2 รถเสียหายทุกกรณี แม้ไม่ใช่ความผิดของผู้เช่า ผู้เช่าต้องจ่ายค่าซ่อมตามที่ผู้ให้เช่าประเมินเอง\nข้อ 3 คืนรถช้ากว่ากำหนด คิดค่าปรับชั่วโมงละ 1,000 บาท"]],
+"อื่น ๆ":[
+["ซื้อขายออนไลน์/มัดจำ","ข้อตกลงซื้อขายสินค้าสั่งผลิต\nข้อ 1 ผู้ซื้อโอนมัดจำร้อยละ 70 ก่อนเริ่มผลิต ผู้ขายไม่คืนมัดจำไม่ว่ากรณีใด\nข้อ 2 ผู้ขายส่งมอบสินค้าภายในเวลาที่ผู้ขายเห็นสมควร\nข้อ 3 ผู้ขายไม่รับผิดชอบความเสียหายใด ๆ และไม่รับคืนสินค้าทุกกรณี"],
+["ฝึกงาน/พาร์ทไทม์","สัญญาจ้างพาร์ทไทม์\nข้อ 1 ผู้รับจ้างทำงานสัปดาห์ละ 6 วัน ไม่มีค่าล่วงเวลา ค่าจ้างวันละ 300 บาท\nข้อ 2 ช่วง 3 เดือนแรกเป็นช่วงทดลองงาน ไม่จ่ายค่าจ้าง\nข้อ 3 หากลาออกก่อนครบ 1 ปี ต้องชดใช้ค่าฝึกอบรม 50,000 บาท"],
+["ตัวแทนขาย/ขายตรง","สัญญาตัวแทนจำหน่าย\nข้อ 1 ตัวแทนต้องซื้อสินค้าเริ่มต้น 100,000 บาท และซื้อเพิ่มทุกเดือนไม่ต่ำกว่า 20,000 บาท\nข้อ 2 บริษัทไม่รับซื้อสินค้าคืน และเปลี่ยนเงื่อนไขค่าคอมมิชชันได้ฝ่ายเดียว\nข้อ 3 หากยอดไม่ถึงเป้า บริษัทตัดสิทธิ์ตัวแทนและริบเงินที่จ่ายมา"]]};
+const PRE=[{"safety_score":2,"summary":"สัญญานี้เอาเปรียบผู้รับจ้างมาก ทั้งค่าปรับสูงเกินจริง แก้งานไม่จำกัด และยกเลิกได้โดยไม่จ่ายเงิน ไม่ควรเซ็นตามที่เขียน","red_flags":[{"level":"high","phrase":"วันละ 5,000 บาท","why":"ปรับหนักเกินจริง ส่งช้าไม่กี่วันอาจหมดค่าจ้างทั้งก้อน (30,000 บาท) ศาลมีอำนาจลดเบี้ยปรับที่สูงเกินส่วนได้ แต่ต้องไปสู้คดีเอง","suggestion":"ส่งงานล่าช้า ปรับวันละไม่เกินร้อยละ 0.5 ของค่าจ้าง และปรับรวมไม่เกินร้อยละ 10","how_to_handle":"ต่อรองให้ลดค่าปรับ และกำหนดเพดานรวมก่อนเซ็น"},{"level":"high","phrase":"ไม่จำกัดจำนวนครั้ง","why":"แก้ไม่จำกัดโดยไม่คิดเงิน ผู้ว่าจ้างจึงยื้องานได้เรื่อย ๆ และคุณไม่ได้เงิน","suggestion":"แก้ไขได้ไม่เกิน 2 รอบ ส่วนที่เกินคิดเพิ่มตามอัตราที่ตกลง"},{"level":"high","phrase":"เมื่อใดก็ได้","why":"ยกเลิกเมื่อไรก็ได้โดยไม่จ่ายอะไร แม้คุณทำงานไปแล้วเกือบเสร็จ","suggestion":"หากยกเลิก ต้องจ่ายค่างานตามสัดส่วนที่ทำไปแล้ว และมัดจำไม่คืน"},{"level":"medium","phrase":"พอใจในผลงาน","why":"เงื่อนไข \"พอใจ\" ขึ้นกับความรู้สึกฝ่ายเดียว ผู้ว่าจ้างอ้างไม่พอใจเพื่อไม่จ่ายก็ได้","suggestion":"จ่ายภายใน 7 วันหลังส่งมอบ หากไม่แจ้งข้อแก้ไขเป็นลายลักษณ์อักษรภายใน 3 วัน ถือว่าตรวจรับแล้ว"}],"missing":["ไม่มีมัดจำหรือการแบ่งจ่ายเป็นงวด","ไม่มีขอบเขตงานที่ชัดเจนว่าชุดแบรนด์รวมอะไรบ้าง"],"before_sign":["ขอมัดจำล่วงหน้าอย่างน้อยร้อยละ 30","เขียนขอบเขตงานและจำนวนรอบแก้ให้ชัด","เก็บแชตและไฟล์งานทุกเวอร์ชันไว้เป็นหลักฐาน"]},{"safety_score":3,"summary":"เงื่อนไขการจ่ายนานผิดปกติ และผู้ว่าจ้างได้สิทธิ์ทุกอย่าง แถมไม่จ่ายได้หากไม่พอใจ","red_flags":[{"level":"high","phrase":"มีสิทธิ์ไม่จ่ายค่าจ้างได้","why":"ถ่ายเสร็จแล้วก็ยังไม่จ่ายได้ เพียงอ้างว่าไม่พอใจ เท่ากับทำงานฟรีได้","suggestion":"ไม่พอใจต้องระบุเหตุผลเป็นลายลักษณ์อักษรภายใน 3 วัน และต้องจ่ายอย่างน้อยร้อยละ 50 ของค่าจ้าง"},{"level":"high","phrase":"ภายใน 90 วัน","why":"จ่ายช้ามาก แถมนับหลังตรวจรับครบถ้วน ซึ่งผู้ว่าจ้างยื้อได้","suggestion":"จ่ายมัดจำร้อยละ 50 ก่อนวันงาน ส่วนที่เหลือจ่ายภายใน 7 วันหลังส่งงาน"},{"level":"medium","phrase":"ได้ทุกเมื่อโดยไม่คิดค่าใช้จ่าย","why":"แก้ภาพไม่จำกัดเวลาและจำนวน","suggestion":"ขอแก้ไขได้ 1 รอบภายใน 7 วันหลังส่งงาน"},{"level":"medium","phrase":"ห้ามนำไปแสดงในผลงานของตนเอง","why":"ช่างภาพใช้ผลงานทำพอร์ตโฟลิโอไม่ได้ กระทบการหางานต่อ","suggestion":"ผู้รับจ้างมีสิทธิ์นำภาพไปแสดงเป็นผลงานของตนเองได้"}],"missing":["เงื่อนไขยกเลิกหรือเลื่อนงานกะทันหัน: หากผู้ว่าจ้างยกเลิกก่อนวันงานไม่ถึง X วัน มัดจำที่จ่ายแล้วไม่คืน เพื่อชดเชยที่เสียโอกาสรับงานอื่น และถ้าเลื่อนงานต้องแจ้งล่วงหน้าอย่างน้อยกี่วัน พร้อมระบุค่าใช้จ่ายเพิ่มเติมหากต้องเลื่อน","ขอบเขตงานและเวลา: ระบุเวลาเริ่ม-เลิกงานที่แน่นอน (เช่น ถ่ายอีเวนต์ 8 ชั่วโมง ตั้งแต่เวลา... ถึง...) หากเกินเวลาต้องคิดค่าล่วงเวลา (OT) เป็นรายชั่วโมง ชั่วโมงละเท่าไหร่","ค่าเดินทางและที่พัก: กรณีงานจัดต่างจังหวัดหรือนอกพื้นที่ ต้องระบุให้ชัดว่าผู้ว่าจ้างรับผิดชอบค่าเดินทาง ค่าที่พัก และค่าเบี้ยเลี้ยง หรือตกลงให้เสร็จสรรพว่ารวมอยู่ในค่าจ้าง 15,000 บาทนี้แล้ว เพื่อป้องกันการถูกเรียกใช้งานนอกสถานที่เพิ่มโดยไม่ได้ตกลงกันก่อน"],"before_sign":["ขอมัดจำก่อนวันถ่าย","เขียนจำนวนภาพที่ส่งมอบให้ชัด","ตกลงเรื่องสิทธิ์ใช้ภาพในพอร์ตโฟลิโอเป็นลายลักษณ์อักษร","เขียนเงื่อนไขยกเลิก/เลื่อนงาน เวลาทำงานและ OT และค่าเดินทาง/ที่พักให้ชัดก่อนเซ็น"]},{"safety_score":2,"summary":"ผู้ว่าจ้างเพิ่มปริมาณงานได้ตามใจ ค่าจ้างคงเดิม และห้ามรับงานอื่นนานถึง 5 ปี เสี่ยงมาก","red_flags":[{"level":"high","phrase":"เป็นเวลา 5 ปี","why":"ห้ามทำงานแนวเดียวกันนานมาก ตัดโอกาสหาเงิน ศาลอาจไม่บังคับหากกว้างเกินสมควร แต่ต้องสู้คดีเอง","suggestion":"ลดเหลือไม่เกิน 6 เดือน เฉพาะลูกค้าเดิมที่ทำงานให้โดยตรง"},{"level":"high","phrase":"ผู้ว่าจ้างเป็นผู้กำหนดปริมาณงานเพิ่มได้","why":"งานเพิ่มได้ไม่จำกัดแต่ค่าจ้างเท่าเดิม","suggestion":"งานเกิน 20 คลิปต่อเดือนคิดเพิ่มตามอัตราต่อคลิปที่ตกลง"},{"level":"medium","phrase":"เก็บเงินจากลูกค้าได้แล้ว","why":"ความเสี่ยงที่ลูกค้าของเขาไม่จ่ายถูกโยนมาให้คุณ","suggestion":"จ่ายค่าจ้างทุกสิ้นเดือนภายใน 7 วัน ไม่ขึ้นกับการเก็บเงินจากลูกค้า"},{"level":"medium","phrase":"แจ้งล่วงหน้า 90 วัน","why":"เขาเลิกได้ทันที แต่คุณต้องแจ้ง 90 วัน ไม่สมดุลกัน","suggestion":"ทั้งสองฝ่ายแจ้งล่วงหน้า 30 วันเท่ากัน"}],"missing":["ไม่ระบุกำหนดส่งงานต่อคลิป","ไม่ระบุสิทธิ์ในผลงานและการให้เครดิต"],"before_sign":["ต่อรองให้ตัดข้อห้ามรับงานหรือลดระยะเวลา","กำหนดเพดานงานต่อเดือนให้ชัด","ขอให้มีวันจ่ายเงินแน่นอน"]},{"safety_score":1,"summary":"ดอกเบี้ยสูงมากและให้ยึดทรัพย์โดยไม่ผ่านศาล ไม่ถูกต้องตามกระบวนการกฎหมาย ควรหลีกเลี่ยง","red_flags":[{"level":"high","phrase":"ร้อยละ 5 ต่อเดือน","why":"เท่ากับร้อยละ 60 ต่อปี สูงกว่าเพดานตามกฎหมายร้อยละ 15 ต่อปี ส่วนที่เกินไม่มีผลบังคับ","suggestion":"อัตราดอกเบี้ยไม่เกินร้อยละ 15 ต่อปี","how_to_handle":"หากเซ็นไปแล้ว ควรปรึกษาทนายความเรื่องดอกเบี้ยส่วนเกิน"},{"level":"high","phrase":"โดยไม่ต้องฟ้องศาล","why":"เจ้าหนี้ไม่มีสิทธิ์ยึดทรัพย์เองตามกฎหมาย ต้องผ่านศาลและกรมบังคับคดี","suggestion":"ตัดข้อนี้ออก การบังคับหนี้ทำผ่านกระบวนการทางศาลเท่านั้น"},{"level":"high","phrase":"ค่าปรับวันละ 500 บาท","why":"ปรับหนักมากเมื่อเทียบกับต้นเงิน 50,000 บาท","suggestion":"ให้คิดเฉพาะดอกเบี้ยผิดนัดตามอัตราที่กฎหมายกำหนด"},{"level":"medium","phrase":"ค่าทวงถามครั้งละ 1,000 บาท","why":"ค่าทวงถามควรคิดตามจริง ไม่ควรกำหนดเหมาสูง","suggestion":"เรียกค่าทวงถามได้เฉพาะที่จ่ายจริงพร้อมใบเสร็จ"}],"missing":["ไม่มีตารางชำระเป็นงวด","ไม่ระบุวิธีรับชำระและการออกใบรับเงิน"],"before_sign":["เก็บหลักฐานการโอนเงินกู้และใบรับเงินทุกครั้ง","ตรวจว่าอัตราดอกเบี้ยไม่เกินกฎหมาย"]},{"safety_score":2,"summary":"ดอกเบี้ยเกินเพดานกฎหมาย ผู้ค้ำประกันรับภาระหนัก และเจ้าหนี้ปรับดอกเบี้ยได้ตามใจ","red_flags":[{"level":"high","phrase":"ร้อยละ 24 ต่อปี","why":"สูงกว่าเพดานดอกเบี้ยตามกฎหมาย (ร้อยละ 15 ต่อปี) ส่วนที่เกินไม่มีผลบังคับ","suggestion":"อัตราดอกเบี้ยไม่เกินร้อยละ 15 ต่อปี"},{"level":"high","phrase":"ไม่จำกัดจำนวน","why":"ผู้ค้ำต้องรับผิดไม่มีเพดาน รวมถึงค่าปรับและค่าใช้จ่ายของเจ้าหนี้","suggestion":"จำกัดความรับผิดไม่เกินต้นเงิน 200,000 บาทและดอกเบี้ยตามกฎหมาย"},{"level":"high","phrase":"สละสิทธิ์ทุกประการ","why":"ผู้ค้ำเสียสิทธิ์ที่กฎหมายให้ เช่น ให้เจ้าหนี้เรียกจากลูกหนี้ก่อน","suggestion":"ผู้ค้ำคงสิทธิ์ตามกฎหมายทั้งหมด"},{"level":"high","phrase":"ฝ่ายเดียวโดยไม่ต้องแจ้งล่วงหน้า","why":"เจ้าหนี้ขึ้นดอกเบี้ยได้เอง ทำให้ยอดผ่อนไม่แน่นอน","suggestion":"เปลี่ยนอัตราดอกเบี้ยได้เมื่อทั้งสองฝ่ายตกลงเป็นหนังสือเท่านั้น"}],"missing":["ไม่ระบุกรณีผิดนัดและการแจ้งเตือน","ไม่ระบุการสิ้นสุดการค้ำเมื่อชำระครบ"],"before_sign":["ผู้ค้ำควรขอสำเนาสัญญาและตารางผ่อนทุกงวด","ขอให้แก้เรื่องดอกเบี้ยและความรับผิดก่อนเซ็น","อย่าค้ำประกันหากรับความเสี่ยงไม่ไหว"]},{"safety_score":2,"summary":"เจ้าหนี้ยึดรถและยึดเงินที่ผ่อนมาแล้วได้ทันที พร้อมเก็บค่าธรรมเนียมไม่คืน เสี่ยงเสียทั้งรถและเงิน","red_flags":[{"level":"high","phrase":"ไม่ต้องคืนเงินที่ผ่อนมาแล้ว","why":"ผ่อนมาเกือบครบแต่พลาดงวดเดียวก็เสียทั้งรถและเงิน เกินส่วนมาก ศาลอาจลดให้แต่ต้องสู้คดี","suggestion":"ผิดนัดแล้วให้ยึดรถขาย หักหนี้ค้าง ส่วนเกินคืนผู้กู้"},{"level":"high","phrase":"ขาดชำระ 1 งวด","why":"เงื่อนไขผิดนัดสั้นไป ยึดรถได้ทันทีโดยไม่มีโอกาสแก้ไข","suggestion":"ผิดนัดตั้งแต่ 2 งวดติดกัน และต้องมีหนังสือเตือนให้ชำระภายใน 30 วันก่อน"},{"level":"medium","phrase":"ไม่คืนไม่ว่ากรณีใด","why":"ค่าธรรมเนียม 5,000 บาท ไม่คืนแม้ยกเลิกก่อนรับเงิน","suggestion":"คืนค่าธรรมเนียมเมื่อไม่ได้รับเงินกู้ หรือคิดตามจริง"},{"level":"medium","phrase":"ส่งมอบเล่มทะเบียนรถ","why":"ถือเล่มไว้ ใช้ขายหรือโอนไม่ได้ ระวังเอกสารโอนล่วงหน้า","suggestion":"ห้ามเซ็นเอกสารโอนล่วงหน้า และรับเล่มคืนทันทีเมื่อชำระครบ"}],"missing":["ไม่ระบุดอกเบี้ยรวมที่ต้องจ่ายตลอดสัญญา","ไม่ระบุการปิดบัญชีก่อนกำหนด"],"before_sign":["คำนวณยอดรวมที่ต้องจ่ายทั้งหมด","อย่าเซ็นเอกสารโอนรถเปล่า","ขอสำเนาสัญญาและใบเสร็จทุกงวด"]},{"safety_score":3,"summary":"หลายข้อเอาเปรียบผู้เช่า ทั้งยึดเงินประกัน ขึ้นค่าเช่าเร็วเกินไป และเข้าห้องได้ตลอด","red_flags":[{"level":"high","phrase":"ไม่ต้องคืนหากผู้เช่าย้ายออก","why":"เงินประกัน 36,000 บาท ยึดได้ทั้งก้อนเมื่อย้ายออกก่อน 1 ปี แม้ห้องไม่เสียหาย","suggestion":"เงินประกันหักได้เฉพาะความเสียหายจริงและค่าเช่าค้าง ส่วนที่เหลือคืนภายใน 30 วัน"},{"level":"high","phrase":"ได้ทุกเมื่อโดยไม่ต้องแจ้ง","why":"ผู้ให้เช่าเข้าห้องโดยไม่บอก กระทบความเป็นส่วนตัว","suggestion":"เข้าห้องได้เมื่อแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง ยกเว้นเหตุฉุกเฉิน"},{"level":"medium","phrase":"ได้ทุกเมื่อโดยแจ้งล่วงหน้า 7 วัน","why":"ค่าเช่าขึ้นเมื่อไรก็ได้ วางแผนเงินไม่ได้","suggestion":"ปรับค่าเช่าได้เมื่อต่อสัญญาและแจ้งล่วงหน้า 60 วัน"},{"level":"medium","phrase":"เหมาจ่าย 8,000 บาท","why":"เหมาจ่ายโดยไม่ดูสภาพจริง","suggestion":"คิดตามความเสียหายจริงพร้อมใบเสร็จ ไม่รวมการสึกหรอปกติ"}],"missing":["ไม่ระบุสภาพห้องตอนเข้าอยู่","ไม่ระบุวันคืนเงินประกัน"],"before_sign":["ถ่ายรูปและวิดีโอสภาพห้องก่อนเข้าอยู่","ตกลงวันคืนเงินประกันเป็นลายลักษณ์อักษร"]},{"safety_score":2,"summary":"ผู้เช่าเสียเปรียบมาก ต้องลงทุนเองและเสียงานตกแต่ง ผู้ให้เช่าเลิกเมื่อไรก็ได้ แต่ผู้เช่าเลิกต้องจ่ายหมด","red_flags":[{"level":"high","phrase":"ผู้ให้เช่าบอกเลิกสัญญาได้ทุกเมื่อ","why":"คุณลงทุนตกแต่งแล้ว อาจถูกให้ออกกลางคัน","suggestion":"ผู้ให้เช่าเลิกก่อนกำหนดต้องชดเชยค่าตกแต่งที่ยังไม่คุ้มทุน"},{"level":"high","phrase":"ต้องจ่ายค่าเช่าที่เหลือทั้งหมด","why":"เลิกก่อนครบ 3 ปีต้องจ่ายทั้งหมดไม่ว่าเหลืออีกกี่เดือน","suggestion":"เลิกก่อนกำหนดจ่ายค่าเช่าเพิ่มไม่เกิน 3 เดือน"},{"level":"medium","phrase":"ส่วนแบ่งร้อยละ 10 ของยอดขาย","why":"จ่ายซ้ำสองทางทั้งค่าเช่าคงที่และส่วนแบ่ง ต้นทุนสูง","suggestion":"เลือกอย่างใดอย่างหนึ่ง หรือคิดส่วนแบ่งเมื่อยอดขายเกินเป้า"},{"level":"medium","phrase":"ได้งานตกแต่งทั้งหมด","why":"ผู้ให้เช่าได้ของที่คุณลงทุนโดยไม่จ่ายอะไร","suggestion":"ผู้เช่านำอุปกรณ์ที่เคลื่อนย้ายได้ออกเมื่อสิ้นสุดสัญญา"}],"missing":["ไม่ระบุสิทธิ์ต่อสัญญา","ไม่ระบุใครรับผิดชอบค่าซ่อมโครงสร้าง"],"before_sign":["ประเมินระยะเวลาคืนทุนของค่าตกแต่ง","ขอให้เงื่อนไขเลิกสัญญาเท่ากันทั้งสองฝ่าย"]},{"safety_score":3,"summary":"ผู้เช่าต้องรับผิดแม้ไม่ใช่ความผิดตัวเอง ราคาซ่อมถูกประเมินฝ่ายเดียว และมีเบี้ยปรับสูง","red_flags":[{"level":"high","phrase":"แม้ไม่ใช่ความผิดของผู้เช่า","why":"รถเสียหายจากเหตุที่ควบคุมไม่ได้ คุณก็ต้องจ่าย","suggestion":"ผู้เช่ารับผิดเฉพาะความเสียหายจากความผิดของตน นอกจากนั้นให้ประกันภัยรับผิดชอบ"},{"level":"high","phrase":"ประเมินเอง","why":"ผู้ให้เช่ากำหนดราคาซ่อมได้เอง อาจสูงเกินจริง","suggestion":"ใช้ใบประเมินจากอู่ที่ทั้งสองฝ่ายยอมรับ หรือใบเสร็จตามจริง"},{"level":"medium","phrase":"ชั่วโมงละ 1,000 บาท","why":"สูงกว่าค่าเช่ารายชั่วโมงมาก ศาลลดเบี้ยปรับได้แต่ต้องสู้คดี","suggestion":"คืนรถช้าคิดค่าเช่าตามอัตราปกติ ปรับเพิ่มไม่เกินร้อยละ 20"}],"missing":["ไม่ระบุประกันภัยรถและค่าเสียหายส่วนแรก","ไม่ระบุสภาพรถก่อนรับ"],"before_sign":["ถ่ายรูปรถรอบคันก่อนรับ","ถามเงื่อนไขประกันภัยให้ชัด"]},{"safety_score":2,"summary":"ผู้ซื้อจ่ายมัดจำร้อยละ 70 แต่แทบไม่มีสิทธิ์อะไร ผู้ขายไม่มีกำหนดส่งและไม่รับผิดชอบสินค้า","red_flags":[{"level":"high","phrase":"ไม่คืนมัดจำไม่ว่ากรณีใด","why":"ผู้ขายไม่ส่งสินค้าก็ยังยึดมัดจำได้","suggestion":"ผู้ขายผิดสัญญาต้องคืนมัดจำพร้อมดอกเบี้ย"},{"level":"high","phrase":"เวลาที่ผู้ขายเห็นสมควร","why":"ไม่มีกำหนดส่งแน่นอน ผู้ขายยื้อได้ไม่จำกัด","suggestion":"ระบุวันส่งมอบชัดเจน และเลื่อนเกินกี่วันผู้ซื้อยกเลิกได้"},{"level":"high","phrase":"ไม่รับผิดชอบความเสียหายใด ๆ","why":"สินค้าชำรุดหรือไม่ตรงปก ผู้ขายก็ปฏิเสธได้","suggestion":"ผู้ขายรับผิดชอบสินค้าชำรุดหรือไม่ตรงตามที่ตกลง"},{"level":"medium","phrase":"ไม่รับคืนสินค้าทุกกรณี","why":"แม้สินค้าผิดสเปกก็คืนไม่ได้","suggestion":"รับคืนหรือเปลี่ยนสินค้าที่ไม่ตรงข้อตกลงภายใน 7 วัน"}],"missing":["ไม่ระบุสเปกสินค้าและแบบที่สั่งผลิต","ไม่ระบุวิธีตรวจรับสินค้า"],"before_sign":["ลดมัดจำเหลือร้อยละ 30-50 หรือแบ่งจ่าย","ขอใบเสนอราคาและรูปแบบงานเป็นลายลักษณ์อักษร"]},{"safety_score":1,"summary":"ทำงานหนัก ไม่จ่ายค่าจ้างช่วงทดลองงาน และให้ชดใช้ค่าฝึกอบรมสูง ผิดปกติมาก","red_flags":[{"level":"high","phrase":"ไม่จ่ายค่าจ้าง","why":"ทำงานฟรี 3 เดือน ไม่เป็นธรรมต่อผู้ทำงาน ตามกฎหมายแรงงานผู้ทำงานควรได้ค่าจ้าง","suggestion":"ช่วงทดลองงานจ่ายค่าจ้างเท่ากับช่วงปกติ"},{"level":"high","phrase":"ชดใช้ค่าฝึกอบรม 50,000 บาท","why":"ค่าชดใช้สูงมากและมัดตัวไว้ 1 ปี","suggestion":"ไม่มีค่าชดใช้ หรือชดใช้ตามค่าฝึกอบรมจริงที่มีหลักฐานและลดตามระยะเวลาที่ทำ"},{"level":"medium","phrase":"ไม่มีค่าล่วงเวลา","why":"ทำ 6 วันต่อสัปดาห์ แต่ไม่มีค่าล่วงเวลา กฎหมายแรงงานอาจคุ้มครอง","suggestion":"ระบุชั่วโมงทำงานปกติและจ่ายค่าล่วงเวลาตามกฎหมาย"},{"level":"medium","phrase":"สัปดาห์ละ 6 วัน","why":"วันหยุดน้อย กระทบสุขภาพและการเรียน","suggestion":"ทำงานสัปดาห์ละไม่เกิน 5 วัน มีวันหยุดอย่างน้อย 1 วัน"}],"missing":["ไม่ระบุสวัสดิการและประกันสังคม","ไม่ระบุชั่วโมงทำงานต่อวัน"],"before_sign":["เทียบค่าจ้างวันละ 300 บาทกับค่าจ้างขั้นต่ำของพื้นที่ปัจจุบัน","สอบถามหน่วยงานแรงงานหากไม่แน่ใจ"]},{"safety_score":1,"summary":"ตัวแทนต้องลงทุนสูงและซื้อเพิ่มทุกเดือน แต่บริษัทไม่รับคืนและเปลี่ยนเงื่อนไขได้ฝ่ายเดียว เสี่ยงมาก","red_flags":[{"level":"high","phrase":"ไม่รับซื้อสินค้าคืน","why":"ขายไม่ออกก็ติดสต็อก เงินจมทั้งหมด","suggestion":"บริษัทรับซื้อสินค้าคืนไม่น้อยกว่าร้อยละ 90 ของราคาซื้อเมื่อเลิกสัญญา"},{"level":"high","phrase":"ริบเงินที่จ่ายมา","why":"ยอดไม่ถึงเป้าก็ถูกตัดสิทธิ์และเสียเงินทั้งหมด","suggestion":"ห้ามริบเงิน บริษัทหักได้เฉพาะค่าเสียหายจริงที่พิสูจน์ได้"},{"level":"high","phrase":"เปลี่ยนเงื่อนไขค่าคอมมิชชันได้ฝ่ายเดียว","why":"บริษัทลดคอมมิชชันได้ตามใจ","suggestion":"เปลี่ยนเงื่อนไขได้เมื่อตัวแทนยินยอมเป็นหนังสือ"},{"level":"medium","phrase":"ไม่ต่ำกว่า 20,000 บาท","why":"บังคับซื้อทุกเดือนโดยไม่ดูยอดขายจริง","suggestion":"ไม่บังคับซื้อขั้นต่ำ ซื้อตามยอดสั่งจริง"}],"missing":["ไม่ระบุตัวเลขค่าคอมมิชชันที่ชัดเจน","ไม่ระบุเงื่อนไขเลิกสัญญาโดยสมัครใจ"],"before_sign":["ตรวจสอบว่าบริษัทจดทะเบียนและมีสินค้าขายจริง","ระวังรูปแบบแชร์ลูกโซ่ หากรายได้มาจากการหาสมาชิกเป็นหลัก","ปรึกษาหน่วยงานคุ้มครองผู้บริโภคก่อนลงทุน"]}];
+const SMPFLAT=Object.values(SAMPLES).flat();
+const preOf=t=>{const i=SMPFLAT.findIndex(x=>x[1].trim()===String(t).trim());return i>=0?enrich(PRE[i],i):null};
+const TL=[["ออกแบบโลโก้และชุดแบรนด์","ค่าจ้าง 30,000 บาท จ่ายเมื่อผู้ว่าจ้างพอใจและอนุมัติ","ส่งภายใน 7 วันนับจากวันลงนาม ล่าช้าปรับวันละ 5,000 บาท"],["ถ่ายภาพอีเวนต์เต็มวัน พร้อมแต่งภาพทั้งหมด","ค่าจ้าง 15,000 บาท จ่ายภายใน 90 วันหลังตรวจรับงาน","ส่งไฟล์ภาพที่แต่งแล้วภายใน 24 ชั่วโมงหลังงานจบ"],["ตัดต่อวิดีโอเดือนละไม่เกิน 20 คลิป (ผู้ว่าจ้างเพิ่มปริมาณได้)","เหมาเดือนละ 12,000 บาท จ่ายเมื่อผู้ว่าจ้างเก็บเงินลูกค้าได้","ไม่ระบุกำหนดส่งต่อคลิป ห้ามรับงานคล้ายกัน 5 ปีหลังเลิกสัญญา"],["กู้ยืมเงิน 50,000 บาท","ดอกเบี้ยร้อยละ 5 ต่อเดือน (ราวร้อยละ 60 ต่อปี)","ชำระภายใน 3 เดือน ผิดนัดเรียกคืนทันทีพร้อมค่าปรับวันละ 500 บาท"],["กู้ยืม 200,000 บาท มีผู้ค้ำประกัน","ผ่อนเดือนละ 10,000 บาท ดอกเบี้ยร้อยละ 24 ต่อปี","ไม่ระบุจำนวนงวดชัดเจน ผู้ให้กู้ปรับดอกเบี้ยได้ฝ่ายเดียว"],["กู้ยืม 80,000 บาท มีรถเป็นหลักประกัน","ผ่อน 12 งวด งวดละ 9,000 บาท (รวม 108,000 บาท) บวกค่าธรรมเนียม 5,000 บาท","12 งวด ขาดชำระ 1 งวดถูกยึดรถ"],["เช่าห้องพัก","ค่าเช่า 12,000 บาทต่อเดือน เงินประกัน 3 เดือน (36,000 บาท)","ย้ายออกก่อนครบ 1 ปีเสียเงินประกัน และต้องจ่ายค่าทำความสะอาด 8,000 บาท"],["เช่าพื้นที่ร้านค้า","ค่าเช่า 30,000 บาทต่อเดือน บวกส่วนแบ่งร้อยละ 10 ของยอดขาย","เลิกก่อนครบ 3 ปีต้องจ่ายค่าเช่าที่เหลือทั้งหมด"],["เช่ารถยนต์","ค่าเช่าวันละ 1,500 บาท มัดจำ 20,000 บาท","คืนช้าปรับชั่วโมงละ 1,000 บาท"],["สั่งผลิตสินค้า","มัดจำร้อยละ 70 ก่อนผลิต ไม่คืนไม่ว่ากรณีใด","ไม่ระบุวันส่งมอบ ผู้ขายกำหนดเอง"],["งานพาร์ทไทม์ สัปดาห์ละ 6 วัน","วันละ 300 บาท ไม่มีค่าล่วงเวลา และ 3 เดือนแรกไม่จ่ายค่าจ้าง","ลาออกก่อนครบ 1 ปีต้องชดใช้ 50,000 บาท"],["เป็นตัวแทนจำหน่ายสินค้า","ซื้อสินค้าเริ่มต้น 100,000 บาท และซื้อเพิ่มเดือนละไม่ต่ำกว่า 20,000 บาท","ยอดไม่ถึงเป้าถูกตัดสิทธิ์และริบเงิน (ไม่ระบุกำหนดเวลาชัดเจน)"]];
+const MK={0:"ราคาตลาดต่างกันมากตามฝีมือและขอบเขตงาน ให้ใช้เรทปกติของคุณเป็นเกณฑ์ งานนี้ต้องส่งใน 7 วัน แก้ไม่จำกัด และยกลิขสิทธิ์ทั้งหมดรวมงานต้นแบบ หากเรทปกติของแพ็กเกจนี้สูงกว่า 30,000 บาท ควรบวกเพิ่มสำหรับการโอนลิขสิทธิ์และการแก้ไม่จำกัด",1:"ค่าจ้าง 15,000 บาทต้องครอบคลุมถ่ายเต็มวัน แต่งภาพทั้งหมดใน 24 ชั่วโมง ส่งไฟล์ RAW และยกลิขสิทธิ์ ลองเทียบกับเรทเต็มวันของคุณ หากต่ำกว่าให้คิดเพิ่มสำหรับงานด่วนและการโอนลิขสิทธิ์",2:"เหมา 12,000 บาทต่อ 20 คลิป เฉลี่ยคลิปละ 600 บาท ลองเทียบกับเรทต่อคลิปของคุณและความยาวคลิป และขอเพดานงานต่อเดือน เพราะผู้ว่าจ้างเพิ่มงานได้ตามใจ",10:"วันละ 300 บาท ทำ 6 วันต่อสัปดาห์ (ประมาณ 26 วันต่อเดือน) ได้ราว 7,800 บาทต่อเดือน ควรตรวจกับอัตราค่าจ้างขั้นต่ำปัจจุบันของจังหวัดที่ทำงาน"};
+function mkDraft(r){let o="ร่างข้อความที่ควรเสนอแก้ในสัญญา\n";(r.red_flags||[]).forEach((x,i)=>{o+="\n"+(i+1)+". แก้จาก “"+x.phrase+"”\n   → "+x.suggestion});(r.missing||[]).forEach(m=>{o+="\nเพิ่มข้อกำหนด: "+m});return o}
+function enrich(r,i){if(!r._e){r._e=1;(r.red_flags||[]).forEach(x=>{if(LB[x.phrase])x.legal_basis=LB[x.phrase]});r.tldr=TL[i];r.plain_summary=PS[i];if(MK[i])r.market_note=MK[i];r.fair_draft=mkDraft(r)}return r}
+function tldrH(r){if(!r.tldr||!r.tldr.length)return"";const L=["📋 งาน","💰 เงิน","⏰ เวลา"];return '<div class="tldr"><b>สรุปสั้น ๆ</b><ul>'+r.tldr.slice(0,3).map((v,i)=>'<li>'+L[i]+': '+esc(v)+'</li>').join("")+'</ul></div>'}
+function nego(x){if(!x.you_say&&!x.suggestion)return"";const c=x.client_says||(x.level==="high"?"ข้อนี้เป็นเงื่อนไขมาตรฐานของเรา ทุกคนก็เซ็นแบบนี้":"ข้อนี้ไม่น่ามีปัญหา เราไม่ได้ใช้จริงหรอก");const y=x.you_say||("ขอปรับข้อนี้ให้เป็นธรรมกับทั้งสองฝ่ายนะครับ/คะ โดยแก้เป็น: "+x.suggestion+" เพื่อให้ทำงานร่วมกันได้ราบรื่น");return '<details class="neg"><summary>🎭 ซ้อมเจรจาข้อนี้</summary><p><b>อีกฝ่ายอาจพูดว่า:</b> “'+esc(c)+'”</p><p><b>คุณตอบว่า:</b> “'+esc(y)+'”</p></details>'}
+function extraH(r){let h="";if(r.market_note)h+='<h2>เทียบกับเรทตลาด</h2><p>'+esc(r.market_note)+'</p><p class="hint">เป็นข้อสังเกตเบื้องต้น ราคาจริงขึ้นกับฝีมือ ขอบเขตงาน และช่วงเวลา</p>';
+if(r.fair_draft)h+='<h2>ร่างข้อความฉบับแฟร์</h2><pre class="draft" id="fd">'+esc(r.fair_draft)+'</pre><button type="button" class="link" id="cpy">📋 คัดลอกร่างนี้เพื่อส่งให้อีกฝ่าย</button>';
+h+='<h2>เทียบกับสัญญาฉบับแก้ไข</h2><p class="hint">ลูกค้าแก้กลับมาแล้ว? วางฉบับใหม่ แล้วดูว่าแก้ให้แฟร์ขึ้นหรือแอบเพิ่มข้อความ (เทียบฟรี ไม่เสียเครดิต)</p><textarea id="cmpt" placeholder="วางสัญญาฉบับที่แก้ไขแล้วที่นี่…"></textarea><div class="row"><button type="button" class="go" id="cmpb">เทียบสัญญา · ฟรี</button></div><div id="cmpo"></div>';return extraH2(r,h)}
 
-            try {
-                const response = await fetch('/api/check', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ contract: text })
-                });
-                
-                const data = await response.json();
-                resultDiv.innerText = JSON.stringify(data, null, 2);
-            } catch (error) {
-                resultDiv.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์';
-            }
-        }
-    </script>
+const FP=[[/ตลอดไป|ตลอดกาล|ไม่มีกำหนดเวลา/,"ผูกมัดไม่มีกำหนดเวลา"],[/โอนสิทธิ์?ขาด|สิทธิ์ทั้งหมด|ทุกชิ้น/,"โอนสิทธิ์ในผลงานทั้งหมด"],[/ฝ่ายเดียว/,"อีกฝ่ายเปลี่ยนเงื่อนไขได้ฝ่ายเดียว"],[/ต่ออายุอัตโนมัติ|ต่อสัญญาอัตโนมัติ/,"ต่ออายุอัตโนมัติ"],[/สละสิทธิ์/,"สละสิทธิ์ตามกฎหมาย"],[/ค่าปรับ|เบี้ยปรับ/,"มีค่าปรับ"],[/ไม่จำกัด/,"ไม่จำกัดจำนวนหรือขอบเขต"],[/ไม่ต้องแจ้ง/,"ไม่ต้องแจ้งล่วงหน้า"],[/ไม่รับผิด|ไม่รับผิดชอบ/,"ปัดความรับผิด"],[/ศาล|อนุญาโตตุลาการ/,"กำหนดวิธีหรือสถานที่ระงับข้อพิพาท"],[/ห้ามรับงาน|ห้ามทำงาน/,"ห้ามรับงานอื่น"],[/ริบ|ไม่คืน/,"ริบหรือไม่คืนเงิน"]];
+function fineH(r){const t=window.LT||"",L=lines(t),n=L.length;if(!n)return"";const fl=r.red_flags||[];let hit=0,out="";L.forEach((c,i)=>{const hs=FP.filter(p=>p[0].test(c)).map(p=>p[1]);if(!hs.length)return;hit++;if(fl.some(f=>f.phrase&&c.includes(f.phrase)))return;out+='<div class="df c">'+(i>=n*0.6?'📍 อยู่ท้ายสัญญา · ':'')+esc(c)+'<br><small>พบ: '+hs.map(esc).join(", ")+'</small></div>'});
+return '<h2>🔎 สแกนข้อความแอบแฝง</h2><p>สแกน '+n+' ข้อ พบข้อที่มีคำเสี่ยง '+hit+' ข้อ'+(out?' ข้อที่ยังไม่อยู่ในจุดเสี่ยงด้านบน:':' ทั้งหมดถูกรายงานในจุดเสี่ยงด้านบนแล้ว ไม่พบข้อความน่าสงสัยเพิ่ม')+'</p>'+out+'<p class="hint">สแกนด้วยคำสำคัญเท่านั้น ไม่ใช่การอ่านด้วย AI ข้อความที่เขียนเลี่ยงคำอาจหลุดได้ อ่านท้ายสัญญาซ้ำด้วยตัวเองเสมอ</p>'}
+const TNS={soft:["สวัสดีครับ/ค่ะ ขอบคุณที่ส่งร่างสัญญามาให้ ได้อ่านแล้วขออนุญาตปรับรายละเอียดบางข้อ เพื่อให้ทำงานร่วมกันได้ราบรื่นทั้งสองฝ่าย ดังนี้","ขอบคุณมากครับ/ค่ะ รบกวนพิจารณาและแจ้งกลับนะครับ/คะ"],casual:["สวัสดีครับ/ค่ะ อ่านสัญญาแล้ว มีไม่กี่ข้อที่ขอแก้นิดหน่อย จะได้ทำงานกันสบายใจทั้งสองฝั่ง","ถ้าตกลงตามนี้ได้ เซ็นแล้วเริ่มงานได้เลยครับ/ค่ะ"],firm:["เรียนผู้ว่าจ้าง ตามที่ได้รับร่างสัญญา ข้อต่อไปนี้ไม่เป็นธรรมต่อผู้รับจ้างและอาจเกิดปัญหาเมื่อบังคับใช้จริง จึงขอให้แก้ไขก่อนลงนาม","หากไม่สามารถปรับตามนี้ได้ ขอสงวนสิทธิ์ไม่ลงนามในสัญญาฉบับนี้"]};
+function msgText(r,k){const p=(r.red_flags||[]).slice(0,4).map((x,i)=>(i+1)+". “"+x.phrase+"” ขอแก้เป็น: "+x.suggestion).join("\n"),T=TNS[k];return T[0]+"\n\n"+p+"\n\n"+T[1]}
+function ntbk(){try{return JSON.parse(localStorage.getItem("clients")||"[]")}catch(e){return[]}}
+function ntSave(a){try{localStorage.setItem("clients",JSON.stringify(a))}catch(e){}}
+function ntList(){const a=ntbk();$("ntl").innerHTML=a.length?a.map((x,i)=>'<div class="df c"><b>'+esc(x.n)+'</b> · '+esc(x.d)+'<br>'+esc(x.t)+' <button type="button" class="link" data-del="'+i+'">ลบ</button></div>').join(""):'<p class="hint">ยังไม่มีบันทึก</p>'}
+function warnClient(){const n=(($("cn")||{}).value||"").trim().toLowerCase();if(n.length<2)return"";const m=ntbk().filter(x=>x.n.toLowerCase().includes(n)||n.includes(x.n.toLowerCase()));return m.length?'<div class="warnb">⚠️ คุณเคยบันทึกเกี่ยวกับ “'+esc(m[0].n)+'” ไว้: '+m.map(x=>esc(x.t)).join(" / ")+'</div>':""}
+function extraH2(r,h){let o=h;
+o+=fineH(r);
+o+='<h2>✉️ สร้างข้อความส่งลูกค้า</h2><div class="tn"><button type="button" data-tn="soft">สุภาพนุ่มนวล</button><button type="button" data-tn="casual">เป็นกันเอง</button><button type="button" data-tn="firm">แข็งขันเน้นข้อกฎหมาย</button></div><pre class="draft" id="mt" hidden></pre><div class="acts2" id="ma" hidden><a id="mm">✉️ เปิดอีเมล</a><button type="button" id="mc">📋 คัดลอก (วางใน LINE)</button><button type="button" id="msh" hidden>📤 แชร์</button></div>';
+o+='<h2>🎭 ซ้อมเจรจากับ AI</h2><p class="hint">AI สวมบทเป็นลูกค้า คุณพิมพ์ตอบ แล้วมีโค้ชบอกว่าพูดดีหรือควรปรับ (ไม่เกิน 6 ข้อความ'+(preOf(window.LT||"")?' · ตัวอย่างฟรี':' · ใช้ 1 เครดิตต่อรอบ')+')</p><select id="ch_p" class="cnote"><option value="ลูกค้าใจร้าย ต่อรองแรงและกดดัน">ลูกค้าใจร้าย</option><option value="ลูกค้าหัวหมอ ชอบอ้างว่าเป็นมาตรฐานและบ่ายเบี่ยง">ลูกค้าหัวหมอ</option><option value="ลูกค้าใจดีแต่เกรงใจหัวหน้าจึงไม่กล้าตัดสินใจ">ลูกค้าใจดีแต่ไม่กล้าตัดสินใจ</option></select><div class="row"><button type="button" class="go" id="ch_go">เริ่มซ้อม</button></div><div class="chatlog" id="ch_log"></div><div id="ch_bx" hidden><textarea id="ch_in" rows="2" placeholder="พิมพ์ตอบลูกค้า…"></textarea><div class="row"><button type="button" class="go" id="ch_send">ส่ง</button></div></div>';
+o+='<h2>📒 สมุดบันทึกลูกค้าของฉัน</h2><p class="hint">บันทึกส่วนตัวเก็บในเครื่องคุณเท่านั้น ไม่มีฐานข้อมูลสาธารณะ เพื่อไม่ให้เสี่ยงเรื่องหมิ่นประมาทและ PDPA</p><input id="ntn" class="cnote" placeholder="ชื่อลูกค้า/บริษัท" value="'+esc(($("cn")||{}).value||"")+'"><textarea id="ntt" class="cnote" rows="2" placeholder="เช่น แก้งานเกิน 5 รอบ จ่ายช้า 60 วัน" style="margin-top:6px"></textarea><div class="row"><button type="button" class="go" id="nts">บันทึก</button></div><div id="ntl"></div>';
+o+='<h2>👩‍⚖️ ต้องการทนายความตรวจซ้ำ?</h2><div class="row"><button type="button" class="go" id="lawb">ขอให้ทนายความตรวจซ้ำ</button></div>';o+='<h2>ช่วยเรารายงานความผิดพลาด</h2><div class="tn" id="fbo"><button type="button" data-fo="ok">👍 ถูกต้อง</button><button type="button" data-fo="wrong">🚩 ข้อมูลไม่ถูกต้อง</button><button type="button" data-fo="halluc">🤖 AI มั่ว/แต่งกฎหมาย</button></div>';o+='<p class="hint">⚖️ ผลนี้เป็นการวิเคราะห์เบื้องต้นด้วย AI ไม่ใช่คำปรึกษาทางกฎหมาย ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และผู้ให้บริการจำกัดความรับผิดตามข้อกำหนดการใช้งาน</p>';return o}
+let CHS=null;
+async function chatTurn(txt){const r=window.RC.r,log=$("ch_log"),b=$("ch_send"),g=$("ch_go");
+const API=CFG.api;let sm=null;if(!API){sm=await claude.use("sample");if(!sm){log.innerHTML='<p>เปิดผ่านแอป Claude และอนุญาตให้หน้าเว็บเรียกใช้ Claude ก่อน</p>';return}}
+if(txt){log.insertAdjacentHTML("beforeend",'<div class="bb me">'+esc(txt)+'</div>');CHS.h.push("ผู้ใช้: "+txt);CHS.n++}
+const pr='คุณสวมบทบาทเป็น "'+CHS.p+'" ซึ่งเป็นฝ่ายผู้ว่าจ้างในการเจรจาสัญญา ผู้ใช้เป็นฝ่ายเสียเปรียบที่กำลังขอแก้สัญญา สรุปสัญญา: '+r.summary+' ข้อที่ผู้ใช้อยากแก้: '+(r.red_flags||[]).slice(0,4).map(x=>x.phrase+" → "+x.suggestion).join(" ; ")+' ตอบเป็นบทของลูกค้า 1-3 ประโยค ภาษาไทยธรรมชาติ ห้ามออกนอกบทหรืออ้างข้อกฎหมายที่ไม่แน่ใจ แล้วให้ coach 1 ประโยคบอกผู้ใช้ว่าคำตอบล่าสุดดีหรือควรปรับอย่างไร (ถ้ายังไม่มีข้อความผู้ใช้ ให้ลูกค้าเปิดบทสนทนาและ coach เป็นคำแนะนำเริ่มต้น) ตอบ JSON เท่านั้น {"reply":"...","coach":"..."} บทสนทนาจนถึงตอนนี้:\n'+(CHS.h.join("\n")||"(ยังไม่เริ่ม)");
+b.disabled=true;g.disabled=true;
+try{const res=API?await chatApi(r):await sm(pr,{cache:false});const m=res.text.replace(/```json|```/g,"");const j=JSON.parse(m.slice(m.indexOf("{"),m.lastIndexOf("}")+1));CHS.h.push("ลูกค้า: "+j.reply);log.insertAdjacentHTML("beforeend",'<div class="bb ai">'+esc(j.reply)+(j.coach?'<small>💡 โค้ช: '+esc(j.coach)+'</small>':'')+'</div>');log.scrollTop=log.scrollHeight}
+catch(e){log.insertAdjacentHTML("beforeend",'<p>ตอบไม่สำเร็จ ลองส่งอีกครั้ง</p>')}
+b.disabled=false;g.disabled=false;if(CHS.n>=6){$("ch_bx").hidden=true;log.insertAdjacentHTML("beforeend",'<p class="hint">ครบ 6 ข้อความแล้ว กด “เริ่มซ้อม” เพื่อเริ่มรอบใหม่</p>')}}
+function bindY(r,t){window.RC={r,t};const q=$("out");if(!preOf(t))histSave(r);const lb=$("lawb");if(lb)lb.onclick=openLaw;q.querySelectorAll("[data-pl]").forEach(b=>b.onclick=()=>q.classList.toggle("plainon"));q.querySelectorAll("[data-fb]").forEach(b=>b.onclick=()=>fbOpen("wrong",b.dataset.fb,b.parentElement));q.querySelectorAll("[data-fo]").forEach(b=>b.onclick=()=>fbOpen(b.dataset.fo,"",$("fbo")));q.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const el=$("f"+b.dataset.j);if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.remove("pulse");void el.offsetWidth;el.classList.add("pulse")});
+const w=warnClient();if(w)q.insertAdjacentHTML("afterbegin",w);
+q.querySelectorAll("[data-tn]").forEach(b=>b.onclick=()=>{const k=b.dataset.tn,x=msgText(r,k);$("mt").textContent=x;$("mt").hidden=false;$("ma").hidden=false;$("mm").href="mailto:?subject="+encodeURIComponent("ขอปรับรายละเอียดสัญญา")+"&body="+encodeURIComponent(x);$("msh").hidden=!navigator.share;$("msh").onclick=()=>navigator.share({text:x}).catch(()=>{});$("mc").onclick=async()=>{try{await navigator.clipboard.writeText(x);$("mc").textContent="✅ คัดลอกแล้ว"}catch(e){$("mc").textContent="เลือกข้อความด้านบนเพื่อคัดลอก"}}});
+$("ch_go").onclick=async()=>{const free=!!preOf(t);let sid="";
+if(CFG.api){try{const rr=await fetch(CFG.api+"/chat/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,free})});const d=await rr.json().catch(()=>({}));if(rr.status===402){openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อซ้อมเจรจา");return}if(rr.status===403&&d.error==="tos"){needTos();return}if(!rr.ok){$("ch_log").innerHTML="<p>เริ่มไม่สำเร็จ ลองใหม่อีกครั้ง</p>";return}sid=d.sid;if(d.credits!==undefined){cred=d.credits;showCr()}}catch(e){$("ch_log").innerHTML="<p>เชื่อมต่อหลังบ้านไม่ได้</p>";return}}
+else if(!free){if(cred<CFG.cost){openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อซ้อมเจรจา");return}await spend()}
+CHS={p:$("ch_p").value,h:[],n:0,sid};$("ch_log").innerHTML="";$("ch_bx").hidden=false;chatTurn("")};
+$("ch_send").onclick=()=>{const v=$("ch_in").value.trim();if(!v||!CHS)return;$("ch_in").value="";chatTurn(v)};
+ntList();$("nts").onclick=()=>{const n=$("ntn").value.trim(),x=$("ntt").value.trim();if(!n||!x)return;const a=ntbk();a.unshift({n,t:x,d:new Date().toLocaleDateString("th-TH")});ntSave(a.slice(0,50));$("ntt").value="";ntList()};
+$("ntl").onclick=e=>{const d=e.target.dataset.del;if(d===undefined)return;const a=ntbk();a.splice(+d,1);ntSave(a);ntList()}}
+function genText(v){const P=+v.p||0,dp=Math.max(0,Math.min(100,+v.d||0)),dep=Math.round(P*dp/100),pd=Math.round(P*0.005),pm=Math.round(P*0.1),f=n=>n.toLocaleString("th-TH");
+return "สัญญาจ้างทำของ\n\nสัญญานี้ทำขึ้นระหว่าง “"+(v.c||"__________")+"” (ผู้ว่าจ้าง) กับ “"+(v.f||"__________")+"” (ผู้รับจ้าง) ลงวันที่ ____/____/______ โดยตกลงดังนี้\n\nข้อ 1 ขอบเขตงาน ผู้รับจ้างตกลงทำ “"+(v.j||"__________")+"” โดยส่งมอบ: "+(v.s||"__________")+" งานนอกเหนือขอบเขตนี้ต้องตกลงและคิดค่าจ้างเพิ่มเป็นลายลักษณ์อักษรก่อนเริ่มทำ\n\nข้อ 2 ค่าจ้างและการชำระ ค่าจ้างรวม "+f(P)+" บาท ผู้ว่าจ้างชำระมัดจำร้อยละ "+dp+" ("+f(dep)+" บาท) ก่อนเริ่มงาน ส่วนที่เหลือ "+f(P-dep)+" บาท ชำระภายใน "+(v.y||7)+" วันนับจากวันส่งมอบงาน\n\nข้อ 3 กำหนดส่งมอบ ผู้รับจ้างส่งมอบงานภายใน "+(v.n||7)+" วันนับจากวันที่ได้รับมัดจำและข้อมูลที่จำเป็นครบถ้วน หากผู้ว่าจ้างให้ข้อมูลหรือตอบกลับล่าช้า กำหนดส่งเลื่อนออกไปตามระยะเวลาที่ล่าช้านั้น\n\nข้อ 4 การตรวจรับงาน ผู้ว่าจ้างต้องแจ้งยอมรับหรือขอแก้ไขเป็นลายลักษณ์อักษรภายใน 3 วันนับจากวันส่งมอบ หากไม่แจ้งภายในกำหนด ให้ถือว่าตรวจรับงานแล้ว\n\nข้อ 5 การแก้ไขงาน ผู้ว่าจ้างขอแก้ไขได้ฟรี "+(v.r||2)+" รอบ ส่วนที่เกินคิดค่าแก้ไขเพิ่มตามที่ตกลงกัน\n\nข้อ 6 ความล่าช้า หากผู้รับจ้างส่งงานล่าช้าโดยไม่มีเหตุอันควร ผู้ว่าจ้างปรับได้วันละไม่เกิน "+f(pd)+" บาท (ร้อยละ 0.5 ของค่าจ้าง) และรวมไม่เกิน "+f(pm)+" บาท (ร้อยละ 10 ของค่าจ้าง)\n\nข้อ 7 ลิขสิทธิ์ ลิขสิทธิ์ในงานที่ส่งมอบโอนให้ผู้ว่าจ้างเมื่อได้รับชำระเงินครบถ้วนแล้ว ผู้รับจ้างมีสิทธิ์นำผลงานไปแสดงในพอร์ตโฟลิโอของตน ส่วนงานร่างหรืองานต้นแบบที่ไม่ได้ใช้ยังเป็นของผู้รับจ้าง\n\nข้อ 8 การยกเลิก ฝ่ายที่ประสงค์ยกเลิกต้องแจ้งอีกฝ่ายล่วงหน้าอย่างน้อย 7 วัน หากผู้ว่าจ้างเป็นฝ่ายยกเลิก ต้องชำระค่าจ้างตามสัดส่วนงานที่ทำไปแล้ว และมัดจำไม่คืน\n\nข้อ 9 สัญญานี้ทำเป็นสองฉบับ มีข้อความตรงกัน คู่สัญญาได้อ่านและเข้าใจแล้ว จึงลงลายมือชื่อไว้เป็นหลักฐาน\n\nลงชื่อ ____________ ผู้ว่าจ้าง        ลงชื่อ ____________ ผู้รับจ้าง\n"}
+$("genb").onclick=()=>$("gen").showModal();$("g_x").onclick=()=>$("gen").close();
+$("g_go").onclick=()=>{const t0=$("g_t").value,v={};GF[t0].forEach(a=>v[a[0]]=$("g_"+a[0]).value.trim());const x=({f:genText,l:genLoan,r:genRent})[t0](v);$("g_out").textContent=x;$("g_out").hidden=false;$("g_ac").hidden=false;$("g_dl").href="data:application/msword;charset=utf-8,"+encodeURIComponent('<html><head><meta charset="utf-8"></head><body style="font-family:TH Sarabun New,sans-serif;font-size:16pt">'+x.split("\n").map(l=>"<p>"+esc(l)+"</p>").join("")+"</body></html>");$("g_cp").onclick=async()=>{try{await navigator.clipboard.writeText(x);$("g_cp").textContent="✅ คัดลอกแล้ว"}catch(e){}}};
+
+const GF={f:[["c","ชื่อผู้ว่าจ้าง",""],["f","ชื่อผู้รับจ้าง (คุณ)",""],["j","ชื่องาน",""],["s","รายละเอียดงานที่ส่งมอบ",""],["p","ค่าจ้างรวม (บาท)","","n"],["d","มัดจำ (%)",30,"n"],["n","กำหนดส่ง (วัน)",7,"n"],["r","แก้ไขฟรี (รอบ)",2,"n"],["y","จ่ายส่วนที่เหลือภายใน (วัน)",7,"n"]],l:[["a","ชื่อผู้ให้กู้",""],["b","ชื่อผู้กู้",""],["p","จำนวนเงินกู้ (บาท)","","n"],["i","ดอกเบี้ย (% ต่อปี)",15,"n"],["m","ผ่อนกี่เดือน",12,"n"],["g","ชื่อผู้ค้ำประกัน (ถ้ามี)",""]],r:[["a","ชื่อผู้ให้เช่า",""],["b","ชื่อผู้เช่า",""],["h","ทรัพย์ที่เช่า (ที่อยู่/ห้อง)",""],["p","ค่าเช่าต่อเดือน (บาท)","","n"],["d","เงินประกัน (เดือน)",2,"n"],["m","ระยะเวลาเช่า (เดือน)",12,"n"],["y","จ่ายค่าเช่าภายในวันที่ของเดือน",5,"n"]]};
+function gDraw(){$("g_fs").innerHTML=GF[$("g_t").value].map(x=>'<label>'+x[1]+'</label><input id="g_'+x[0]+'" '+(x[3]?'type="number" inputmode="numeric" ':'')+'value="'+x[2]+'">').join("")}
+$("g_t").onchange=gDraw;gDraw();
+const NF=x=>Math.round(x).toLocaleString("th-TH"),FT="\n\n(แม่แบบเบื้องต้น ควรให้ทนายความตรวจก่อนใช้งานจริง)";
+function genLoan(v){const P=+v.p||0,ri=Math.min(+v.i||0,15),n=Math.max(1,+v.m||12),r=ri/1200,pay=r?P*r/(1-Math.pow(1+r,-n)):P/n,cap=(+v.i||0)>15,g=v.g;
+return "สัญญากู้ยืมเงิน\n\nสัญญานี้ทำขึ้นระหว่าง “"+(v.a||"________")+"” (ผู้ให้กู้) กับ “"+(v.b||"________")+"” (ผู้กู้) ลงวันที่ ____/____/______\n\nข้อ 1 เงินกู้ ผู้ให้กู้ให้ผู้กู้ยืมเงิน "+NF(P)+" บาท ผู้กู้ได้รับเงินครบถ้วนแล้วในวันทำสัญญา และถือสัญญานี้เป็นหลักฐานการรับเงิน\n\nข้อ 2 ดอกเบี้ย ร้อยละ "+ri+" ต่อปี คิดจากต้นเงินคงเหลือ"+(cap?" (ปรับลงจากที่กรอกให้ไม่เกินเพดานตามกฎหมายร้อยละ 15 ต่อปี)":"")+" ไม่เปลี่ยนแปลงตลอดอายุสัญญา เว้นแต่ทั้งสองฝ่ายตกลงเป็นหนังสือ\n\nข้อ 3 การชำระคืน ผ่อน "+n+" เดือน เดือนละประมาณ "+NF(pay)+" บาท ชำระภายในวันที่ ____ ของทุกเดือน ผู้กู้ชำระก่อนกำหนดได้โดยไม่มีค่าธรรมเนียม และผู้ให้กู้ต้องออกใบรับเงินทุกครั้ง\n\nข้อ 4 การผิดนัด ผู้ให้กู้ต้องแจ้งเตือนเป็นหนังสือและให้เวลาชำระอย่างน้อย 30 วันก่อนถือว่าผิดนัด ดอกเบี้ยผิดนัดไม่เกินอัตราตามกฎหมาย ไม่มีค่าปรับอื่น ค่าทวงถามเรียกได้เฉพาะที่จ่ายจริงพร้อมใบเสร็จ การบังคับชำระหนี้ต้องผ่านกระบวนการทางกฎหมาย ผู้ให้กู้ไม่มีสิทธิ์ยึดทรัพย์สินของผู้กู้เอง\n\n"+(g?"ข้อ 5 ผู้ค้ำประกัน “"+g+"” รับผิดไม่เกินต้นเงินและดอกเบี้ยตามสัญญา ไม่รวมค่าปรับหรือดอกเบี้ยส่วนที่เกินกฎหมาย และคงสิทธิ์ที่กฎหมายให้แก่ผู้ค้ำประกันไว้ทั้งหมด\n\n":"")+"ข้อ "+(g?6:5)+" สัญญานี้ทำเป็นสองฉบับ ข้อความตรงกัน คู่สัญญาอ่านและเข้าใจแล้ว จึงลงนามต่อหน้าพยาน\n\nลงชื่อ ________ ผู้ให้กู้    ลงชื่อ ________ ผู้กู้"+(g?"    ลงชื่อ ________ ผู้ค้ำประกัน":"")+"\nพยาน ________    พยาน ________"+FT}
+function genRent(v){const P=+v.p||0,d=+v.d||2,m=+v.m||12;
+return "สัญญาเช่า\n\nสัญญานี้ทำขึ้นระหว่าง “"+(v.a||"________")+"” (ผู้ให้เช่า) กับ “"+(v.b||"________")+"” (ผู้เช่า) ลงวันที่ ____/____/______\n\nข้อ 1 ทรัพย์ที่เช่า "+(v.h||"________")+" ผู้เช่าใช้เพื่ออยู่อาศัย ระยะเวลาเช่า "+m+" เดือน นับจากวันที่ ____/____/______\n\nข้อ 2 ค่าเช่า เดือนละ "+NF(P)+" บาท ชำระภายในวันที่ "+(v.y||5)+" ของทุกเดือน ผู้ให้เช่าไม่ขึ้นค่าเช่าในระหว่างอายุสัญญา การปรับค่าเช่าเมื่อต่อสัญญาต้องแจ้งล่วงหน้าอย่างน้อย 60 วัน\n\nข้อ 3 เงินประกัน "+d+" เดือน ("+NF(P*d)+" บาท) ผู้ให้เช่าคืนภายใน 30 วันหลังผู้เช่าส่งมอบทรัพย์คืน หักได้เฉพาะค่าเช่าและสาธารณูปโภคค้างชำระ และความเสียหายจริงที่เกินการสึกหรอตามปกติ พร้อมแสดงรายการและใบเสร็จ\n\nข้อ 4 สภาพทรัพย์ ทั้งสองฝ่ายตรวจและถ่ายรูปสภาพทรัพย์ร่วมกันในวันเข้าอยู่ และใช้เป็นหลักฐานเทียบตอนส่งคืน\n\nข้อ 5 การเข้าทรัพย์ ผู้ให้เช่าเข้าทรัพย์ได้เมื่อแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง ยกเว้นเหตุฉุกเฉิน\n\nข้อ 6 การซ่อมแซม ผู้ให้เช่ารับผิดชอบโครงสร้างและระบบหลัก ผู้เช่ารับผิดชอบความเสียหายที่เกิดจากการใช้งานโดยประมาท\n\nข้อ 7 สาธารณูปโภค คิดตามที่ใช้จริงตามมิเตอร์ในอัตราที่ผู้ให้บริการเรียกเก็บ ไม่บวกเพิ่ม\n\nข้อ 8 การเลิกสัญญา ผู้เช่าเลิกก่อนครบกำหนดได้โดยแจ้งล่วงหน้า 30 วัน และชดเชยค่าเช่าไม่เกิน 1 เดือน ผู้ให้เช่าเลิกสัญญาได้เฉพาะกรณีผู้เช่าผิดสัญญาร้ายแรง และต้องแจ้งเป็นหนังสือให้แก้ไขภายใน 15 วันก่อน\n\nข้อ 9 สัญญานี้ทำเป็นสองฉบับ ข้อความตรงกัน คู่สัญญาอ่านและเข้าใจแล้ว จึงลงนามไว้เป็นหลักฐาน\n\nลงชื่อ ________ ผู้ให้เช่า    ลงชื่อ ________ ผู้เช่า"+(m>36?"\n\nหมายเหตุ: สัญญาเช่าอสังหาริมทรัพย์ที่เกิน 3 ปีควรปรึกษาผู้รู้เรื่องการทำเป็นหนังสือและจดทะเบียน":"")+FT}
+function riskH(r,t){const sc=Math.max(0,Math.min(10,Number(r.safety_score)||0)),k=Math.round((10-sc)*10),c=k>=70?"var(--stamp)":k>=40?"var(--warn)":"var(--ok)",lv=k>=70?"เสี่ยงสูง":k>=40?"ควรระวัง":"เสี่ยงต่ำ",fl=r.red_flags||[],hi=fl.filter(x=>x.level==="high").length,md=fl.filter(x=>x.level==="medium").length;
+return '<div class="rk"><div><b class="big" style="color:'+c+'">'+k+'%</b> ความเสี่ยงโดยรวม · <b>'+lv+'</b></div><div class="gauge"><i style="width:'+k+'%;background:'+c+'"></i></div><div>พบจุดเสี่ยงสูง '+hi+' จุด · ควรระวัง '+md+' จุด</div><div class="tn"><button type="button" data-pl="1">🗣️ แปลเป็นภาษาชาวบ้าน</button></div><div class="tn">'+fl.slice(0,5).map((x,i)=>'<button type="button" data-j="'+i+'">'+(i+1)+'. '+esc(String(x.phrase).slice(0,22))+' ›</button>').join("")+'</div>'+(fl.length?'<p style="margin:6px 0">🔍 ตรวจอ้างอิง: พบในสัญญาต้นฉบับ <b>'+fl.filter(x=>x.phrase&&NW(t).includes(NW(x.phrase))).length+'/'+fl.length+'</b> ข้อ'+(fl.every(x=>x.phrase&&NW(t).includes(NW(x.phrase)))?'':' (ข้อที่ไม่พบมีป้ายเตือน)')+'</p>':'')+'<p class="hint" style="margin:0">คำนวณจากคะแนนความปลอดภัย ใช้เปรียบเทียบเบื้องต้น ไม่ใช่ความน่าจะเป็นทางกฎหมาย กดปุ่มเพื่อข้ามไปดูวิธีแก้</p></div>'}
+function chatApi(r){return fetch(CFG.api+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sid:CHS.sid,persona:CHS.p,summary:r.summary,flags:(r.red_flags||[]).slice(0,4).map(x=>({phrase:x.phrase,suggestion:x.suggestion})),history:CHS.h})}).then(async rr=>{const d=await rr.json().catch(()=>({}));if(!rr.ok)throw{code:d.error||"fail"};return{text:d.text}})}
+
+const LB={"ร้อยละ 5 ต่อเดือน":"ป.พ.พ. มาตรา 654 (ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ)","ร้อยละ 24 ต่อปี":"ป.พ.พ. มาตรา 654 (ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ)","วันละ 5,000 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","ค่าปรับวันละ 500 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","ชั่วโมงละ 1,000 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","โดยไม่ต้องฟ้องศาล":"เจ้าหนี้ไม่มีสิทธิ์ยึดทรัพย์เอง การบังคับชำระหนี้ต้องผ่านศาลและการบังคับคดี"};
+const NW=v=>String(v||"").replace(/\s+/g," ").trim();
+function vbadge(x,t){const T=NW(t),ok=x.phrase&&T.includes(NW(x.phrase));let h=ok?'<small class="vk">✅ พบข้อความนี้ในสัญญาต้นฉบับ</small>':'<small class="vw">⚠️ ไม่พบข้อความนี้ในสัญญาต้นฉบับ AI อาจอ้างผิด โปรดตรวจเอง</small>';if(x.quote){h+=T.includes(NW(x.quote))?'<p class="qt">ในสัญญา: “'+esc(x.quote)+'”</p>':'<p class="vw">⚠️ ข้อความอ้างอิงเต็มไม่ตรงกับต้นฉบับ</p>'}return h}
+function lbasis(x){const b=x.legal_basis;return b&&b!=="null"?'<p class="lb">📚 อ้างอิง: '+esc(b)+'</p>':''}
+function fbBtn(i){return '<div class="fbk"><button type="button" data-fb="'+i+'">🚩 ข้อนี้ไม่ถูกต้อง / AI มั่ว</button></div>'}
+function fbForm(kind,idx){return '<div class="rf" id="fbf"><b>'+(kind==="halluc"?"🤖 รายงาน AI มั่ว/แต่งข้อมูล":kind==="ok"?"👍 ถูกต้อง":"🚩 รายงานข้อมูลไม่ถูกต้อง")+'</b><textarea id="fbt" class="cnote" rows="2" placeholder="บอกเราสั้น ๆ ว่าผิดตรงไหน (ไม่บังคับ)"></textarea>'+(kind==="ok"?'':'<label style="display:block;margin:6px 0"><input type="checkbox" id="fba"> แนบข้อความสัญญาเพื่อช่วยตรวจสอบ (ไม่แนบก็ได้ ข้อมูลส่วนตัวจะไม่ถูกส่ง)</label>')+'<div class="row"><button type="button" class="go" id="fbs" data-k="'+kind+'" data-i="'+(idx===undefined?"":idx)+'">ส่งรายงาน</button></div></div>'}
+async function fbSend(kind,idx){const r=window.RC.r,t=window.RC.t,f=idx!==""&&idx!==undefined?(r.red_flags||[])[+idx]:null,a=$("fba")&&$("fba").checked;
+const p={uid:typeof uid!=="undefined"?uid:"",kind,idx:idx===""?null:idx,type,score:r.safety_score,sample:!!preOf(t),flag:f?{phrase:f.phrase,why:f.why,suggestion:f.suggestion,legal_basis:f.legal_basis||null}:null,comment:($("fbt").value||"").slice(0,500),text:a?t.slice(0,20000):undefined,ts:Date.now()};
+try{const q=JSON.parse(localStorage.getItem("fb")||"[]");q.push(p);localStorage.setItem("fb",JSON.stringify(q.slice(-50)))}catch(e){}
+let ok=true;if(typeof CFG!=="undefined"&&CFG.api){try{const rr=await fetch(CFG.api+"/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});ok=rr.ok}catch(e){ok=false}}
+$("fbf").innerHTML='<p>'+(ok?'ขอบคุณ ส่งรายงานแล้ว เราจะใช้ปรับปรุงระบบ':'บันทึกไว้ในเครื่องแล้ว แต่ส่งไปหลังบ้านไม่สำเร็จ')+'</p>'}
+function fbOpen(kind,idx,anchor){const o=$("fbf");if(o)o.remove();anchor.insertAdjacentHTML("afterend",fbForm(kind,idx));$("fbs").onclick=e=>fbSend(e.target.dataset.k,e.target.dataset.i);$("fbf").scrollIntoView({behavior:"smooth",block:"center"})}
+
+const TOSV="1.1";const PS=["สัญญานี้ให้คุณทำงานเร็ว แก้ไม่อั้น ถ้าช้าโดนปรับหนัก และเขาเลิกเมื่อไรก็ได้โดยไม่จ่ายเงิน ถ้าเซ็นแล้วคุณอาจทำงานฟรี", "คุณต้องถ่ายทั้งวันและแต่งภาพส่งใน 1 วัน แต่เงินอาจมาช้าถึง 3 เดือน และเขาอ้างว่าไม่พอใจเพื่อไม่จ่ายก็ได้", "เขาเพิ่มงานให้คุณได้เรื่อย ๆ ในราคาเท่าเดิม เงินมาเมื่อลูกค้าของเขาจ่ายก่อน และคุณห้ามรับงานอื่นถึง 5 ปี", "ดอกเบี้ยแพงมาก (ราว 60% ต่อปี) ผิดนัดครั้งเดียวโดนปรับหนัก และเขาบอกว่ายึดของคุณได้เองโดยไม่ผ่านศาล ซึ่งไม่ถูกต้อง", "ดอกเบี้ยสูงกว่าที่กฎหมายกำหนด คนค้ำต้องรับผิดไม่อั้นและเสียสิทธิ์ที่กฎหมายให้ และเจ้าหนี้ขึ้นดอกเบี้ยเองได้", "พลาดแค่งวดเดียวเขายึดรถได้และเงินที่ผ่อนมาไม่คืน แถมมีค่าธรรมเนียมที่ไม่คืนอีก", "ถ้าย้ายออกก่อนครบปีเงินประกันหายหมด ค่าเช่าขึ้นได้เร็ว เจ้าของเข้าห้องได้โดยไม่บอก และต้องจ่ายค่าทำความสะอาดแบบเหมา", "คุณลงทุนตกแต่งเอง แต่เจ้าของเลิกสัญญาเมื่อไรก็ได้และได้ของตกแต่งไป ส่วนคุณเลิกก่อนต้องจ่ายค่าเช่าที่เหลือทั้งหมด", "รถเสียหายยังไงคุณก็ต้องจ่าย ราคาซ่อมเขากำหนดเอง และคืนรถช้านิดเดียวโดนปรับชั่วโมงละพัน", "คุณจ่ายมัดจำเกือบทั้งหมดก่อน แต่ผู้ขายจะส่งของเมื่อไรก็ได้ ไม่คืนเงิน และไม่รับผิดชอบถ้าของเสีย", "ทำงานหนักสัปดาห์ละ 6 วัน 3 เดือนแรกไม่ได้เงิน ถ้าลาออกก่อนครบปีต้องจ่ายคืน 50,000 บาท", "คุณต้องซื้อของเยอะทุกเดือน ขายไม่ได้ก็คืนไม่ได้ ยอดไม่ถึงเป้าโดนยึดเงินที่จ่ายไป และบริษัทเปลี่ยนค่าคอมได้เอง"];
+const TOS=[["ลักษณะของบริการ","เว็บนี้เป็นเครื่องมืออำนวยความสะดวกที่ใช้ AI วิเคราะห์และร่างสัญญาเบื้องต้น ไม่ใช่สำนักงานกฎหมาย ผู้ให้บริการไม่ใช่ทนายความ และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต การใช้บริการไม่ก่อให้เกิดความสัมพันธ์ระหว่างทนายความกับลูกความ"],["ไม่ใช่คำปรึกษาทางกฎหมาย","ผลวิเคราะห์ แม่แบบสัญญา และข้อความที่สร้างขึ้นเป็นข้อมูลทั่วไป ไม่ได้พิจารณาข้อเท็จจริงทั้งหมดของคุณ ไม่ใช่คำปรึกษาหรือความเห็นทางกฎหมาย"],["ห้ามใช้เป็นหลักฐานทางกฎหมาย","ห้ามนำผลวิเคราะห์หรือข้อความจากเว็บนี้ไปอ้างเป็นหลักฐาน ความเห็นทางกฎหมาย หรือคำรับรองต่อศาล อนุญาโตตุลาการ หรือหน่วยงานรัฐ"],["ความถูกต้อง","AI อาจผิดพลาด ตกหล่น ตีความคลาดเคลื่อน หรือแต่งข้อมูลขึ้นเองได้ ไม่มีการรับประกันความถูกต้อง ครบถ้วน หรือความเหมาะสมต่อวัตถุประสงค์ใด ๆ คุณต้องตรวจสอบเองและปรึกษาทนายความสำหรับสัญญามูลค่าสูงหรือเรื่องสำคัญ"],["หน้าที่ของผู้ใช้","คุณตัดสินใจเซ็นหรือไม่เซ็นสัญญาด้วยตนเองและรับผลจากการตัดสินใจนั้น ห้ามอัปโหลดข้อมูลที่คุณไม่มีสิทธิ์ใช้ และไม่ใช้บริการเพื่อวัตถุประสงค์ที่ผิดกฎหมาย"],["ข้อมูลส่วนบุคคล","ข้อความสัญญาหรือรูปที่คุณส่งจะถูกส่งให้ผู้ให้บริการ AI ภายนอกเพื่อประมวลผล ระบบนี้ไม่บันทึกข้อความสัญญาไว้ (เว้นแต่คุณเลือกแนบตอนรายงานข้อผิดพลาด) แต่ผู้ให้บริการ AI ภายนอกอาจเก็บข้อมูลตามนโยบายของเขา โปรดลบข้อมูลส่วนบุคคลของบุคคลที่สามและเลขบัตรหรือเลขบัญชีก่อนส่ง สมุดบันทึกลูกค้าเก็บในเครื่องของคุณเท่านั้น"],["การปิดบังข้อมูลและประวัติ","ระบบพยายามปิดบังเลขบัตรประชาชน เบอร์โทร เลขบัญชี และอีเมลในข้อความก่อนส่งให้ AI แต่อาจตกหล่นได้ และไม่สามารถปิดบังข้อมูลในรูปภาพได้ ประวัติการตรวจเก็บเฉพาะสรุปผลในเครื่องของคุณ"],["การส่งต่อให้ทนายความและโปรแกรมชวนเพื่อน","การขอให้ทนายความตรวจซ้ำจะส่งข้อมูลเฉพาะที่คุณเลือกแนบและยินยอมเท่านั้น ทีมงานเป็นผู้ประสานงานและอาจมีค่าตอบแทนจากการส่งต่อ ซึ่งจะแจ้งก่อนตกลงใช้บริการ ส่วนโปรแกรมชวนเพื่อนให้เครดิตตามเงื่อนไขที่แสดง และอาจระงับเมื่อพบการใช้ผิดปกติ"],["เครดิตและการชำระเงิน","เครดิตใช้เรียกบริการตามอัตราที่แสดง ไม่สามารถขอคืนเงินได้ เว้นแต่ระบบขัดข้องจนไม่ได้รับผล ซึ่งระบบจะคืนเครดิตให้โดยอัตโนมัติ"],["จำกัดความรับผิด","ในขอบเขตสูงสุดที่กฎหมายอนุญาต ความรับผิดรวมของผู้ให้บริการต่อคุณไม่เกินจำนวนเงินที่คุณชำระให้ผู้ให้บริการในช่วง 30 วันก่อนเกิดเหตุ และผู้ให้บริการไม่รับผิดต่อความเสียหายทางอ้อม ความเสียหายสืบเนื่อง หรือกำไรที่สูญเสีย ข้อจำกัดนี้ไม่ใช้กับความเสียหายที่เกิดจากความจงใจหรือประมาทเลินเล่ออย่างร้ายแรงของผู้ให้บริการ หรือกรณีที่กฎหมายห้ามจำกัดความรับผิด"],["การแก้ไขข้อกำหนดและกฎหมายที่ใช้","ผู้ให้บริการแก้ไขข้อกำหนดได้ โดยจะแจ้งในหน้านี้และขอให้ยอมรับใหม่ ข้อกำหนดนี้อยู่ภายใต้กฎหมายไทย"]];
+function tosHtml(){return '<h2 style="margin-top:0">ข้อกำหนดการใช้งาน (เวอร์ชัน '+TOSV+')</h2><ol>'+TOS.map(x=>'<li><b>'+esc(x[0])+'</b><br>'+esc(x[1])+'</li>').join("")+'</ol><p class="hint">ติดต่อผู้ให้บริการ: <a href="'+esc(CFG.contact)+'" target="_blank" rel="noopener">ช่องทางติดต่อ</a></p>'}
+function openTos(){$("tos_b").innerHTML=tosHtml();if(!$("tos").open)$("tos").showModal()}
+function needTos(){$("dsc_cb").checked=false;$("dsc_ok").disabled=true;if(!$("dsc").open)$("dsc").showModal()}
+function payGate(){let ok=false;try{ok=localStorage.getItem("paytos")===TOSV}catch(e){}$("pay_cb").checked=ok;$("pay").classList.toggle("gate",!ok)}
+$("pay_cb").onchange=()=>{try{localStorage.setItem("paytos",$("pay_cb").checked?TOSV:"")}catch(e){}$("pay").classList.toggle("gate",!$("pay_cb").checked)};
+$("pay_tos").onclick=e=>{e.preventDefault();openTos()};
+$("tos_open").onclick=openTos;$("tos_f").onclick=openTos;$("tos_x").onclick=()=>$("tos").close();
+$("dsc_cb").onchange=()=>{$("dsc_ok").disabled=!$("dsc_cb").checked};
+
+const LAW_DISCLOSE="ทีมงานเป็นผู้ประสานงานและอาจมีค่าตอบแทนจากการส่งต่อ ซึ่งจะแจ้งให้ทราบก่อนที่คุณตกลงใช้บริการ";
+function maskPII(t){let n=0;const R=(re,l,k)=>{t=t.replace(re,function(){n++;const a=arguments;return k?a[1]+l:l})};
+R(/[\w.+-]+@[\w-]+\.[\w.-]+/g,"[อีเมล]");
+R(/(^|\D)(\d[- ]?\d{4}[- ]?\d{5}[- ]?\d{2}[- ]?\d)(?!\d)/g,"[เลขบัตรประชาชน]",1);
+R(/(^|\D)(0\d{1,2}[- ]?\d{3}[- ]?\d{4})(?!\d)/g,"[เบอร์โทร]",1);
+R(/(^|\D)(\d{3}[- ]?\d[- ]?\d{5}[- ]?\d)(?!\d)/g,"[เลขบัญชี]",1);
+R(/(^|\D)(\d{10,12})(?!\d)/g,"[เลขบัญชี]",1);return{text:t,n}}
+if(location.protocol==="http:"&&!/^(localhost|127\.|\[::1\]|)$/.test(location.hostname))location.replace("https:"+location.href.slice(5));
+function histGet(){try{return JSON.parse(localStorage.getItem("hist")||"[]")}catch(e){return[]}}
+function histSave(r){try{const fl=r.red_flags||[],a=histGet();a.unshift({d:Date.now(),ty:type,sc:r.safety_score,hi:fl.filter(x=>x.level==="high").length,md:fl.filter(x=>x.level==="medium").length,sm:String(r.summary||"").slice(0,160)});localStorage.setItem("hist",JSON.stringify(a.slice(0,50)))}catch(e){}}
+function histDraw(){const a=histGet();$("hist_l").innerHTML=a.length?a.map((x,i)=>'<div class="df c"><b>'+esc(x.ty)+'</b> · '+new Date(x.d).toLocaleDateString("th-TH")+' · เสี่ยง '+Math.round((10-(+x.sc||0))*10)+'% ('+x.hi+' สูง / '+x.md+' ระวัง)<br>'+esc(x.sm)+' <button type="button" class="link" data-hd="'+i+'">ลบ</button></div>').join(""):'<p class="hint">ยังไม่มีประวัติ</p>'}
+$("histb").onclick=()=>{histDraw();$("hist").showModal()};$("hist_x").onclick=()=>$("hist").close();
+$("hist_c").onclick=()=>{try{localStorage.removeItem("hist")}catch(e){}histDraw()};
+$("hist_l").onclick=e=>{const d=e.target.dataset.hd;if(d===undefined)return;const a=histGet();a.splice(+d,1);try{localStorage.setItem("hist",JSON.stringify(a))}catch(x){}histDraw()};
+async function claimRef(){try{const r=new URLSearchParams(location.search).get("ref");if(!CFG.api||!r||r===uid||localStorage.getItem("refd"))return;const rr=await fetch(CFG.api+"/referral",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref:r})});localStorage.setItem("refd","1");const d=await rr.json().catch(()=>({}));if(rr.ok&&d.credits!==undefined){cred=d.credits;showCr();$("ocrst").textContent="🎁 ได้เครดิตฟรีจากเพื่อนแล้ว!"}}catch(e){}}
+$("refb").onclick=async()=>{const l=location.origin+location.pathname+"?ref="+encodeURIComponent(uid),tx="ลองเช็กสัญญาด้วย AI ฟรี รับเครดิตเพิ่มเมื่อเข้าผ่านลิงก์นี้: "+l;if(navigator.share){try{await navigator.share({text:tx});return}catch(e){}}try{await navigator.clipboard.writeText(tx);$("refb").textContent="✅ คัดลอกลิงก์แล้ว"}catch(e){prompt("คัดลอกลิงก์นี้",l)}};
+let RCPL=[];
+$("rcpb").onclick=async()=>{$("rcp").showModal();$("rcp_l").textContent="กำลังโหลด…";try{const d=await(await fetch(CFG.api+"/receipts?uid="+encodeURIComponent(uid))).json();RCPL=d.items||[];$("rcp_l").innerHTML=RCPL.length?RCPL.map((x,i)=>'<div class="df c">'+esc(x.no)+' · '+new Date(x.ts).toLocaleDateString("th-TH")+' · '+x.baht+' บาท · '+(x.days?'แพ็กเกจ '+x.days+' วัน':x.credits+' เครดิต')+' <button type="button" class="link" data-rc="'+i+'">เปิด/พิมพ์</button></div>').join(""):'<p class="hint">ยังไม่มีใบเสร็จ</p>'}catch(e){$("rcp_l").textContent="โหลดไม่สำเร็จ"}};
+$("rcp_x").onclick=()=>$("rcp").close();
+$("rcp_l").onclick=e=>{const i=e.target.dataset.rc;if(i===undefined)return;const x=RCPL[+i],sl=CFG.seller,w=window.open("","_blank");if(!w)return;w.document.write('<html><head><meta charset="utf-8"><title>'+esc(x.no)+'</title><style>body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 16px}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:8px;text-align:left}</style></head><body><h2>ใบเสร็จรับเงิน</h2><p><b>'+esc(sl.name)+'</b><br>'+esc(sl.addr)+(sl.tax?'<br>เลขประจำตัวผู้เสียภาษี '+esc(sl.tax):'')+'</p><p>เลขที่ '+esc(x.no)+'<br>วันที่ '+new Date(x.ts).toLocaleDateString("th-TH")+'<br>ผู้ซื้อ '+esc($("rcp_b").value||"-")+'</p><table><tr><th>รายการ</th><th>จำนวน</th><th>บาท</th></tr><tr><td>'+(x.days?'แพ็กเกจรายเดือน บริการตรวจสัญญาด้วย AI':'เครดิตบริการตรวจสัญญาด้วย AI')+'</td><td>'+(x.days?x.days+' วัน':x.credits)+'</td><td>'+x.baht+'</td></tr></table><p><b>รวมทั้งสิ้น '+x.baht+' บาท</b></p><p style="color:#666;font-size:13px">เอกสารนี้เป็นใบเสร็จรับเงิน ไม่ใช่ใบกำกับภาษี</p></body></html>');w.document.close();w.focus();w.print()};
+function openLaw(){$("law_d").textContent=LAW_DISCLOSE;$("law_msg").textContent="";$("law").showModal()}
+$("law_x2").onclick=()=>$("law").close();
+$("law_go").onclick=async()=>{const m=$("law_msg");if(!$("law_cb").checked){m.textContent="กรุณาติ๊กยินยอมก่อนส่งคำขอ";return}const nm=$("law_n").value.trim(),ct=$("law_c").value.trim();if(!ct){m.textContent="กรอกช่องทางติดต่อก่อน";return}
+const R=window.RC||{},r=R.r,t=R.t,p={uid,name:nm,contact:ct,note:$("law_t").value.slice(0,500),consent:true,type,summary:$("law_s").checked&&r?{score:r.safety_score,summary:r.summary,flags:(r.red_flags||[]).map(x=>({level:x.level,phrase:x.phrase,suggestion:x.suggestion}))}:null,text:$("law_x").checked&&t?t.slice(0,20000):null};
+if(CFG.api){try{const rr=await fetch(CFG.api+"/lawyer-request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});m.textContent=rr.ok?"ส่งคำขอแล้ว ทีมงานจะติดต่อกลับตามช่องทางที่ระบุ":"ส่งไม่สำเร็จ ลองใหม่อีกครั้ง"}catch(e){m.textContent="เชื่อมต่อหลังบ้านไม่ได้"}}
+else{const tx="คำขอให้ทนายตรวจสัญญา\nชื่อ: "+nm+"\nติดต่อ: "+ct+"\n"+p.note+(p.summary?"\nสรุป: "+p.summary.summary:"");try{await navigator.clipboard.writeText(tx)}catch(e){}m.textContent="คัดลอกคำขอแล้ว กำลังเปิดช่องทางติดต่อ";window.open(CFG.contact,"_blank")}};
+function lines(x){return String(x).split(/\n+/).map(v=>v.trim()).filter(Boolean)}
+function nums(v){return v.match(/\d[\d,.]*/g)||[]}
+function pair(x,y){let p=0;while(p<x.length&&p<y.length&&x[p]===y[p])p++;let q=0;while(q<x.length-p&&q<y.length-p&&x[x.length-1-q]===y[y.length-1-q])q++;const a=nums(x).join(", "),b=nums(y).join(", ");return '<div class="df c"><div>✏️ แก้ไขข้อความ</div><div class="o">เดิม: '+esc(x.slice(0,p))+'<s>'+esc(x.slice(p,x.length-q))+'</s>'+esc(x.slice(x.length-q))+'</div><div>ใหม่: '+esc(y.slice(0,p))+'<b class="nn">'+esc(y.slice(p,y.length-q))+'</b>'+esc(y.slice(y.length-q))+'</div>'+(a!==b?'<div>🔢 ตัวเลขเปลี่ยน: '+esc(a||"-")+' → '+esc(b||"-")+'</div>':'')+'</div>'}
+function doCmp(a,b){const A=lines(a),B=lines(b),o=$("cmpo");if(!B.length){o.innerHTML='<p>วางสัญญาฉบับแก้ไขก่อนนะ</p>';return}
+const n=A.length,m=B.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=A[i]===B[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+const ops=[];let i=0,j=0;while(i<n&&j<m){if(A[i]===B[j]){ops.push(["=",A[i]]);i++;j++}else if(L[i+1][j]>=L[i][j+1]){ops.push(["-",A[i]]);i++}else{ops.push(["+",B[j]]);j++}}
+while(i<n)ops.push(["-",A[i++]]);while(j<m)ops.push(["+",B[j++]]);
+let h="",same=0,add=0,del=0,chg=0;
+for(let k=0;k<ops.length;k++){const x=ops[k];if(x[0]==="="){same++;continue}
+if(x[0]==="-"&&ops[k+1]&&ops[k+1][0]==="+"){h+=pair(x[1],ops[k+1][1]);chg++;k++;continue}
+if(x[0]==="-"){del++;h+='<div class="df d">🗑️ ถูกตัดออก: '+esc(x[1])+'</div>'}else{add++;h+='<div class="df a">⚠️ ข้อความใหม่ที่ไม่มีในฉบับเดิม: '+esc(x[1])+'</div>'}}
+o.innerHTML='<p><b>สรุป:</b> เหมือนเดิม '+same+' ข้อ · แก้ไข '+chg+' · เพิ่มใหม่ '+add+' · ตัดออก '+del+'</p>'+(chg+add+del?h+'<p class="hint">ข้อความที่เพิ่มหรือแก้ควรตรวจซ้ำ คัดลอกสัญญาฉบับใหม่ไปกดตรวจอีกครั้งได้</p>':'<p>ทั้งสองฉบับเหมือนกันทุกข้อ</p>')}
+function bindX(r,t){bindY(r,t);const b=$("cmpb");if(b)b.onclick=()=>doCmp(t,$("cmpt").value);const c=$("cpy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText($("fd").textContent);c.textContent="✅ คัดลอกแล้ว"}catch(e){const g=getSelection(),rg=document.createRange();rg.selectNodeContents($("fd"));g.removeAllRanges();g.addRange(rg);c.textContent="เลือกข้อความแล้ว กดคัดลอกได้เลย"}}}
+
+let scat=TYPES[0];
+const total=Object.values(SAMPLES).reduce((a,l)=>a+l.length,0);
+$("demo").textContent="⚡ ลองดูตัวอย่างสัญญา ("+total+" แบบ) โดนเอาเปรียบแค่ไหน · ฟรี ไม่เสียเครดิต";
+function drawSmp(){
+$("scat").innerHTML=Object.keys(SAMPLES).map(k=>`<button type="button" data-c="${esc(k)}" aria-pressed="${k===scat}">${esc(k)}</button>`).join("");
+$("slist").innerHTML=SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}">${esc(x[0])}</button>`).join("")}
+$("demo").onclick=()=>{drawSmp();$("smp").showModal()};
+$("sx").onclick=()=>$("smp").close();
+$("smp").addEventListener("click",e=>{if(e.target===$("smp")){$("smp").close();return}
+const b=e.target.closest("button");if(!b)return;
+if(b.dataset.c){scat=b.dataset.c;drawSmp()}
+else if(b.dataset.i!==undefined){$("txt").value=SAMPLES[scat][+b.dataset.i][1];type=scat;drawTypes();$("out").innerHTML="";$("err").textContent="";sync();$("smp").close();$("txt").scrollIntoView({behavior:"smooth",block:"center"})}});
+/* ===== วิธีใช้งาน ===== */
+const closeHow=()=>{$("how").close();try{localStorage.setItem("seen","1")}catch(e){}};
+$("howbtn").onclick=()=>$("how").showModal();
+$("hx").onclick=closeHow;$("hok").onclick=closeHow;
+$("how").addEventListener("click",e=>{if(e.target===$("how"))closeHow()});
+function showHow(){try{if(!localStorage.getItem("seen"))setTimeout(()=>$("how").showModal(),300)}catch(e){}}
+try{if(localStorage.getItem("tos")===TOSV){showHow()}else setTimeout(()=>$("dsc").showModal(),200)}catch(e){showHow()}
+$("dsc").addEventListener("cancel",e=>e.preventDefault());
+$("dsc_ok").onclick=async()=>{try{localStorage.setItem("tos",TOSV)}catch(e){}if(CFG.api){try{await fetch(CFG.api+"/accept",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,v:TOSV})})}catch(e){}}$("dsc").close();showHow();claimRef()};
+
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LV={high:["var(--stamp)","เสี่ยงสูง"],medium:["var(--warn)","ควรระวัง"],low:["var(--ok)","เสี่ยงต่ำ"]};
+function hl(t,f){
+const R=[];
+let n=0;f.forEach((x,i)=>{if(x.level==="low"||n>=4)return;const p=String(x.phrase||"").trim();if(!p||p.length>40)return;const k=t.indexOf(p);if(k<0)return;if(R.some(a=>k<a[1]&&k+p.length>a[0]))return;R.push([k,k+p.length,i]);n++});
+R.sort((a,b)=>a[0]-b[0]);
+let o="",c=0;
+R.forEach(([s,e,i])=>{o+=esc(t.slice(c,s))+`<mark data-i="${i}" tabindex="0" role="button" title="ดูวิธีแก้ข้อนี้">${esc(t.slice(s,e))}<sup>${i+1}</sup></mark>`;c=e});
+return o+esc(t.slice(c));
+}
+function render(r,t){
+ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
+const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
+const f=r.red_flags||[];
+let h=`<div class="head"><div class="stamp" style="--c:${c}"><div><b>${s}/10</b><span>คะแนนความปลอดภัย</span></div></div><p class="sum">${esc(r.summary)}</p></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn"></span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
+h+=`<h2>สัญญาของคุณ (ไฮไลต์จุดน่ากลัว)</h2><div class="doc">${hl(t,f)}</div><p class="hint">ไฮไลต์เฉพาะจุดที่เสี่ยงที่สุด แตะเพื่อดูวิธีแก้ข้อนั้น</p>`;
+h+=`<h2>จุดที่ต้องระวังและวิธีแก้</h2>`;
+if(!f.length)h+=`<p>ไม่พบข้อที่น่ากังวลเป็นพิเศษ</p>`;
+f.forEach((x,i)=>{const l=LV[x.level]||LV.medium;h+=`<div class="flag" id="f${i}" style="--c:${l[0]}"><span class="num">${i+1}</span><span class="tag">${l[1]}</span><q>${esc(x.phrase)}</q>${vbadge(x,t)}<p class="why">${esc(x.why)}</p><p class="pl">🗣️ ${esc(x.plain||x.why)}</p>${lbasis(x)}<p class="fix"><b>เสนอแก้เป็น:</b> ${esc(x.suggestion)}</p>${x.how_to_handle?`<p class="how"><b>วิธีรับมือ:</b> ${esc(x.how_to_handle)}</p>`:""}${nego(x)}${fbBtn(i)}</div>`});
+if((r.missing||[]).length)h+=`<h2>สิ่งที่สัญญายังไม่ได้ระบุ</h2><ul>${r.missing.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
+if((r.before_sign||[]).length)h+=`<h2>ก่อนเซ็นควรทำ</h2><ul class="steps">${r.before_sign.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
+window.LT=t;h+=extraH(r);$("out").innerHTML=h;bindX(r,t);bindTTS(r);$("out").scrollIntoView({behavior:"smooth"});
+}
+function jump(e){const m=e.target.closest("mark");if(!m)return;if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;const el=$("f"+m.dataset.i);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.remove("pulse");void el.offsetWidth;el.classList.add("pulse")}
+$("out").addEventListener("click",jump);$("out").addEventListener("keydown",jump);
+function eff(){const d=document.documentElement.dataset.theme;return d||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}
+function lab(){$("theme").textContent=eff()==="dark"?"☀️ โหมดสว่าง":"🌙 โหมดมืด"}
+try{const t=localStorage.getItem("th");if(t)document.documentElement.dataset.theme=t}catch(e){}
+lab();
+$("theme").onclick=()=>{const t=eff()==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("th",t)}catch(e){}lab()};
+function setM(c,t){$("mascot").setAttribute("class","mascot "+c);$("bub").textContent=t}
+$("go").onclick=async()=>{
+$("out").innerHTML="";
+const t0=$("txt").value.trim();$("err").textContent="";const MK2=$("mk").checked&&!preOf(t0)?maskPII(t0):{text:t0,n:0};const t=MK2.text;
+if(t.length<40){$("err").textContent="วางข้อความสัญญาให้ยาวขึ้นอีกนิด (อย่างน้อย 1–2 ข้อ) แล้วกดตรวจอีกครั้ง";return}
+const PR=preOf(t);
+if(PR){const bt=$("go");bt.disabled=true;bt.textContent="กำลังเปิดตัวอย่าง…";setM("busy","กำลังอ่านทีละข้อ…");await new Promise(r=>setTimeout(r,900));render(PR,t);setM("hop","นี่คือผลตัวอย่าง ไม่เสียเครดิต");bt.disabled=false;bt.textContent=GO();return}
+if(cred<CFG.cost&&!(passUntil>Date.now())){openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อตรวจต่อ");return}
+const btn=$("go");btn.disabled=true;btn.textContent="กำลังตรวจ…";setM("busy","กำลังอ่านทีละข้อ…");
+try{
+let res;
+if(CFG.api){
+progStart();pg.target=40;
+const rr=await fetch(CFG.api+"/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,type,text:t})});
+const d=await rr.json().catch(()=>({}));
+if(rr.status===402){progHide();openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อตรวจต่อ");return}
+if(rr.status===403&&d.error==="tos"){progHide();needTos();return}
+if(!rr.ok)throw{code:d.error||"fail"};
+cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;window.NEXTRID=d.rid||"";res={text:d.result};
+}else{
+const sample=await claude.use("sample");
+if(!sample){$("err").textContent="เปิดหน้านี้ผ่านแอป Claude และอนุญาตให้หน้าเว็บเรียกใช้ Claude เพื่อใช้งานการตรวจสัญญา";return}
+const prompt=PROMPT(type,t);
+progStart();
+res=await sample(prompt,{cache:false,onText:({text})=>progText(text)});
+}
+const mm=res.text.replace(/```json|```/g,"");
+const r=JSON.parse(mm.slice(mm.indexOf("{"),mm.lastIndexOf("}")+1));
+await progFinish();
+if(CFG.api)showCr();else await spend();render(r,t);if(MK2.n)$("ocrst").textContent="🔒 ปิดบังข้อมูลส่วนตัว "+MK2.n+" จุดก่อนส่งให้ AI";setM("hop","ตรวจเสร็จแล้ว! ดูผลด้านล่าง");
+}catch(e){$("err").textContent=e&&e.code==="rate_limited"?"ใช้งานถี่เกินไป รอสักครู่แล้วลองใหม่":e&&e.code==="pass_cap"?"วันนี้ใช้ครบโควตาแพ็กเกจรายเดือนแล้ว ("+CFG.passDaily+" ครั้ง/วัน) พรุ่งนี้ใช้ได้ใหม่ หรือเติมเครดิตเพิ่ม":e&&e.code==="too_long"?"สัญญายาวเกินไป ลองตรวจทีละส่วน":e&&e.code==="not_granted"?"ต้องอนุญาตให้หน้านี้ใช้ Claude ก่อนจึงจะตรวจสัญญาได้":"ตรวจไม่สำเร็จ ลองกดตรวจอีกครั้ง"}
+finally{progHide();if($("mascot").classList.contains("busy"))setM("","ลองกดตรวจอีกครั้งนะ");btn.disabled=false;btn.textContent=GO()}
+};
+
+/* ===== ถ่ายรูป / อัปโหลดเอกสาร ===== */
+const fcam=$("fcam"),fpick=$("fpick"),bstop=$("bstop"),ost=$("ocrst");
+let ctl=null;
+$("bcam").onclick=()=>fcam.click();$("bpick").onclick=()=>fpick.click();
+bstop.onclick=()=>ctl&&ctl.abort();
+fcam.onchange=()=>{ingest(fcam.files);fcam.value=""};
+fpick.onchange=()=>{ingest(fpick.files);fpick.value=""};
+async function pdfBlobs(f,max){
+const L=window.pdfjsLib;if(!L)throw{code:"nopdf"};
+L.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const d=await L.getDocument({data:await f.arrayBuffer()}).promise,n=Math.min(d.numPages,max),o=[];
+for(let i=1;i<=n;i++){ost.textContent=`กำลังแปลง PDF หน้า ${i}/${n}…`;const pg=await d.getPage(i),vp=pg.getViewport({scale:1.6}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;o.push(await new Promise(r=>c.toBlob(r,"image/jpeg",.85)))}
+return{blobs:o,total:d.numPages}}
+async function ingest(list){
+const files=[...list];if(!files.length)return;$("err").textContent="";ost.textContent="";
+const busy=v=>{["bcam","bpick"].forEach(i=>$(i).disabled=v);bstop.hidden=!v};
+try{
+let text="",imgs=[],cut="";
+for(const f of files){
+if(/\.(txt|md)$/i.test(f.name)||f.type==="text/plain"){text+=(text?"\n":"")+await f.text()}
+else if(/\.docx$/i.test(f.name)){if(!window.mammoth)throw{code:"type",name:f.name};text+=(text?"\n":"")+(await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+else if(f.type==="application/pdf"||/\.pdf$/i.test(f.name))imgs.push(f);
+else if(f.type.startsWith("image/"))imgs.push(f);
+else throw{code:"type",name:f.name}}
+if(text){$("txt").value=($("txt").value?$("txt").value+"\n":"")+text.trim();if(!imgs.length){ost.textContent="อ่านไฟล์ข้อความแล้ว ตรวจทานแล้วกดตรวจสัญญาได้เลย";return}}
+const s=await claude.use("sample");
+if(!s){$("err").textContent="เปิดหน้านี้ผ่านแอป Claude และอนุญาตให้หน้าเว็บเรียกใช้ Claude ก่อนจึงจะอ่านภาพได้";return}
+const lim=await s.limits().catch(()=>null);
+if(!lim||!lim.images){$("err").textContent="ตอนนี้ยังส่งภาพให้ Claude อ่านไม่ได้ ลองวางข้อความแทน หรืออัปโหลดไฟล์ .txt";return}
+busy(true);
+let blobs=[];
+for(const f of imgs){
+if(f.type.startsWith("image/")){if(f.size>lim.images.maxInputBytes)throw{code:"big"};blobs.push(f)}
+else{const r=await pdfBlobs(f,lim.images.maxCount);blobs.push(...r.blobs);if(r.total>r.blobs.length)cut=`PDF มี ${r.total} หน้า อ่านให้ ${r.blobs.length} หน้าแรก`}}
+if(blobs.length>lim.images.maxCount){blobs=blobs.slice(0,lim.images.maxCount);cut=`อ่านได้สูงสุด ${lim.images.maxCount} ภาพต่อครั้ง`}
+ctl=new AbortController();setM("busy","กำลังอ่านเอกสาร…");
+const base=$("txt").value?$("txt").value.trim()+"\n":"";
+ost.textContent=`กำลังอ่าน ${blobs.length} ภาพ…`;
+const r=await s(`ภาพที่แนบเป็นภาพถ่ายหรือสแกนของสัญญา เรียงตามลำดับหน้า ถอดข้อความทั้งหมดในภาพออกมาเป็นข้อความธรรมดา ตามตัวอักษรต้นฉบับทุกประการ ห้ามสรุป ห้ามแก้ไข ห้ามเติมคำอธิบายหรือหัวข้อของคุณเอง คงเลขข้อและย่อหน้าไว้ ส่วนที่อ่านไม่ออกให้ใส่ [อ่านไม่ออก] เลขบัตรประชาชนและเลขบัญชีให้แทนด้วย xxx ตอบเฉพาะข้อความสัญญา ถ้าภาพไม่ใช่เอกสาร ให้ตอบว่า [ไม่พบข้อความเอกสารในภาพ]`,{images:blobs,signal:ctl.signal,cache:false,onText:({text})=>{$("txt").value=base+text}});
+$("txt").value=base+r.text.trim();
+ost.textContent=(cut?cut+" · ":"")+"อ่านเสร็จแล้ว ตรวจทานข้อความให้ถูกต้องก่อน แล้วกดตรวจสัญญา";
+setM("hop","อ่านเสร็จแล้ว เช็กคำที่อ่านผิดด้วยนะ")
+}catch(e){
+ost.textContent="";
+const c=e&&e.code;
+$("err").textContent=c==="cancelled"?"หยุดอ่านแล้ว":c==="not_granted"?"ต้องอนุญาตให้หน้านี้ใช้ Claude ก่อนจึงจะอ่านภาพได้":c==="rate_limited"?"ใช้งานถี่เกินไป รอสักครู่แล้วลองใหม่":c==="nopdf"?"แปลง PDF ไม่สำเร็จ ลองถ่ายรูปหรือแคปหน้าจอสัญญาแทน":c==="type"?`ไม่รองรับไฟล์ ${e.name} (ใช้ได้: รูป, PDF, .txt)`:c==="big"||c==="image_rejected"?"ไฟล์ภาพใหญ่หรืออ่านไม่ได้ ลองถ่ายใหม่หรือลดขนาดภาพ":"อ่านเอกสารไม่สำเร็จ ลองใหม่อีกครั้ง";
+if(!$("mascot").classList.contains("hop"))setM("","วางสัญญามาได้เลย")
+}finally{busy(false);ctl=null;if($("mascot").classList.contains("busy"))setM("","วางสัญญามาได้เลย")}
+}
+
+/* ===== แถบความคืบหน้า ===== */
+const STEPS=["อ่านและแยกสัญญาเป็นรายข้อ","ให้คะแนนและสรุปภาพรวม","หาข้อที่เสี่ยงและเขียนวิธีแก้","หาสิ่งที่สัญญายังไม่ได้ระบุ","สรุปสิ่งที่ควรทำก่อนเซ็น"];
+const SCAN={"สัญญาจ้างฟรีแลนซ์":["เงื่อนไขการจ่ายเงิน","ค่าปรับกรณีส่งงานล่าช้า","จำนวนครั้งที่ต้องแก้งาน","ลิขสิทธิ์และการโอนสิทธิ์","สิทธิ์ยกเลิกสัญญา"],"สัญญากู้ยืมเงิน":["อัตราดอกเบี้ย","ค่าปรับและค่าทวงถาม","เงื่อนไขผิดนัดและเรียกเงินคืนทั้งหมด","หลักประกันและผู้ค้ำ","กำหนดการชำระ"],"สัญญาเช่า":["ค่าเช่าและเงินประกัน","เงื่อนไขการยกเลิกก่อนครบสัญญา","ค่าปรับและค่าซ่อมแซม","สิทธิ์ของผู้ให้เช่าในการเข้าพื้นที่","การต่อสัญญาและขึ้นค่าเช่า"],x:["ภาระและค่าปรับของคุณ","เงื่อนไขการจ่ายเงิน","สิทธิ์ยกเลิกสัญญา","ข้อความคลุมเครือ","ข้อที่อีกฝ่ายได้เปรียบ"]};
+const STRICT=`กฎเหล็กที่ต้องทำตามเสมอ: (1) วิเคราะห์เฉพาะจากข้อความในสัญญาที่ให้ ห้ามสันนิษฐานหรือเติมข้อเท็จจริงที่ไม่มีในสัญญา (2) ห้ามแต่งหรือเดากฎหมาย มาตรา เพดานหรืออัตรา ให้อ้างได้เฉพาะจากกรอบกฎหมายที่ให้ไว้ด้านล่าง ถ้าไม่แน่ใจหรือไม่อยู่ในกรอบ ให้เขียนว่า "ไม่สามารถระบุได้อย่างแน่ชัด" และห้ามคาดเดา (3) ทุกประเด็นต้องอ้างข้อความต้นฉบับจากสัญญาตัวอักษรต่อตัวอักษร (4) ตัวเลขที่คำนวณต้องมาจากตัวเลขในสัญญาเท่านั้น (5) คุณเป็นผู้ช่วยวิเคราะห์ความเสี่ยงเบื้องต้น ไม่ใช่ทนายความ ห้ามฟันธงว่าข้อใดใช้บังคับไม่ได้หรือชนะคดี ให้ใช้คำว่า "อาจ" และแนะนำปรึกษาทนายความเมื่อเรื่องสำคัญ`;
+const LAWREF={"สัญญาจ้างฟรีแลนซ์":["ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม พ.ศ. 2540: ข้อสัญญาที่เอาเปรียบเกินสมควรในสัญญาสำเร็จรูป ศาลอาจให้บังคับเพียงเท่าที่เป็นธรรม (ไม่ครอบคลุมทุกสัญญา)","ไม่มีเพดานตายตัวของค่าปรับในสัญญาจ้างทำของ ให้พิจารณาความสมเหตุสมผลโดยไม่อ้างตัวเลขเพดาน"],"สัญญากู้ยืมเงิน":["ป.พ.พ. มาตรา 653: กู้ยืมเกิน 2,000 บาทต้องมีหลักฐานเป็นหนังสือลงลายมือชื่อผู้ยืม","ป.พ.พ. มาตรา 654: ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ","ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","เจ้าหนี้ไม่มีสิทธิ์ยึดทรัพย์เอง การบังคับชำระหนี้ต้องผ่านศาลและการบังคับคดี"],"สัญญาเช่า":["ป.พ.พ. มาตรา 538: เช่าอสังหาริมทรัพย์เกิน 3 ปีต้องทำเป็นหนังสือและจดทะเบียน มิฉะนั้นฟ้องบังคับได้เพียง 3 ปี","ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม ใช้กับสัญญาบางประเภทเท่านั้น"],"อื่น ๆ":["ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม ใช้กับสัญญาบางประเภทเท่านั้น"]};
+const REF=ty=>(LAWREF[ty]||LAWREF["อื่น ๆ"]).map(x=>"- "+x).join("\n");
+const PROMPT=(type,t)=>`${STRICT}\n\nกรอบกฎหมายอ้างอิงที่อนุญาตให้ใช้ (ห้ามอ้างนอกเหนือจากนี้):\n${REF(type)}\n\nคุณเป็นผู้ช่วยตรวจสัญญาที่มีความรู้กฎหมายแพ่งและพาณิชย์ของไทย ตรวจ "${type}" ต่อไปนี้ในมุมของฝ่ายที่มีอำนาจต่อรองน้อยกว่า (ผู้รับจ้าง/ผู้กู้/ผู้เช่า) หาข้อที่ไม่เป็นธรรมหรือเสี่ยง เช่น ค่าปรับสูงเกินจริง (ศาลลดเบี้ยปรับได้ตาม ป.พ.พ. มาตรา 383), ดอกเบี้ยเกินอัตราตามกฎหมาย (เกินร้อยละ 15 ต่อปี ตกเป็นโมฆะ), เงื่อนไขจ่ายเงินคลุมเครือ, แก้งานไม่จำกัด, โอนลิขสิทธิ์เกินขอบเขต, ยกเลิกฝ่ายเดียว ตอบเป็นภาษาไทยที่เข้าใจง่าย ห้ามอ้างมาตรากฎหมายที่ไม่แน่ใจ ตอบเป็น JSON เท่านั้นในรูปแบบ {"safety_score":0-10 (10=ปลอดภัยมาก),"summary":"สรุปไม่เกิน 2 ประโยค","plain_summary":"สรุปแบบภาษาชาวบ้านไม่เกิน 3 ประโยคสำหรับคนไม่รู้กฎหมาย","red_flags":[{"level":"high|medium|low","phrase":"คำหรือวลีน่ากลัวที่คัดลอกจากสัญญาตัวอักษรต่อตัวอักษร สั้นที่สุดเท่าที่ได้ 2-6 คำ เลือกเฉพาะคำที่อันตรายจริง (เช่น วันละ 5,000 บาท หรือ ไม่จำกัดจำนวนครั้ง) ไม่ใช่ทั้งประโยค ห้ามแก้ไขหรือเรียบเรียงใหม่","quote":"ข้อความเต็มของข้อนั้นในสัญญาคัดลอกตัวอักษรต่อตัวอักษร ไม่เกิน 120 ตัวอักษร","legal_basis":"อ้างได้เฉพาะจากกรอบกฎหมายที่ให้ไว้ ถ้าไม่มีให้ใส่ null","why":"เสี่ยงอย่างไร ผลร้ายที่อาจเกิดจริง ๆ","suggestion":"ประโยคที่ควรแก้เป็น","plain":"อธิบายข้อนี้แบบภาษาชาวบ้านสั้น ๆ 1 ประโยค","how_to_handle":"วิธีรับมือ เช่น ประโยคสั้น ๆ ที่พูดเจรจากับอีกฝ่าย หรือทางเลือกถ้าอีกฝ่ายไม่ยอมแก้","client_says":"สิ่งที่อีกฝ่ายน่าจะพูดเมื่อคุณขอแก้ข้อนี้ 1 ประโยค","you_say":"ประโยคตอบกลับที่สุภาพแต่หนักแน่น 1-2 ประโยค"}],"missing":["ข้อที่ควรมีแต่ไม่มี"],"before_sign":["สิ่งที่ควรทำก่อนเซ็น 3-5 ข้อ เรียงตามความสำคัญ"],"tldr":["งานคืออะไร","ได้เงินเท่าไหร่และจ่ายเมื่อไร","กำหนดส่งงานหรือระยะเวลาสัญญา"],"market_note":"เทียบค่าตอบแทนในสัญญากับเรทตลาดโดยสรุป 1-2 ประโยค ห้ามแต่งตัวเลขราคาตลาดที่ไม่แน่ใจ ถ้าไม่มีข้อมูลที่เชื่อถือได้ให้ใส่ null","fair_draft":"ร่างสัญญาฉบับแก้ให้เป็นธรรมกับทั้งสองฝ่าย เขียนเป็นข้อ ๆ ครบทุกข้อของสัญญาเดิมพร้อมเพิ่มข้อที่ขาด"} เรียง red_flags จากเสี่ยงมากไปน้อย ไม่เกิน 8 ข้อ ทุกช่องให้กระชับ\n\nสัญญา:\n${t}`;
+let pg=null;
+function progStart(){
+const b=$("prog");b.hidden=false;
+b.innerHTML=`<div class="pr-top"><b class="pr-n" aria-hidden="true">0%</b><div class="pr-bar" role="progressbar" aria-label="ความคืบหน้าการตรวจสัญญา" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div><p class="pr-now" role="status"></p><ol class="pr-steps">${STEPS.map(s=>`<li>${s}</li>`).join("")}</ol><p class="pr-est">เปอร์เซ็นต์เป็นค่าประมาณจากความคืบหน้าของการวิเคราะห์</p>`;
+pg={shown:0,target:2,step:0,n:0,t0:performance.now(),done:false,scan:SCAN[type]||SCAN.x,last:-1};
+b.scrollIntoView({behavior:"smooth",block:"center"});
+const tick=()=>{if(!pg)return;
+const el=performance.now()-pg.t0;
+if(pg.step===0)pg.target=Math.max(pg.target,18*(1-Math.exp(-el/9000)));
+pg.shown+=(pg.target-pg.shown)*(pg.done?.25:.05);
+if(pg.done&&pg.target-pg.shown<.5)pg.shown=pg.target;
+const v=Math.min(pg.done?100:99,Math.floor(pg.shown));
+b.querySelector(".pr-n").textContent=v+"%";
+b.querySelector(".pr-bar i").style.width=pg.shown+"%";
+b.querySelector(".pr-bar").setAttribute("aria-valuenow",v);
+$("go").textContent="กำลังตรวจ… "+v+"%";
+b.querySelectorAll(".pr-steps li").forEach((li,i)=>{li.className=pg.done||i<pg.step?"done":i===pg.step?"cur":""});
+const sc=pg.scan[Math.floor(el/3200)%pg.scan.length];
+const msg=pg.done?"วิเคราะห์เสร็จแล้ว":[`กำลังอ่านสัญญาทีละข้อ และไล่ตรวจเรื่อง “${sc}”`,"กำลังให้คะแนนความปลอดภัยและสรุปภาพรวมของสัญญา",pg.n?`พบจุดเสี่ยงแล้ว ${pg.n} ข้อ กำลังเขียนเหตุผลและประโยคที่ควรแก้`:"กำลังคัดจุดที่เสี่ยงที่สุดออกมาจากสัญญา","กำลังตรวจว่าสัญญาขาดข้อไหนที่ควรมี","กำลังเรียบเรียงสิ่งที่ควรทำก่อนเซ็น"][pg.step];
+if(msg!==pg.last){b.querySelector(".pr-now").textContent=msg;pg.last=msg}
+pg.raf=requestAnimationFrame(tick)};
+pg.raf=requestAnimationFrame(tick);
+}
+function progText(t){if(!pg)return;
+const n=(t.match(/"level"/g)||[]).length;pg.n=n;
+let s=0,g=18;
+if(t.includes('"safety_score"')){s=1;g=t.includes('"summary"')?32:22}
+if(t.includes('"red_flags"')){s=2;g=35+Math.min(n,8)*5}
+if(t.includes('"missing"')){s=3;g=82}
+if(t.includes('"before_sign"')){s=4;g=91}
+if(s>=pg.step){pg.step=s;pg.target=Math.max(pg.target,g)}}
+async function progFinish(){if(!pg)return;pg.done=true;pg.target=100;await new Promise(r=>setTimeout(r,650))}
+function progHide(){if(pg){cancelAnimationFrame(pg.raf);pg=null}$("prog").hidden=true}
+
+/* ===== ระบบเครดิต + เติมเงิน ===== */
+/* ✏️ แก้ค่าตรงนี้ให้เป็นของคุณ */
+const CFG={cost:1,free:1,
+promptpay:"0800000000",            // เบอร์พร้อมเพย์ / เลขบัตร ปชช. 13 หลัก
+bank:{name:"ธนาคารกสิกรไทย",no:"000-0-00000-0",acct:"ชื่อบัญชีของคุณ"},
+truemoney:"0800000000",            // เบอร์ TrueMoney Wallet
+contact:"https://line.me/ti/p/~ไอดีไลน์ของคุณ", // ช่องทางส่งสลิป
+api:(/^https?:$/.test(location.protocol)&&!/claude/i.test(location.hostname))?location.origin:"",                            // URL หลังบ้าน เช่น "" = ทดสอบในเครื่อง, "https://โดเมนคุณ" = ใช้ server.js (ถ้ารัน server.js ที่เดียวกับหน้านี้ ใส่ location.origin)
+seller:{name:"ชื่อผู้ขาย/ร้านของคุณ",addr:"ที่อยู่ผู้ขาย",tax:""},
+packs:[{b:20,c:5},{b:50,c:15},{b:100,c:35},{b:199,c:0,days:30}], // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
+passDaily:30};
+let cred=0,uid="",pk=1,mt=0,ref="",passUntil=0;
+try{uid=localStorage.getItem("uid")||"";if(!uid){uid=Math.random().toString(36).slice(2,10);localStorage.setItem("uid",uid)}}catch(e){uid="guest"}
+const lget=()=>{try{const v=localStorage.getItem("cr");if(v===null){localStorage.setItem("cr",CFG.free);return CFG.free}return+v||0}catch(e){return 0}};
+const lset=v=>{try{localStorage.setItem("cr",v)}catch(e){}};
+const J=(u,o)=>fetch(CFG.api+u,o).then(r=>r.json());
+const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
+function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?"∞":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id=\"crc\">"+CFG.cost+"</b> เครดิต";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
+async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}
+async function spend(){if(CFG.api){try{cred=(await J("/spend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,n:CFG.cost})})).credits}catch(e){}}else{cred=Math.max(0,cred-CFG.cost);lset(cred)}showCr();$("cr").classList.remove("pop");void $("cr").offsetWidth;$("cr").classList.add("pop")}
+function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
+const tl=(i,v)=>i+String(v.length).padStart(2,"0")+v;
+function ppay(id,amt){id=id.replace(/\D/g,"");const t=id.length>=15?"03":id.length>=13?"02":"01",v=t==="01"?"0066"+id.slice(1):id;const p=tl("00","01")+tl("01","12")+tl("29",tl("00","A000000677010111")+tl(t,v))+tl("53","764")+tl("54",amt.toFixed(2))+tl("58","TH")+"6304";return p+crc(p)}
+function drawPay(){
+const P=CFG.packs[pk];
+$("packs").innerHTML=CFG.packs.map((x,i)=>`<button type="button" data-p="${i}" aria-pressed="${i===pk}"${x.days?' style="grid-column:1/-1"':""}><b>${x.b} ฿${x.days?" / "+x.days+" วัน":""}</b><span>${x.days?"แพ็กเกจรายเดือน ตรวจได้ไม่จำกัด* (สูงสุด "+CFG.passDaily+" ครั้ง/วัน)":x.c+" เครดิต"}</span></button>`).join("");
+$("meth").innerHTML=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney"].map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===mt}">${m}</button>`).join("");
+const mn=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney Wallet"][mt];
+let h="";
+if(mt===1)h=`<div class="acc"><p>${esc(CFG.bank.name)}</p><p><b>${esc(CFG.bank.no)}</b> <button class="link" style="display:inline;margin:0" type="button" data-cp="${esc(CFG.bank.no.replace(/\D/g,""))}">คัดลอก</button></p><p>ชื่อบัญชี ${esc(CFG.bank.acct)}</p><p>ยอดที่ต้องโอน <b>${P.b} บาท</b></p></div>`;
+else h=`<div class="qr" id="qr"></div><p class="hint" style="text-align:center">${mt===2?`สแกนด้วยแอป TrueMoney หรือโอนเข้าเบอร์ <b>${esc(CFG.truemoney)}</b>`:"สแกนด้วยแอปธนาคารใดก็ได้"} · ยอด ${P.b} บาท</p>`;
+if(P.days)h+=`<p class="hint">*ใช้งานเป็นธรรม สูงสุด ${CFG.passDaily} ครั้งต่อวัน ไม่ต่ออายุอัตโนมัติ เมื่อครบ ${P.days} วันจะกลับไปใช้เครดิตตามปกติ</p>`;
+h+=`<p class="ref">รหัสอ้างอิง <b>${ref}</b></p><a class="go" id="paid" href="${esc(CFG.contact)}" target="_blank" rel="noopener">โอนแล้ว ส่งสลิปยืนยัน</a>`;
+if(CFG.api)h+=`<label class="go" id="slipb" style="display:block;text-align:center;cursor:pointer;margin-top:10px">แนบสลิป · เติมเครดิตอัตโนมัติ<input type="file" id="slipf" accept="image/*" hidden></label><p class="hint" style="text-align:center">ใช้รูปสลิปต้นฉบับจากแอปธนาคาร (ไม่ครอบตัด) เห็น QR เล็กบนสลิปชัดเจน</p>`;
+if(!CFG.api)h+=`<button class="link" id="dpay" type="button">โหมดทดสอบ: จำลองว่าชำระแล้ว</button>`;
+$("pbody").innerHTML=h;
+if(mt!==1){const q=$("qr");q.innerHTML="";if(window.QRCode)new QRCode(q,{text:ppay(mt===2?CFG.truemoney:CFG.promptpay,P.b),width:200,height:200,correctLevel:QRCode.CorrectLevel.M});else q.textContent="โหลด QR ไม่สำเร็จ"}
+$("pay").dataset.mn=mn}
+function openPay(msg){ref="CK"+Math.floor(1e4+Math.random()*9e4);$("pmsg").textContent=msg||"";showCr();drawPay();payGate();if(!$("pay").open)$("pay").showModal()}
+$("cradd").onclick=()=>openPay();$("crn").onclick=()=>openPay();
+$("px").onclick=()=>$("pay").close();
+$("pay").addEventListener("click",e=>{
+const t=e.target;if(t===$("pay")){$("pay").close();return}
+const b=t.closest("button,a");if(!b)return;
+if(b.dataset.p){pk=+b.dataset.p;drawPay()}
+else if(b.dataset.m){mt=+b.dataset.m;drawPay()}
+else if(b.dataset.cp){navigator.clipboard&&navigator.clipboard.writeText(b.dataset.cp);b.textContent="คัดลอกแล้ว"}
+else if(b.id==="paid"){const P=CFG.packs[pk],m=`${P.days?"สั่งซื้อแพ็กเกจรายเดือน "+P.days+" วัน":"สั่งซื้อเครดิต "+P.c+" เครดิต"} (${P.b} บาท) รหัส ${ref} ผู้ใช้ ${uid} ช่องทาง ${$("pay").dataset.mn}`;try{navigator.clipboard.writeText(m)}catch(e){}$("pmsg").textContent="คัดลอกข้อความสั่งซื้อแล้ว วางส่งพร้อมสลิปได้เลย";if(CFG.api)J("/order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref,baht:P.b,credits:P.c,method:$("pay").dataset.mn})}).catch(()=>{})}
+else if(b.id==="dpay"){cred+=CFG.packs[pk].c;if(CFG.packs[pk].days)passUntil=Date.now()+CFG.packs[pk].days*864e5;lset(cred);showCr();$("pmsg").textContent="";$("pay").close()}});
+
+/* ===== ฟังสรุปเสียง: มีเซิร์ฟเวอร์ = เสียงคนจริงจาก Google ถ้าไม่มี = เสียงอ่านในเครื่อง (ไม่เสียเครดิต) ===== */
+let ttsOn=false,ttsA=null;
+const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+function ttsStop(){try{speechSynthesis.cancel()}catch(e){}if(ttsA){try{ttsA.pause()}catch(e){}}ttsOn=false;const b=$("tts");if(b)b.textContent="🔊 ฟังสรุปเสียง AI"}
+function ttsText(r){const cut=(v,n)=>String(v||"").replace(/\s+/g," ").trim().slice(0,n),f=(r.red_flags||[]).filter(x=>x.level!=="low").slice(0,3),a=["สรุปผลตรวจสัญญา คะแนนความปลอดภัย "+Math.round(Number(r.safety_score)||0)+" เต็มสิบ.",cut(r.plain_summary||r.summary,260)];
+if(f.length){a.push("มีจุดที่ต้องระวัง "+f.length+" ข้อ.");f.forEach((x,i)=>a.push("ข้อ "+(i+1)+". "+cut(x.plain||x.why,150)+(x.suggestion?" ควรแก้เป็น "+cut(x.suggestion,110):"")+"."))}
+const bs=(r.before_sign||[]).slice(0,2).map(v=>cut(v,100));if(bs.length)a.push("ก่อนเซ็นควร "+bs.join(" และ ")+".");
+a.push("ผลนี้เป็นการวิเคราะห์เบื้องต้นด้วย AI ไม่ใช่คำปรึกษาทางกฎหมาย.");return a.join(" ")}
+const spD=["ศูนย์","หนึ่ง","สอง","สาม","สี่","ห้า","หก","เจ็ด","แปด","เก้า"],spU=["","สิบ","ร้อย","พัน","หมื่น","แสน"];
+function sp6(s,high){let o="";const L=s.length;for(let i=0;i<L;i++){const d=+s[i],p=L-1-i;if(!d)continue;
+if(p===1)o+=(d===1?"":d===2?"ยี่":spD[d])+"สิบ";else if(p===0)o+=(d===1&&(L>1||high)?"เอ็ด":spD[d]);else o+=spD[d]+spU[p]}return o}
+function spInt(s){s=s.replace(/^0+(?=\d)/,"");if(s==="0")return spD[0];if(s.length>12)return[...s].map(c=>spD[+c]).join("");
+const g=[];for(let e=s.length;e>0;e-=6)g.unshift(s.slice(Math.max(0,e-6),e));
+return g.map((p,i)=>{p=p.replace(/^0+/,"");return(p?sp6(p,i===g.length-1&&g.length>1):"")+(i<g.length-1?"ล้าน":"")}).join("")}
+function spNum(n){const[i,f]=n.split("."),ip=i.replace(/,/g,"");
+if(!f&&(ip.length>=10||(ip.length>1&&ip[0]==="0")))return[...ip].map(c=>spD[+c]).join(" ");
+return spInt(ip)+(f?"จุด"+[...f].map(c=>spD[+c]).join(""):"")}
+function spSay(t){return String(t).replace(/[*_`#>\[\]{}"“”]/g,"").replace(/\bAI\b/g,"เอไอ").replace(/ป\.พ\.พ\./g,"ประมวลกฎหมายแพ่งและพาณิชย์")
+.replace(/(\d[\d,]*(?:\.\d+)?)\s*%/g,(m,n)=>"ร้อยละ"+spNum(n)).replace(/฿\s*(\d[\d,]*(?:\.\d+)?)/g,(m,n)=>spNum(n)+" บาท")
+.replace(/\d[\d,]*(?:\.\d+)?/g,spNum).replace(/\s+/g," ").trim()}
+function ttsChunks(s){const o=[];let c="";s.replace(/\.\s+/g,".\u0001").split("\u0001").forEach(p=>{if(c&&(c+" "+p).length>170){o.push(c);c=p}else c=c?c+" "+p:p});if(c)o.push(c);
+return o.flatMap(x=>{const r=[];while(x.length>200){let k=x.lastIndexOf(" ",200);if(k<80)k=200;r.push(x.slice(0,k));x=x.slice(k).trim()}r.push(x);return r})}
+function bestTh(){const v=(speechSynthesis.getVoices()||[]).filter(x=>/^th/i.test(x.lang)),sc=x=>(/premium|enhanced|natural|neural|online/i.test(x.name)?4:0)+(/google/i.test(x.name)?2:0)+(x.localService?0:1);return v.sort((a,b)=>sc(b)-sc(a))[0]}
+try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+function browserTTS(r,b){if(!("speechSynthesis" in window)){$("ttsn").textContent=" เครื่องนี้ไม่รองรับเสียงอ่าน";return}
+const th=bestTh();$("ttsn").textContent=th?" (เสียงในเครื่อง: "+th.name+")":" เครื่องนี้อาจไม่มีเสียงภาษาไทย ถ้าไม่มีเสียงออก ลองติดตั้งเสียงไทยในการตั้งค่าเครื่อง";
+const ch=ttsChunks(spSay(ttsText(r)));ttsOn=true;b.textContent="⏹ หยุดฟัง";try{speechSynthesis.cancel()}catch(e){}
+ch.forEach((c,i)=>{const u=new SpeechSynthesisUtterance(c);u.lang="th-TH";if(th)u.voice=th;u.rate=.9;if(i===ch.length-1)u.onend=ttsStop;u.onerror=()=>{if(ttsOn)ttsStop()};speechSynthesis.speak(u)})}
+function bindTTS(r){const b=$("tts");if(!b)return;const rid=window.RID||"",si=SMPFLAT.findIndex(x=>x[1].trim()===String(window.LT||"").trim()),srv=!!(CFG.api&&(rid||si>=0));
+if(!srv&&!("speechSynthesis" in window)){b.hidden=true;return}
+b.onclick=async()=>{if(ttsOn){ttsStop();return}
+if(!srv){browserTTS(r,b);$("ttsn").textContent+=" — เสียงคนจริงใช้ได้เมื่อเปิดผ่านเซิร์ฟเวอร์ (ไม่ใช่เปิดไฟล์ในเครื่อง)";return}
+ttsOn=true;b.textContent="⏳ กำลังสร้างเสียง…";$("ttsn").textContent="";
+if(!ttsA)ttsA=new Audio();ttsA.onended=null;ttsA.onerror=null;ttsA.src=SILENT;ttsA.play().catch(()=>{}); // ปลดล็อกการเล่นเสียงบน iPhone ระหว่างรอเซิร์ฟเวอร์
+try{const rr=await fetch(CFG.api+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rid?{uid,rid}:{uid,sample:si})}),d=await rr.json().catch(()=>({}));
+if(!ttsOn)return;
+if(rr.ok&&d.audio){ttsA.src="data:audio/mpeg;base64,"+d.audio;ttsA.onended=ttsStop;ttsA.onerror=ttsStop;$("ttsn").textContent=d.via==="elevenlabs"?" (เสียง ElevenLabs)":d.via==="google"?" (เสียง Google"+(d.elerr?" — ElevenLabs ใช้ไม่ได้: "+d.elerr:"")+")":"";await ttsA.play();b.textContent="⏹ หยุดฟัง";return}
+ttsOn=false;b.textContent="🔊 ฟังสรุปเสียง AI";
+if(rr.status===429&&d.error==="tts_cap"){$("ttsn").textContent=" วันนี้ฟังเสียงครบโควตาแล้ว ลองใหม่พรุ่งนี้";return}
+browserTTS(r,b);if(d.detail)$("ttsn").textContent+=" — เสียงเซิร์ฟเวอร์ใช้ไม่ได้: "+d.detail}catch(e){ttsOn=false;browserTTS(r,b)}}}
+/* ===== ตรวจสลิปอัตโนมัติ (อ่าน QR บนสลิปในเครื่อง ส่งเฉพาะข้อความ QR ให้เซิร์ฟเวอร์) ===== */
+const SLIPERR={tos:"กรุณายอมรับข้อกำหนดการใช้งานก่อน",amount_mismatch:"ยอดบนสลิปไม่ตรงกับแพ็กเกจที่เลือก",duplicate:"สลิปนี้ถูกใช้เติมเครดิตไปแล้ว",recv_mismatch:"สลิปนี้ไม่ได้โอนเข้าบัญชีของร้าน",bad_slip:"ตรวจสลิปไม่ผ่าน",not_configured:"ระบบตรวจสลิปอัตโนมัติยังไม่เปิดใช้ กด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ",upstream:"ระบบตรวจสลิปขัดข้อง ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่"};
+async function slipQR(f){const url=URL.createObjectURL(f),im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url});
+const sc=Math.min(1,3000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+const g=c.getContext("2d");g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
+if(!window.jsQR)return null;const d=g.getImageData(0,0,c.width,c.height),r=jsQR(d.data,d.width,d.height,{inversionAttempts:"attemptBoth"});return r&&r.data}
+$("pay").addEventListener("change",async e=>{
+if(e.target.id!=="slipf"||!e.target.files[0])return;const f=e.target.files[0],m=$("pmsg");e.target.value="";
+m.style.color="";m.textContent="กำลังอ่านสลิป…";
+try{const q=await slipQR(f);
+if(!q){m.textContent="อ่าน QR บนสลิปไม่ได้ ลองใช้สลิปต้นฉบับที่ไม่ครอบตัด หรือกด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ";return}
+m.textContent="กำลังตรวจกับธนาคาร…";
+const d=await J("/slip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,payload:q,baht:CFG.packs[pk].b,ref})});
+if(d.ok){cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;showCr();m.textContent=d.days?"✅ เปิดแพ็กเกจรายเดือนแล้ว ใช้ได้ถึง "+new Date(d.passUntil).toLocaleDateString("th-TH"):"✅ เติมเครดิตสำเร็จ +"+d.added+" เครดิต";setTimeout(()=>{if($("pay").open)$("pay").close()},1800)}
+else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ")+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")
+}catch(x){m.textContent="เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง"}});
+loadCr();
+if(CFG.api){$("refb").style.display="inline-block";$("rcpb").style.display="inline-block"}
+try{if(localStorage.getItem("tos")===TOSV)claimRef()}catch(e){}
+</script>
 </body>
 </html>

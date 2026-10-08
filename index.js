@@ -281,7 +281,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     if(!e.audio){const d=today();if(!x.tt||x.tt.d!==d)x.tt={d,n:0};if(x.tt.n>=TTS_DAILY)return send(res,429,{error:"tts_cap"});x.tt.n++;save();
       try{{const o=await speak(await spoken(e.r));e.audio=o.audio;e.via=o.via;e.elerr=o.err||""}}catch(err){x.tt.n--;save();return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}
       let c=0;for(const v of results.values())if(v.audio)c++;if(c>40)for(const v of results.values())if(v.audio&&v!==e){delete v.audio;break}} // ไม่เก็บเสียงเกิน 40 รายการ กันหน่วยความจำเต็ม
-    return send(res,200,{audio:e.audio,via:e.via||"",elerr:e.elerr||""})}
+    return send(res,200,{audio:e.audio,via:e.via||"",elerr:e.elerr||"",used:(x.tt&&x.tt.d===today())?x.tt.n:0,cap:TTS_DAILY})}
   if(P==="/slip"){if(!tosOk(x))return send(res,403,{error:"tos"});if(limited("slip"+ip,15))return send(res,429,{error:"rate_limited"});
     if(!SLIP_BRANCH||!SLIP_KEY)return send(res,501,{error:"not_configured"});
     const baht=+b.baht,payload=String(b.payload||""),ref=cid(b.ref)||"slip";

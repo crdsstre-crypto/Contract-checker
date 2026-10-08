@@ -25,6 +25,9 @@ textarea{width:100%;min-height:220px;resize:vertical;font:inherit;font-size:15px
 .go{font:inherit;font-weight:600;background:var(--stamp);color:#fff;border:0;border-radius:8px;padding:11px 22px;cursor:pointer}
 .go:disabled{opacity:.5;cursor:wait}
 .link{font:inherit;font-size:14px;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;padding:0}
+.tstop{position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;font:inherit;font-size:13px;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 12px;opacity:.92;box-shadow:0 2px 8px rgba(0,0,0,.14);cursor:pointer}
+.tstop[hidden]{display:none}
+#ttsn{display:block;font-size:13px;line-height:1.5;margin-top:4px}
 button:focus-visible,textarea:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
 #out{margin-top:26px}
 .head{display:flex;gap:18px;align-items:center;margin-bottom:18px}
@@ -455,7 +458,7 @@ function render(r,t){
 ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
 const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
 const f=r.red_flags||[];
-let h=`<div class="head"><div class="stamp" style="--c:${c}"><div><b>${s}/10</b><span>คะแนนความปลอดภัย</span></div></div><p class="sum">${esc(r.summary)}</p></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn"></span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
+let h=`<div class="head"><div class="stamp" style="--c:${c}"><div><b>${s}/10</b><span>คะแนนความปลอดภัย</span></div></div><p class="sum">${esc(r.summary)}</p></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn">เสียง AI จำกัดจำนวนครั้งต่อวัน ถ้าระบบเสียงหลักเต็มหรือขัดข้อง จะสลับไปใช้เสียงสำรองของ Google หรือเสียงในเครื่องให้เอง เสียงอาจต่างจากเดิม ไม่ใช่เว็บมีปัญหา</span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
 h+=`<h2>สัญญาของคุณ (ไฮไลต์จุดน่ากลัว)</h2><div class="doc">${hl(t,f)}</div><p class="hint">ไฮไลต์เฉพาะจุดที่เสี่ยงที่สุด แตะเพื่อดูวิธีแก้ข้อนั้น</p>`;
 h+=`<h2>จุดที่ต้องระวังและวิธีแก้</h2>`;
 if(!f.length)h+=`<p>ไม่พบข้อที่น่ากังวลเป็นพิเศษ</p>`;
@@ -652,7 +655,10 @@ else if(b.id==="dpay"){cred+=CFG.packs[pk].c;if(CFG.packs[pk].days)passUntil=Dat
 /* ===== ฟังสรุปเสียง: มีเซิร์ฟเวอร์ = เสียงคนจริงจาก Google ถ้าไม่มี = เสียงอ่านในเครื่อง (ไม่เสียเครดิต) ===== */
 let ttsOn=false,ttsA=null;
 const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
-function ttsStop(){try{speechSynthesis.cancel()}catch(e){}if(ttsA){try{ttsA.pause()}catch(e){}}ttsOn=false;const b=$("tts");if(b)b.textContent="🔊 ฟังสรุปเสียง AI"}
+function fab(on){let f=$("tstop");if(!f){f=document.createElement("button");f.id="tstop";f.type="button";f.className="tstop";f.textContent="⏹ หยุดเสียง";f.onclick=ttsStop;f.hidden=true;document.body.appendChild(f)}f.hidden=!on}
+function ttsInfo(d){let t=(Number.isFinite(+d.used)&&+d.cap>0)?"ใช้เสียงอ่านไปแล้ว "+(+d.used)+"/"+(+d.cap)+" ครั้งวันนี้ (รีเซ็ตเที่ยงคืน)":"ฟังตัวอย่าง ไม่นับโควตา";
+if(d.via==="google"){const m=/(\d{3})/.exec(d.elerr||""),q=m&&(m[1]==="402"||m[1]==="429");t+=" · ตอนนี้ใช้เสียงสำรองของ Google "+(q?"เพราะโควตาเสียงหลักของระบบเต็มชั่วคราว":"เพราะเสียงหลักใช้ไม่ได้ชั่วคราว")+" เสียงจึงต่างจากปกติ ไม่ใช่เว็บมีปัญหา"}return t}
+function ttsStop(){clearInterval(window._tp);fab(false);try{speechSynthesis.cancel()}catch(e){}if(ttsA){try{ttsA.pause()}catch(e){}}ttsOn=false;const b=$("tts");if(b)b.textContent="🔊 ฟังสรุปเสียง AI"}
 function ttsText(r){const cut=(v,n)=>String(v||"").replace(/\s+/g," ").trim().slice(0,n),f=(r.red_flags||[]).filter(x=>x.level!=="low").slice(0,3),a=["สรุปผลตรวจสัญญา คะแนนความปลอดภัย "+Math.round(Number(r.safety_score)||0)+" เต็มสิบ.",cut(r.plain_summary||r.summary,260)];
 if(f.length){a.push("มีจุดที่ต้องระวัง "+f.length+" ข้อ.");f.forEach((x,i)=>a.push("ข้อ "+(i+1)+". "+cut(x.plain||x.why,150)+(x.suggestion?" ควรแก้เป็น "+cut(x.suggestion,110):"")+"."))}
 const bs=(r.before_sign||[]).slice(0,2).map(v=>cut(v,100));if(bs.length)a.push("ก่อนเซ็นควร "+bs.join(" และ ")+".");
@@ -674,8 +680,8 @@ return o.flatMap(x=>{const r=[];while(x.length>200){let k=x.lastIndexOf(" ",200)
 function bestTh(){const v=(speechSynthesis.getVoices()||[]).filter(x=>/^th/i.test(x.lang)),sc=x=>(/premium|enhanced|natural|neural|online/i.test(x.name)?4:0)+(/google/i.test(x.name)?2:0)+(x.localService?0:1);return v.sort((a,b)=>sc(b)-sc(a))[0]}
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
 function browserTTS(r,b){if(!("speechSynthesis" in window)){$("ttsn").textContent=" เครื่องนี้ไม่รองรับเสียงอ่าน";return}
-const th=bestTh();$("ttsn").textContent=th?" (เสียงในเครื่อง: "+th.name+")":" เครื่องนี้อาจไม่มีเสียงภาษาไทย ถ้าไม่มีเสียงออก ลองติดตั้งเสียงไทยในการตั้งค่าเครื่อง";
-const ch=ttsChunks(spSay(ttsText(r)));ttsOn=true;b.textContent="⏹ หยุดฟัง";try{speechSynthesis.cancel()}catch(e){}
+const th=bestTh();$("ttsn").textContent=th?" ตอนนี้ใช้เสียงในเครื่อง ("+th.name+") เสียงจึงต่างจากเสียง AI ปกติ ไม่ใช่เว็บมีปัญหา":" เครื่องนี้อาจไม่มีเสียงภาษาไทย ถ้าไม่มีเสียงออก ลองติดตั้งเสียงไทยในการตั้งค่าเครื่อง";
+const ch=ttsChunks(spSay(ttsText(r)));ttsOn=true;b.textContent="⏹ หยุดฟัง";fab(true);try{speechSynthesis.cancel()}catch(e){}
 ch.forEach((c,i)=>{const u=new SpeechSynthesisUtterance(c);u.lang="th-TH";if(th)u.voice=th;u.rate=.9;if(i===ch.length-1)u.onend=ttsStop;u.onerror=()=>{if(ttsOn)ttsStop()};speechSynthesis.speak(u)})}
 function bindTTS(r){const b=$("tts");if(!b)return;const rid=window.RID||"",si=SMPFLAT.findIndex(x=>x[1].trim()===String(window.LT||"").trim()),srv=!!(CFG.api&&(rid||si>=0));
 if(!srv&&!("speechSynthesis" in window)){b.hidden=true;return}
@@ -685,7 +691,7 @@ ttsOn=true;b.textContent="⏳ กำลังสร้างเสียง… 0
 if(!ttsA)ttsA=new Audio();ttsA.onended=null;ttsA.onerror=null;ttsA.src=SILENT;ttsA.play().catch(()=>{}); // ปลดล็อกการเล่นเสียงบน iPhone ระหว่างรอเซิร์ฟเวอร์
 try{const rr=await fetch(CFG.api+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rid?{uid,rid}:{uid,sample:si})}),d=await rr.json().catch(()=>({}));
 clearInterval(window._tp);if(!ttsOn)return;
-if(rr.ok&&d.audio){ttsA.src="data:audio/mpeg;base64,"+d.audio;ttsA.onended=ttsStop;ttsA.onerror=ttsStop;b.textContent="⏳ กำลังสร้างเสียง… 100%";$("ttsn").textContent="";await ttsA.play();b.textContent="⏹ หยุดฟัง";return}
+if(rr.ok&&d.audio){ttsA.src="data:audio/mpeg;base64,"+d.audio;ttsA.onended=ttsStop;ttsA.onerror=ttsStop;b.textContent="⏳ กำลังสร้างเสียง… 100%";$("ttsn").textContent=ttsInfo(d);await ttsA.play();b.textContent="⏹ หยุดฟัง";fab(true);return}
 ttsOn=false;b.textContent="🔊 ฟังสรุปเสียง AI";
 if(rr.status===429&&d.error==="tts_cap"){$("ttsn").textContent=" วันนี้ฟังเสียงครบโควตาแล้ว ลองใหม่พรุ่งนี้";return}
 browserTTS(r,b)}catch(e){clearInterval(window._tp);ttsOn=false;browserTTS(r,b)}}}

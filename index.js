@@ -12,12 +12,12 @@ const PORT=+E.PORT||3000,RAWKEY=E.ANTHROPIC_API_KEY||"",KEY=RAWKEY.trim().replac
 const API_URL=E.API_URL||"https://api.anthropic.com/v1/messages",SLIP_URL=E.SLIPOK_URL||"https://api.slipok.com/api/line/apikey/";
 const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==undefined?+E.REF_BONUS:1,REF_MAX=+E.REF_MAX||10,NEW_PER_IP=+E.NEW_PER_IP||5;
 const TOSV=E.TOS_VERSION||"1.1",TOS_REQ=E.TOS_REQUIRED!=="0";
-const PASS_BAHT=+E.PASS_BAHT||199,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||30; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
+const PASS_BAHT=+E.PASS_BAHT||399,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||5; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
 const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";
 console.log("เสียงอ่าน:",EL_KEY&&EL_VOICE?"ElevenLabs ("+EL_MODEL+")":EL_KEY?"⚠️ ตั้ง ELEVENLABS_API_KEY แล้ว แต่ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID":"ยังไม่ได้ตั้ง ElevenLabs",TTS_KEY?"| สำรอง: Google":"| ไม่มี Google สำรอง");
 const SLIP_BRANCH=E.SLIPOK_BRANCH||"",SLIP_KEY=E.SLIPOK_KEY||"",SLIP_RECV=E.SLIP_RECV||"";
-let PACKS={20:5,50:15,100:35};try{if(E.PACKS)PACKS=JSON.parse(E.PACKS)}catch(e){} // ต้องตรงกับ CFG.packs ในหน้าเว็บ (บาท:เครดิต)
+let PACKS={29:2,69:5,129:10};try{if(E.PACKS)PACKS=JSON.parse(E.PACKS)}catch(e){} // ต้องตรงกับ CFG.packs ในหน้าเว็บ (บาท:เครดิต)
 const DB_FILE=fp("data.json"),PAY=fp("payments.jsonl"),ORD=fp("orders.jsonl"),FB=fp("feedback.jsonl"),LAW=fp("lawyer_requests.jsonl"),USED=fp("slips_used.json");
 const PAGE=path.join(__dirname,"check_contract.html"),ADMINPAGE=path.join(__dirname,"admin.html");
 
@@ -33,7 +33,8 @@ const today=()=>new Date(Date.now()+7*36e5).toISOString().slice(0,10);
 function getUser(id,ip){id=cid(id);if(!id||id.startsWith("__"))return null;let x=db[id];if(x)return x;
   const m=db.__ipn=db.__ipn||{},k=hash(ip),d=today();if(!m[k]||m[k].d!==d)m[k]={d,n:0};m[k].n++;
   x=db[id]={credits:m[k].n<=NEW_PER_IP?FREE:0,created:Date.now()};save();return x}
-const packOf=b=>b===PASS_BAHT?{credits:0,days:PASS_DAYS}:PACKS[b]?{credits:PACKS[b],days:0}:null;
+const MINB=+E.MIN_TOPUP||50,MAXB=+E.MAX_TOPUP||5000,RATE=b=>b>=500?13:b>=200?14:15; // บาทต่อ 1 เครดิต (ต้องตรงกับหน้าเว็บ)
+const packOf=b=>b===PASS_BAHT?{credits:0,days:PASS_DAYS}:(Number.isInteger(b)&&b>=MINB&&b<=MAXB&&Math.floor(b/RATE(b))>0)?{credits:Math.floor(b/RATE(b)),days:0}:null;
 const passOn=x=>(x.passUntil||0)>Date.now();
 function take(x){if(passOn(x)){const d=today();if(!x.pd||x.pd.d!==d)x.pd={d,n:0};if(x.pd.n>=PASS_DAILY)return"cap";x.pd.n++;save();return"pass"}
   if(x.credits<COST)return"none";x.credits-=COST;save();return"credit"}

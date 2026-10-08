@@ -180,6 +180,36 @@ pre.draft{white-space:pre-wrap;word-break:break-word;font:inherit;background:var
 .vk{color:var(--ok)}.vw{color:var(--warn);font-weight:600}.lb,.qt{margin:4px 0;font-size:14px}.qt{color:var(--mute)}.fbk{margin-top:6px}.fbk button{font:inherit;font-size:13px;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;padding:0}
 .tosl{display:block;font-size:14px;margin:8px 0;padding:8px 10px;background:var(--soft);border-radius:8px}.gate #packs,.gate #meth,.gate #pbody{opacity:.35;pointer-events:none}#tos_b ol{padding-left:20px}#tos_b li{margin:8px 0}
 .pl{display:none}.plainon .pl{display:block}.plainon .why{display:none}
+
+/* ===== ปรับหน้าตา: ทองเฉพาะจุดที่ต้องกด ===== */
+:root{--gold:#c58a12;--on-gold:#1b1405;--gold-glow:rgba(197,138,18,.12);--warn:var(--gold)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--card:#151a22;--line:#2a303a;--ink:#f4f4f5;--mute:#8d95a3;--soft:#1b212b;--ok:#4ade80;--stamp:#ff5c5c;--gold:#f5b83d;--gold-glow:rgba(245,184,61,.12)}}
+:root[data-theme="dark"]{--bg:#0d1117;--card:#151a22;--line:#2a303a;--ink:#f4f4f5;--mute:#8d95a3;--soft:#1b212b;--ok:#4ade80;--stamp:#ff5c5c;--gold:#f5b83d;--gold-glow:rgba(245,184,61,.12)}
+.bg{background:radial-gradient(900px 520px at 85% -5%,var(--gold-glow),transparent 70%),radial-gradient(800px 600px at -10% 105%,color-mix(in srgb,var(--ok) 7%,transparent),transparent 70%),repeating-linear-gradient(transparent 0 33px,color-mix(in srgb,var(--line) 55%,transparent) 33px 34px)}
+.mwrap{position:relative}.mwrap::before{content:"";position:absolute;inset:-18px;background:radial-gradient(circle,var(--gold-glow) 0,transparent 68%);z-index:-1;border-radius:50%}
+.go,.crbar button{background:var(--gold);color:var(--on-gold)}
+.crbar{border:1px solid var(--line);background:linear-gradient(var(--gold-glow),var(--gold-glow)),var(--card)}.crbar.low{border-color:var(--stamp)}
+.sec{font-size:13px;font-weight:600;color:var(--mute);margin:2px 0 8px}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.types button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px;border-radius:12px;position:relative;transition:border-color .2s,background .2s,transform .15s}
+.types button:active{transform:scale(.98)}
+.types button b{font-size:15px}.types button small{font-size:12px;color:var(--mute)}
+.types button[aria-pressed="true"]{background:var(--gold-glow);color:var(--ink);border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.types button[aria-pressed="true"]::after{content:"✓";position:absolute;right:10px;top:8px;color:var(--gold);font-weight:700}
+.dz{border:1.5px dashed var(--line);border-radius:14px;padding:18px 12px;text-align:center;margin-bottom:12px;background:var(--soft);transition:border-color .2s,background .2s}
+.dz.over{border-color:var(--gold);background:var(--gold-glow)}
+.dz .dzi{font-size:30px;line-height:1;margin-bottom:6px}.dz>b{display:block}.dz>span{display:block;font-size:13px;color:var(--mute);margin:2px 0 12px}
+.dz .cap{justify-content:center;margin:0}.dz .cap button{border-style:solid}
+#demo{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:400;font-size:14px;border:1px solid var(--line)}
+#demo b{font-weight:600}.free{font-style:normal;font-size:12px;font-weight:600;white-space:nowrap;color:var(--ok);border:1px solid var(--ok);border-radius:99px;padding:2px 10px}
+.opt{margin:0 0 10px}.opt summary{cursor:pointer;font-size:13px;color:var(--mute)}.opt input{margin-top:8px}
+.more{margin:18px 0 6px;display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center}.more .link{margin:0!important}
+#sbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.18);animation:sbu .3s ease-out}
+#sbar[hidden]{display:none}#sbar div{flex:1;min-width:0;font-size:14px}#sbar b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#sbar span{font-size:12px;color:var(--ok)}
+#sbar button{flex:none;font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 18px;background:var(--gold);color:var(--on-gold);cursor:pointer}
+@keyframes sbu{from{transform:translateY(100%)}}
+main{padding-bottom:96px}
+@media(prefers-reduced-motion:no-preference){.mwrap::before{animation:gl 5s ease-in-out infinite alternate}@keyframes gl{to{opacity:.55;transform:scale(1.08)}}}
 </style>
 </head>
 <body>
@@ -210,12 +240,13 @@ pre.draft{white-space:pre-wrap;word-break:break-word;font:inherit;background:var
 </svg></div>
 <h1>เช็กสัญญา</h1>
 </div>
-<p class="lead">วางข้อความสัญญาจ้างงานหรือสัญญากู้ยืมเงิน แล้วดูว่าข้อไหนเสี่ยง ข้อไหนเอาเปรียบ พร้อมคำแนะนำในการแก้ประโยคให้แฟร์ขึ้น</p>
+<p class="lead">ให้ AI ช่วยหาจุดเสี่ยงในสัญญาก่อนคุณเซ็น พร้อมคำแนะนำแก้ประโยคให้แฟร์ขึ้น</p>
 
-<button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button>
 <div class="crbar" id="cr"><span class="coin" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="cg" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset=".55" style="stop-color:var(--c2)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><linearGradient id="cr2" x1="32" y1="36" x2="8" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><clipPath id="cc"><circle cx="20" cy="20" r="18"/></clipPath></defs><circle cx="20" cy="20" r="18.5" fill="url(#cr2)"/><circle cx="20" cy="20" r="16.4" fill="url(#cg)"/><circle cx="20" cy="20" r="12.6" fill="none" stroke="var(--c3)" stroke-opacity=".45" stroke-width="1"/><circle cx="20" cy="20" r="13.4" fill="none" stroke="var(--c1)" stroke-opacity=".7" stroke-width=".8"/><path class="hl" d="M13.4 21.4l4.6 4.6 8.8-10.2" transform="translate(.7 .9)"/><path class="eng" d="M13.4 21.4l4.6 4.6 8.8-10.2"/><g clip-path="url(#cc)"><rect class="sh" x="-6" y="-4" width="9" height="48" fill="#fff" opacity=".38" transform="rotate(24 20 20)"/></g></svg></span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button></div>
 <section class="panel">
-<div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
+<p class="sec">① เลือกประเภทสัญญา</p><div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
+<p class="sec">② อัปโหลดสัญญา</p>
+<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>วางสัญญาของคุณที่นี่</b><span>ถ่ายรูป หรือเลือกไฟล์ · PDF • Word • รูปภาพ</span>
 <div class="cap" id="cap">
 <button type="button" id="bcam">📷 ถ่ายรูปสัญญา</button>
 <button type="button" id="bpick">📎 เลือกรูป / PDF / Word / ไฟล์ข้อความ</button>
@@ -223,12 +254,13 @@ pre.draft{white-space:pre-wrap;word-break:break-word;font:inherit;background:var
 <input type="file" id="fcam" accept="image/*" capture="environment" hidden>
 <input type="file" id="fpick" accept="image/*,.pdf,application/pdf,.txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
 </div>
+</div>
 <p id="ocrst" role="status"></p>
-<button type="button" class="chip" id="demo">⚡ ลองกดดูตัวอย่างสัญญาฟรีแลนซ์โดนเอาเปรียบ</button>
-<input id="cn" placeholder="ชื่อลูกค้า/บริษัท (ไม่บังคับ — ใช้เช็กสมุดบันทึกลูกค้าของคุณ)" style="margin-bottom:8px"><button type="button" class="chip" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button>
 <div class="tw"><textarea id="txt" placeholder="วางข้อความสัญญาที่นี่ หรือถ่ายรูป/อัปโหลดไฟล์ด้านบน…"></textarea><button type="button" id="clr" class="clr" aria-label="ล้างข้อความ" hidden>✕ ล้าง</button></div>
+<details class="opt"><summary>ตัวเลือกเพิ่มเติม (ชื่อลูกค้า)</summary><input id="cn" placeholder="ชื่อลูกค้า/บริษัท (ไม่บังคับ — ใช้เช็กสมุดบันทึกลูกค้าของคุณ)" style="margin-bottom:8px"></details>
 <p class="warn">⚠️ <b>เว็บนี้เป็นเครื่องมือช่วยอำนวยความสะดวกด้วย AI เท่านั้น ไม่ใช่สำนักงานกฎหมาย และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต</b> ผลวิเคราะห์ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น</p>
 <label class="note" style="display:block;margin:8px 0"><input type="checkbox" id="mk" checked> 🔒 ปิดบังข้อมูลส่วนตัว (เลขบัตร เบอร์โทร เลขบัญชี อีเมล) ก่อนส่งให้ AI<br><small>รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังข้อมูลส่วนตัวก่อนถ่ายหรืออัปโหลด</small></label>
+<button type="button" class="chip" id="demo">⚡ ลองกดดูตัวอย่างสัญญาฟรีแลนซ์โดนเอาเปรียบ</button>
 <div class="row">
 <button class="go" id="go" type="button">ตรวจสัญญา · ใช้ 1 เครดิต</button>
 </div>
@@ -237,8 +269,10 @@ pre.draft{white-space:pre-wrap;word-break:break-word;font:inherit;background:var
 
 <div id="prog" class="prog" hidden></div>
 <div id="out" aria-live="polite"></div>
+<div class="more"><button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button><button type="button" class="link" style="display:inline-block" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button></div>
 <p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและข้อจำกัดความรับผิด (เวอร์ชัน 1.0)</button></p>
 </main>
+<div id="sbar" hidden><div><b id="sbn">สัญญา</b><span>✓ พร้อมตรวจ</span></div><button type="button" id="sgo">ตรวจสัญญา</button></div>
 <dialog id="how"><div class="pw">
 <div class="ph"><b>วิธีใช้งาน</b><button class="link" id="hx" type="button">ปิด</button></div>
 <ol class="hs"><li><b>เลือกประเภทสัญญา</b><br>จ้างฟรีแลนซ์ กู้ยืมเงิน เช่า หรืออื่น ๆ เพื่อให้ตรวจตรงจุด</li>
@@ -280,7 +314,8 @@ const TYPES=["สัญญาจ้างฟรีแลนซ์","สัญญ
 let type=TYPES[0];
 const $=id=>document.getElementById(id);
 const tw=$("types");
-function drawTypes(){tw.innerHTML="";TYPES.forEach(t=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.setAttribute("aria-pressed",t===type);b.onclick=()=>{type=t;drawTypes()};tw.appendChild(b)})}
+const TM={"สัญญาจ้างฟรีแลนซ์":["💼","จ้างงาน","ค่าจ้าง / ลิขสิทธิ์"],"สัญญากู้ยืมเงิน":["💰","กู้ยืม","ดอกเบี้ย / ผิดนัด / ค้ำ"],"สัญญาเช่า":["🏠","เช่า","ค่าเช่า / มัดจำ / ยกเลิก"],"อื่น ๆ":["⋯","อื่น ๆ","ตรวจความเสี่ยงทั่วไป"]};
+function drawTypes(){tw.innerHTML="";TYPES.forEach(t=>{const b=document.createElement("button");b.type="button";const m=TM[t]||["📄",t,""];b.innerHTML='<span aria-hidden="true">'+m[0]+'</span><b>'+m[1]+'</b><small>'+m[2]+'</small>';b.setAttribute("aria-label",t);b.setAttribute("aria-pressed",t===type);b.onclick=()=>{type=t;drawTypes()};tw.appendChild(b)})}
 drawTypes();
 const DEMO=`สัญญาจ้างทำของ\nข้อ 1 ผู้รับจ้างต้องส่งมอบงานออกแบบโลโก้และชุดแบรนด์ภายใน 7 วัน นับจากวันลงนาม\nข้อ 2 ค่าจ้าง 30,000 บาท จ่ายเมื่อผู้ว่าจ้างพอใจในผลงานและอนุมัติแล้วเท่านั้น\nข้อ 3 หากส่งงานล่าช้า ผู้รับจ้างต้องชำระค่าปรับวันละ 5,000 บาท\nข้อ 4 ผู้ว่าจ้างมีสิทธิ์ให้แก้ไขงานได้ไม่จำกัดจำนวนครั้งโดยไม่คิดค่าใช้จ่ายเพิ่ม\nข้อ 5 ลิขสิทธิ์และสิทธิ์ในผลงานทั้งหมด รวมถึงงานต้นแบบที่ไม่ได้ใช้ เป็นของผู้ว่าจ้างโดยสมบูรณ์\nข้อ 6 ผู้ว่าจ้างยกเลิกสัญญาเมื่อใดก็ได้โดยไม่ต้องชำระค่าตอบแทนใด ๆ`;
 const sync=()=>{$("clr").hidden=!$("txt").value;const g=$("go");if(g&&!g.disabled&&typeof GO==="function"&&typeof CFG!=="undefined"){const l=GO();if(g.textContent!==l)g.textContent=l}};
@@ -434,7 +469,7 @@ function bindX(r,t){bindY(r,t);const b=$("cmpb");if(b)b.onclick=()=>doCmp(t,$("c
 
 let scat=TYPES[0];
 const total=Object.values(SAMPLES).reduce((a,l)=>a+l.length,0);
-$("demo").textContent="⚡ ลองดูตัวอย่างสัญญา ("+total+" แบบ) โดนเอาเปรียบแค่ไหน · ฟรี ไม่เสียเครดิต";
+$("demo").innerHTML='<span>⚡ <b>ยังไม่มีสัญญาให้ลอง?</b> ดูตัวอย่างผลตรวจจากสัญญาจริง '+total+' แบบ</span><em class="free">ฟรี ไม่เสียเครดิต</em>';
 function drawSmp(){
 $("scat").innerHTML=Object.keys(SAMPLES).map(k=>`<button type="button" data-c="${esc(k)}" aria-pressed="${k===scat}">${esc(k)}</button>`).join("");
 $("slist").innerHTML=SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}">${esc(x[0])}</button>`).join("")}
@@ -532,7 +567,7 @@ const d=await L.getDocument({data:await f.arrayBuffer()}).promise,n=Math.min(d.n
 for(let i=1;i<=n;i++){ost.textContent=`กำลังแปลง PDF หน้า ${i}/${n}…`;const pg=await d.getPage(i),vp=pg.getViewport({scale:1.6}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;o.push(await new Promise(r=>c.toBlob(r,"image/jpeg",.85)))}
 return{blobs:o,total:d.numPages}}
 async function ingest(list){
-const files=[...list];if(!files.length)return;$("err").textContent="";ost.textContent="";
+const files=[...list];if(!files.length)return;window.LASTF=files.map(f=>f.name).join(", ");$("err").textContent="";ost.textContent="";
 const busy=v=>{["bcam","bpick"].forEach(i=>$(i).disabled=v);bstop.hidden=!v};
 try{
 let text="",imgs=[],cut="";
@@ -630,7 +665,7 @@ async function JR(u,o,n=0){let r;try{r=await fetch(CFG.api+u,o)}catch(e){if(n<2)
 if([502,503,504].includes(r.status)&&n<2){await new Promise(s=>setTimeout(s,5000));return JR(u,o,n+1)}
 const d=await r.json().catch(()=>({}));if(!d.ok&&!d.error)d.error="http_"+r.status;return d}
 const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
-function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id=\"crc\">"+CFG.cost+"</b> เครดิต";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
+function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจได้อีก <b id=\"crc\">"+Math.floor(cred/CFG.cost)+"</b> ครั้ง";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
 async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}
 async function spend(){if(CFG.api){try{cred=(await J("/spend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,n:CFG.cost})})).credits}catch(e){}}else{cred=Math.max(0,cred-CFG.cost);lset(cred)}showCr();$("cr").classList.remove("pop");void $("cr").offsetWidth;$("cr").classList.add("pop")}
 function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
@@ -725,6 +760,17 @@ else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำ�
 loadCr();
 if(CFG.api){$("refb").style.display="inline-block";$("rcpb").style.display="inline-block"}
 try{if(localStorage.getItem("tos")===TOSV)claimRef()}catch(e){}
+
+/* ===== ลากวาง + แถบตรวจสัญญาแบบลอย ===== */
+const dz=$("dz");
+["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("over")}));
+dz.addEventListener("drop",e=>{if(e.dataTransfer&&e.dataTransfer.files.length)ingest(e.dataTransfer.files)});
+let goIn=true;const sb=$("sbar");
+new IntersectionObserver(e=>{goIn=e[0].isIntersecting;upSb()}).observe($("go"));
+function upSb(){const n=$("txt").value.trim().length;if(!n)window.LASTF="";$("sbn").textContent=(window.LASTF||"ข้อความสัญญา")+" · "+n.toLocaleString("th-TH")+" ตัวอักษร";sb.hidden=!(n>=40&&!goIn&&!$("go").disabled)}
+$("txt").addEventListener("input",upSb);setInterval(upSb,500);
+$("sgo").onclick=()=>$("go").click();
 </script>
 </body>
 </html>

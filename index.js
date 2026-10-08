@@ -2,9 +2,9 @@
 // รัน:  ANTHROPIC_API_KEY=sk-ant-... ADMIN_KEY=รหัสลับของคุณ node index.js
 // ไฟล์ที่ต้องอยู่โฟลเดอร์เดียวกัน: check_contract.html, admin.html
 // ตัวเลือก (env): PORT, MODEL, FREE(เครดิตฟรี=1), COST(=1), FORCE_HTTPS=1, TRUST_PROXY=1, DATA_DIR,
-//   GOOGLE_TTS_KEY(เปิดเสียงอ่านสรุปแบบเสียงคนจริง) ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID (เสียง ElevenLabs ใช้ก่อน Google) ELEVENLABS_MODEL(=eleven_v3) หน้าลองฟังเสียง Google ทุกเสียง: /admin/voices?key=รหัสแอดมิน | TTS_RATE(=1 ความเร็วเสียง 0.8-1.2) TTS_GENDER(=f เสียงหญิง "ค่ะ" / m เสียงชาย "ครับ" ต้องตรงกับเสียงที่เลือก) GOOGLE_TTS_VOICE(=th-TH-Chirp3-HD-Achernar) TTS_DAILY(=10 ครั้ง/คน/วัน),
+//   GOOGLE_TTS_KEY(เปิดเสียงอ่านสรุปแบบเสียงคนจริง) ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID (เสียง ElevenLabs ใช้ก่อน Google) ELEVENLABS_MODEL(=eleven_v3) หน้าเลือกเสียง ElevenLabs: /admin/el-voices?key=รหัสแอดมิน หน้าลองฟังเสียง Google ทุกเสียง: /admin/voices?key=รหัสแอดมิน | TTS_RATE(=1 ความเร็วเสียง 0.8-1.2) TTS_GENDER(=f เสียงหญิง "ค่ะ" / m เสียงชาย "ครับ" ต้องตรงกับเสียงที่เลือก) GOOGLE_TTS_VOICE(=th-TH-Chirp3-HD-Achernar) TTS_DAILY(=10 ครั้ง/คน/วัน),
 //   PASS_BAHT(=199) PASS_DAYS(=30) PASS_DAILY(=30 ครั้ง/วัน) แพ็กเกจรายเดือน,
-//   SLIPOK_BRANCH, SLIPOK_KEY, SLIP_RECV, TOS_VERSION(=1.1), REF_BONUS(=1), REF_MAX(=10), NEW_PER_IP(=5), ALLOWED_ORIGIN
+//   SLIPOK_BRANCH, SLIPOK_KEY, SLIP_RECV, TOS_VERSION(=1.1), REF_BONUS(=1), REF_MAX(=10), NEW_PER_IP(=5), ALLOWED_ORIGIN (หลายโดเมนคั่นด้วย , เช่น https://me.github.io,https://mydomain.com)
 "use strict";
 const http=require("http"),fs=require("fs"),path=require("path"),crypto=require("crypto");
 const E=process.env,DIR=E.DATA_DIR||__dirname,fp=n=>path.join(DIR,n);
@@ -14,7 +14,7 @@ const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==
 const TOSV=E.TOS_VERSION||"1.1",TOS_REQ=E.TOS_REQUIRED!=="0";
 const PASS_BAHT=+E.PASS_BAHT||199,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||30; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
-const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech";
+const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";
 console.log("เสียงอ่าน:",EL_KEY&&EL_VOICE?"ElevenLabs ("+EL_MODEL+")":EL_KEY?"⚠️ ตั้ง ELEVENLABS_API_KEY แล้ว แต่ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID":"ยังไม่ได้ตั้ง ElevenLabs",TTS_KEY?"| สำรอง: Google":"| ไม่มี Google สำรอง");
 const SLIP_BRANCH=E.SLIPOK_BRANCH||"",SLIP_KEY=E.SLIPOK_KEY||"",SLIP_RECV=E.SLIP_RECV||"";
 let PACKS={20:5,50:15,100:35};try{if(E.PACKS)PACKS=JSON.parse(E.PACKS)}catch(e){} // ต้องตรงกับ CFG.packs ในหน้าเว็บ (บาท:เครดิต)
@@ -106,9 +106,9 @@ async function gtts(text){ // ลองเสียงที่ตั้งไ�
     if(r.ok){const d=await r.json();if(d.audioContent)return d.audioContent}
     last=r.status;if(r.status===401||r.status===403||r.status===429)break}
   throw new Error("tts "+last)}
-async function eltts(text){ // ElevenLabs: ภาษาไทยต้องใช้โมเดล eleven_v3 (โมเดลอื่นไม่รองรับไทย)
+async function eltts(text,vid=EL_VOICE){ // ElevenLabs: ภาษาไทยต้องใช้โมเดล eleven_v3 (โมเดลอื่นไม่รองรับไทย)
   let last;for(const lang of[true,false]){
-    const r=await fetch(EL_URL+"/"+encodeURIComponent(EL_VOICE)+"?output_format=mp3_44100_128",{method:"POST",signal:AbortSignal.timeout(60000),
+    const r=await fetch(EL_URL+"/"+encodeURIComponent(vid)+"?output_format=mp3_44100_128",{method:"POST",signal:AbortSignal.timeout(60000),
       headers:{"xi-api-key":EL_KEY,"content-type":"application/json",accept:"audio/mpeg"},
       body:JSON.stringify({text,model_id:EL_MODEL,...(lang?{language_code:"th"}:{}),voice_settings:{stability:0.5}})});
     if(r.ok){const b=Buffer.from(await r.arrayBuffer());if(b.length>1000)return b.toString("base64")}
@@ -143,6 +143,27 @@ fetch("/admin/voice-sample?voice="+encodeURIComponent(v[0])+"&key="+encodeURICom
 if(!x.audio){m.textContent="ใช้ไม่ได้: "+(x.error||"");return}
 m.innerHTML="ตั้งค่า: <code>GOOGLE_TTS_VOICE=th-TH-Chirp3-HD-"+v[0]+"</code>";A=new Audio("data:audio/mpeg;base64,"+x.audio);A.play()}).catch(function(){t.disabled=false;m.textContent="เชื่อมต่อไม่ได้"})};
 w.appendChild(b);w.appendChild(m);d.appendChild(w);d.appendChild(t);l.appendChild(d)});</script></html>`.replace("__V__",JSON.stringify(GV));
+const EL_PAGE=`<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>เลือกเสียง ElevenLabs</title>
+<style>:root{color-scheme:light dark}body{font-family:system-ui,"Noto Sans Thai",sans-serif;max-width:680px;margin:0 auto;padding:16px;line-height:1.6}h1{font-size:22px}h2{font-size:18px;margin-top:28px}.v{padding:10px 0;border-bottom:1px solid #8884}.r{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}button{font:inherit;font-size:14px;padding:6px 14px;border-radius:99px;border:1px solid #8886;background:Canvas;color:CanvasText;cursor:pointer}.i{font-size:13px;opacity:.75}.m{font-size:13px;min-height:1.3em;margin-top:4px;word-break:break-all}code{background:#8883;padding:2px 6px;border-radius:4px}</style>
+<h1>เลือกเสียง ElevenLabs สำหรับภาษาไทย</h1>
+<p>กด "ลองพูดไทย" เพื่อฟังเสียงนั้นอ่านประโยคไทยจริง (ใช้เครดิตเล็กน้อย) พอชอบแล้วคัดลอกบรรทัดตั้งค่าไปใส่บน Render แล้วรีสตาร์ท เสียงจากคลังเสียง ต้องกด "เพิ่มเข้าบัญชี" ก่อนถึงจะใช้ได้</p>
+<h2>เสียงในบัญชีของคุณ</h2><div id="mine">กำลังโหลด…</div>
+<h2>เสียงภาษาไทยจากคลังเสียง (Voice Library)</h2><div id="lib">กำลังโหลด…</div>
+<script>var K=new URLSearchParams(location.search).get("key")||"",A=null;
+function api(q){return fetch("/admin/el-api?"+q+"&key="+encodeURIComponent(K)).then(function(r){return r.json()})}
+function play(src){if(A){A.pause()}A=new Audio(src);A.play()}
+function row(v,isLib,box){var d=document.createElement("div");d.className="v";var b=document.createElement("b"),i=document.createElement("div"),r=document.createElement("div"),m=document.createElement("div");
+b.textContent=v.name;i.className="i";i.textContent=v.info||"";r.className="r";m.className="m";
+function btn(t,f){var x=document.createElement("button");x.textContent=t;x.onclick=function(){f(x)};r.appendChild(x);return x}
+function ids(id){m.textContent="";var c=document.createElement("code");c.textContent="ELEVENLABS_VOICE_ID="+id;m.appendChild(c);if(/\bmale\b/i.test(v.info||"")&&!/female/i.test(v.info||"")){m.appendChild(document.createTextNode("  "));var g=document.createElement("code");g.textContent="TTS_GENDER=m";m.appendChild(g)}}
+if(v.preview)btn("▶ ตัวอย่างเสียง",function(){play(v.preview)});
+function say(id){return function(x){x.disabled=true;m.textContent="กำลังสร้างเสียงไทย…";api("op=say&voice="+encodeURIComponent(id)+"&g="+(/\bmale\b/i.test(v.info||"")&&!/female/i.test(v.info||"")?"m":"f")).then(function(z){x.disabled=false;if(!z.audio){m.textContent="ใช้ไม่ได้: "+(z.error||"");return}ids(id);play("data:audio/mpeg;base64,"+z.audio)})}}
+if(!isLib)btn("▶ ลองพูดไทย",say(v.id));
+else btn("➕ เพิ่มเข้าบัญชี",function(x){x.disabled=true;m.textContent="กำลังเพิ่ม…";api("op=add&owner="+encodeURIComponent(v.owner)+"&voice="+encodeURIComponent(v.id)+"&name="+encodeURIComponent(v.name)).then(function(z){if(!z.id){x.disabled=false;m.textContent="เพิ่มไม่ได้: "+(z.error||"");return}m.textContent="เพิ่มแล้ว";r.removeChild(x);btn("▶ ลองพูดไทย",say(z.id));ids(z.id)})});
+if(!isLib)ids(v.id);
+d.appendChild(b);d.appendChild(i);d.appendChild(r);d.appendChild(m);box.appendChild(d)}
+function load(op,id,isLib){api("op="+op).then(function(z){var box=document.getElementById(id);box.textContent="";if(!z.voices){box.textContent="โหลดไม่ได้: "+(z.error||"");return}if(!z.voices.length)box.textContent="ไม่พบเสียง";z.voices.forEach(function(v){row(v,isLib,box)})})}
+load("mine","mine",false);load("library","lib",true);</script></html>`;
 const results=new Map(); // ผลตรวจล่าสุดของแต่ละคน (เก็บ 1 ชั่วโมง) ใช้สร้างเสียง เซิร์ฟเวอร์ไม่รับข้อความมั่ว ๆ ไปสังเคราะห์เสียง
 const jr=s=>{try{const m=String(s).replace(/```json|```/g,"");return JSON.parse(m.slice(m.indexOf("{"),m.lastIndexOf("}")+1))}catch(e){return null}};
 setInterval(()=>{const n=Date.now();for(const[k,v]of results)if(v.exp<n)results.delete(k)},60000).unref();
@@ -150,13 +171,13 @@ setInterval(()=>{const n=Date.now();for(const[k,v]of results)if(v.exp<n)results.
 /* ---------- HTTP ---------- */
 const SEC={"x-content-type-options":"nosniff","referrer-policy":"no-referrer","x-frame-options":"SAMEORIGIN"};
 const send=(res,c,o)=>{const h={...SEC,"content-type":"application/json; charset=utf-8","cache-control":"no-store"};
-  if(E.ALLOWED_ORIGIN){h["access-control-allow-origin"]=E.ALLOWED_ORIGIN;h["access-control-allow-headers"]="content-type,x-admin-key";h["access-control-allow-methods"]="GET,POST,OPTIONS"}
+  if(E.ALLOWED_ORIGIN){h["access-control-allow-origin"]=(()=>{const l=E.ALLOWED_ORIGIN.split(",").map(s=>s.trim()).filter(Boolean);return l.includes("*")?"*":l.includes(res.org)?res.org:l[0]})();h.vary="Origin";h["access-control-allow-headers"]="content-type,x-admin-key";h["access-control-allow-methods"]="GET,POST,OPTIONS"}
   res.writeHead(c,h);res.end(c===204?"":JSON.stringify(o))};
 const html=(res,f)=>{let d;try{d=fs.readFileSync(f)}catch(e){return send(res,404,{error:"no_page"})}res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-cache"});res.end(d)};
 const body=req=>new Promise((ok,no)=>{let b="",n=0;req.on("data",c=>{n+=c.length;if(n>150000){no(new Error("big"));req.destroy();return}b+=c});req.on("end",()=>{try{ok(JSON.parse(b||"{}"))}catch(e){no(e)}});req.on("error",no)});
 const adminOK=(req,u)=>{const k=Buffer.from(String(req.headers["x-admin-key"]||u.searchParams.get("key")||"")),A=Buffer.from(ADMIN);return!!ADMIN&&k.length===A.length&&crypto.timingSafeEqual(k,A)};
 
-http.createServer(async(req,res)=>{try{
+http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   const u=new URL(req.url,"http://x"),P=u.pathname;
   const ip=E.TRUST_PROXY==="1"?(String(req.headers["x-forwarded-for"]||"").split(",")[0].trim()||req.socket.remoteAddress):req.socket.remoteAddress;
   if(E.FORCE_HTTPS==="1"&&(req.headers["x-forwarded-proto"]||"https")==="http"){res.writeHead(301,{location:"https://"+req.headers.host+req.url});return res.end()}
@@ -189,6 +210,16 @@ http.createServer(async(req,res)=>{try{
     if(P==="/admin/tts-test"){const o={elevenlabs:{api_key:!!EL_KEY,voice_id:!!EL_VOICE,model:EL_MODEL},google:{api_key:!!TTS_KEY}};
       if(EL_KEY&&EL_VOICE){try{await eltts("สวัสดีครับ ทดสอบเสียงครับ");o.elevenlabs.result="ok"}catch(e){o.elevenlabs.result="ล้มเหลว: "+e.message}}else o.elevenlabs.result="ตั้งค่าไม่ครบ";
       return send(res,200,o)}
+    if(P==="/admin/el-voices"){res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});return res.end(EL_PAGE)}
+    if(P==="/admin/el-api"){if(!EL_KEY)return send(res,501,{error:"ยังไม่ได้ตั้ง ELEVENLABS_API_KEY"});const op=u.searchParams.get("op"),q=k=>String(u.searchParams.get(k)||"");
+      const el=async(p,o={})=>{const r=await fetch(EL_BASE+p,{...o,signal:AbortSignal.timeout(30000),headers:{"xi-api-key":EL_KEY,"content-type":"application/json"}});const t=await r.text();if(!r.ok)throw new Error(r.status+" "+t.replace(/\s+/g," ").slice(0,140));try{return JSON.parse(t)}catch(e){return{}}};
+      try{
+        if(op==="mine"){const d=await el("/v1/voices");return send(res,200,{voices:(d.voices||[]).map(v=>({id:v.voice_id,name:v.name,preview:v.preview_url,info:[v.labels&&v.labels.gender,v.labels&&v.labels.accent,v.category].filter(Boolean).join(" · ")}))})}
+        if(op==="library"){const d=await el("/v1/shared-voices?language=th&page_size=30");return send(res,200,{voices:(d.voices||[]).map(v=>({id:v.voice_id,owner:v.public_owner_id,name:v.name,preview:v.preview_url,info:[v.gender,v.age,v.accent,v.descriptive].filter(Boolean).join(" · ")}))})}
+        if(op==="add"){const o=q("owner"),v=q("voice");if(!/^[\w-]{5,80}$/.test(o)||!/^[\w-]{5,40}$/.test(v))return send(res,400,{error:"bad_id"});const d=await el("/v1/voices/add/"+o+"/"+v,{method:"POST",body:JSON.stringify({new_name:q("name").slice(0,60)||"Thai voice"})});return send(res,200,{id:d.voice_id})}
+        if(op==="say"){const v=q("voice");if(!/^[\w-]{5,40}$/.test(v))return send(res,400,{error:"bad_id"});const m=q("g")==="m",e=m?"ครับ":"ค่ะ",e2=m?"ครับ":"คะ";
+          return send(res,200,{audio:await eltts(speakable("สวัสดี"+e+" ผลตรวจสัญญาออกมาแล้วนะ"+e2+" ข้อแรกเลย... ค่าปรับวันละ 5,000 บาท สูงเกินไปมาก ลองขอลดเหลือ 500 บาทดูนะ"+e2),v)})}
+        return send(res,400,{error:"bad_op"})}catch(e){return send(res,502,{error:String(e.message).slice(0,200)})}}
     if(P==="/admin/voices"){res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});return res.end(VOICE_PAGE)}
     if(P==="/admin/voice-sample"){const n=String(u.searchParams.get("voice")||""),g=GV.find(v=>v[0]===n);if(!g)return send(res,400,{error:"bad_voice"});
       if(!TTS_KEY)return send(res,501,{error:"ยังไม่ได้ตั้ง GOOGLE_TTS_KEY"});const m=g[1]==="m",e1=m?"ครับ":"ค่ะ",e2=m?"ครับ":"คะ";
@@ -255,8 +286,8 @@ http.createServer(async(req,res)=>{try{
     if(!SLIP_BRANCH||!SLIP_KEY)return send(res,501,{error:"not_configured"});
     const baht=+b.baht,payload=String(b.payload||""),ref=cid(b.ref)||"slip";
     const pk=packOf(baht);if(!pk||payload.length<20||payload.length>600)return send(res,400,{error:"bad_request"});
-    let d;try{const r=await fetch(SLIP_URL+SLIP_BRANCH,{method:"POST",signal:AbortSignal.timeout(30000),headers:{"x-authorization":SLIP_KEY,"content-type":"application/json"},body:JSON.stringify({data:payload,amount:baht,log:true})});d=await r.json()}catch(e){return send(res,502,{error:"upstream"})}
-    const s=d&&d.data;if(!d||!d.success||!s)return send(res,422,{error:"bad_slip",msg:String((d&&d.message)||"").slice(0,120)});
+    let d;try{const r=await fetch(SLIP_URL+SLIP_BRANCH,{method:"POST",signal:AbortSignal.timeout(30000),headers:{"x-authorization":SLIP_KEY,"content-type":"application/json"},body:JSON.stringify({data:payload,amount:baht,log:true})});d=await r.json()}catch(e){console.log("SlipOK เชื่อมต่อไม่ได้:",e.message);return send(res,502,{error:"upstream"})}
+    const s=d&&d.data;if(!d||!d.success||!s)console.log("SlipOK ปฏิเสธ:",JSON.stringify(d).slice(0,300));if(!d||!d.success||!s)return send(res,422,{error:"bad_slip",msg:String((d&&d.message)||"").slice(0,120)});
     const tx=String(s.transRef||"");if(!tx)return send(res,422,{error:"bad_slip"});
     if(Math.abs(+s.amount-baht)>0.001)return send(res,422,{error:"amount_mismatch"});
     if(SLIP_RECV){const nm=[s.receiver&&s.receiver.displayName,s.receiver&&s.receiver.name].join(" ");if(!nm.includes(SLIP_RECV))return send(res,422,{error:"recv_mismatch"})}
@@ -265,4 +296,4 @@ http.createServer(async(req,res)=>{try{
     grant(x,id,baht,pk,ref,"slip",tx);return send(res,200,{ok:true,credits:x.credits,added:pk.credits,days:pk.days,passUntil:x.passUntil||0})}
 
   send(res,404,{error:"not_found"})
-}catch(e){try{send(res,400,{error:"bad_request"})}catch(_){}}}).listen(PORT,()=>console.log("เช็กสัญญา พร้อมที่พอร์ต "+PORT+(KEY?"":"  ⚠️ ยังไม่ได้ตั้ง ANTHROPIC_API_KEY")+(ADMIN?"":"  ⚠️ ยังไม่ได้ตั้ง ADMIN_KEY")));
+}catch(e){console.log("error:",req.method,req.url,e&&e.stack||e);try{send(res,400,{error:"bad_request"})}catch(_){}}}).listen(PORT,()=>console.log("เช็กสัญญา พร้อมที่พอร์ต "+PORT+(KEY?"":"  ⚠️ ยังไม่ได้ตั้ง ANTHROPIC_API_KEY")+(ADMIN?"":"  ⚠️ ยังไม่ได้ตั้ง ADMIN_KEY")));

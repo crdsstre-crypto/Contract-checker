@@ -681,14 +681,14 @@ function bindTTS(r){const b=$("tts");if(!b)return;const rid=window.RID||"",si=SM
 if(!srv&&!("speechSynthesis" in window)){b.hidden=true;return}
 b.onclick=async()=>{if(ttsOn){ttsStop();return}
 if(!srv){browserTTS(r,b);$("ttsn").textContent+=" — เสียงคนจริงใช้ได้เมื่อเปิดผ่านเซิร์ฟเวอร์ (ไม่ใช่เปิดไฟล์ในเครื่อง)";return}
-ttsOn=true;b.textContent="⏳ กำลังสร้างเสียง…";$("ttsn").textContent="";
+ttsOn=true;b.textContent="⏳ กำลังสร้างเสียง… 0%";$("ttsn").textContent="";const t0=performance.now();clearInterval(window._tp);window._tp=setInterval(()=>{if(!ttsOn){clearInterval(window._tp);return}b.textContent="⏳ กำลังสร้างเสียง… "+Math.min(95,Math.floor(95*(1-Math.exp(-(performance.now()-t0)/7000))))+"%"},200);
 if(!ttsA)ttsA=new Audio();ttsA.onended=null;ttsA.onerror=null;ttsA.src=SILENT;ttsA.play().catch(()=>{}); // ปลดล็อกการเล่นเสียงบน iPhone ระหว่างรอเซิร์ฟเวอร์
 try{const rr=await fetch(CFG.api+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rid?{uid,rid}:{uid,sample:si})}),d=await rr.json().catch(()=>({}));
-if(!ttsOn)return;
-if(rr.ok&&d.audio){ttsA.src="data:audio/mpeg;base64,"+d.audio;ttsA.onended=ttsStop;ttsA.onerror=ttsStop;$("ttsn").textContent=d.via==="elevenlabs"?" (เสียง ElevenLabs)":d.via==="google"?" (เสียง Google"+(d.elerr?" — ElevenLabs ใช้ไม่ได้: "+d.elerr:"")+")":"";await ttsA.play();b.textContent="⏹ หยุดฟัง";return}
+clearInterval(window._tp);if(!ttsOn)return;
+if(rr.ok&&d.audio){ttsA.src="data:audio/mpeg;base64,"+d.audio;ttsA.onended=ttsStop;ttsA.onerror=ttsStop;b.textContent="⏳ กำลังสร้างเสียง… 100%";$("ttsn").textContent="";await ttsA.play();b.textContent="⏹ หยุดฟัง";return}
 ttsOn=false;b.textContent="🔊 ฟังสรุปเสียง AI";
 if(rr.status===429&&d.error==="tts_cap"){$("ttsn").textContent=" วันนี้ฟังเสียงครบโควตาแล้ว ลองใหม่พรุ่งนี้";return}
-browserTTS(r,b);if(d.detail)$("ttsn").textContent+=" — เสียงเซิร์ฟเวอร์ใช้ไม่ได้: "+d.detail}catch(e){ttsOn=false;browserTTS(r,b)}}}
+browserTTS(r,b)}catch(e){clearInterval(window._tp);ttsOn=false;browserTTS(r,b)}}}
 /* ===== ตรวจสลิปอัตโนมัติ (อ่าน QR บนสลิปในเครื่อง ส่งเฉพาะข้อความ QR ให้เซิร์ฟเวอร์) ===== */
 const SLIPERR={tos:"กรุณายอมรับข้อกำหนดการใช้งานก่อน",amount_mismatch:"ยอดบนสลิปไม่ตรงกับแพ็กเกจที่เลือก",duplicate:"สลิปนี้ถูกใช้เติมเครดิตไปแล้ว",recv_mismatch:"สลิปนี้ไม่ได้โอนเข้าบัญชีของร้าน",bad_slip:"ตรวจสลิปไม่ผ่าน",not_configured:"ระบบตรวจสลิปอัตโนมัติยังไม่เปิดใช้ กด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ",upstream:"ระบบตรวจสลิปขัดข้อง ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่",bad_request:"ข้อมูลสลิปไม่ถูกต้อง ลองใช้รูปสลิปต้นฉบับที่ไม่ครอบตัด หรือเลือกแพ็กเกจใหม่",not_found:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_404:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_502:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_503:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_504:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่"};
 async function slipQR(f){const url=URL.createObjectURL(f),im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url});

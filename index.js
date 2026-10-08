@@ -8,7 +8,7 @@
 "use strict";
 const http=require("http"),fs=require("fs"),path=require("path"),crypto=require("crypto");
 const E=process.env,DIR=E.DATA_DIR||__dirname,fp=n=>path.join(DIR,n);
-const PORT=+E.PORT||3000,KEY=E.ANTHROPIC_API_KEY||"",ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
+const PORT=+E.PORT||3000,RAWKEY=E.ANTHROPIC_API_KEY||"",KEY=RAWKEY.trim().replace(/^['"“”]+|['"“”]+$/g,"").replace(/\s+/g,""),ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
 const API_URL=E.API_URL||"https://api.anthropic.com/v1/messages",SLIP_URL=E.SLIPOK_URL||"https://api.slipok.com/api/line/apikey/";
 const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==undefined?+E.REF_BONUS:1,REF_MAX=+E.REF_MAX||10,NEW_PER_IP=+E.NEW_PER_IP||5;
 const TOSV=E.TOS_VERSION||"1.1",TOS_REQ=E.TOS_REQUIRED!=="0";
@@ -207,7 +207,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});return send(res,200,{credits:x.credits})}
     if(P==="/admin/feedback")return send(res,200,{items:rd(FB).slice(-100).reverse()});
     if(P==="/admin/lawyer")return send(res,200,{items:rd(LAW).slice(-100).reverse()});
-    if(P==="/admin/ai-test"){const o={api_key:!!KEY,model:MODEL};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
+    if(P==="/admin/ai-test"){const o={api_key:!!KEY,model:MODEL,key_len:KEY.length,key_start:KEY.slice(0,7),key_had_extra_chars:RAWKEY!==KEY,api_host:(()=>{try{return new URL(API_URL).host}catch(_){return"?"}})()};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
     if(P==="/admin/tts-test"){const o={elevenlabs:{api_key:!!EL_KEY,voice_id:!!EL_VOICE,model:EL_MODEL},google:{api_key:!!TTS_KEY}};
       if(EL_KEY&&EL_VOICE){try{await eltts("สวัสดีครับ ทดสอบเสียงครับ");o.elevenlabs.result="ok"}catch(e){o.elevenlabs.result="ล้มเหลว: "+e.message}}else o.elevenlabs.result="ตั้งค่าไม่ครบ";
       return send(res,200,o)}

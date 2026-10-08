@@ -1,5 +1,5 @@
-// server.js — เซิร์ฟเวอร์ครบชุดของ "เช็กสัญญา" (Node 18+, ไม่ต้องติดตั้งแพ็กเกจเพิ่ม)
-// รัน:  ANTHROPIC_API_KEY=sk-ant-... ADMIN_KEY=รหัสลับของคุณ node server.js
+// index.js — เซิร์ฟเวอร์ครบชุดของ "เช็กสัญญา" (Node 18+, ไม่ต้องติดตั้งแพ็กเกจเพิ่ม)
+// รัน:  ANTHROPIC_API_KEY=sk-ant-... ADMIN_KEY=รหัสลับของคุณ node index.js
 // ไฟล์ที่ต้องอยู่โฟลเดอร์เดียวกัน: check_contract.html, admin.html
 // ตัวเลือก (env): PORT, MODEL, FREE(เครดิตฟรี=1), COST(=1), FORCE_HTTPS=1, TRUST_PROXY=1, DATA_DIR,
 //   GOOGLE_TTS_KEY(เปิดเสียงอ่านสรุปแบบเสียงคนจริง) ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID (เสียง ElevenLabs ใช้ก่อน Google) ELEVENLABS_MODEL(=eleven_v3) หน้าลองฟังเสียง Google ทุกเสียง: /admin/voices?key=รหัสแอดมิน | TTS_RATE(=1 ความเร็วเสียง 0.8-1.2) TTS_GENDER(=f เสียงหญิง "ค่ะ" / m เสียงชาย "ครับ" ต้องตรงกับเสียงที่เลือก) GOOGLE_TTS_VOICE(=th-TH-Chirp3-HD-Achernar) TTS_DAILY(=10 ครั้ง/คน/วัน),

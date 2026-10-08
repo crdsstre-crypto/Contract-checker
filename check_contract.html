@@ -267,6 +267,33 @@ button:active:not(:disabled){transition-duration:.05s}
 .types button[aria-pressed="true"]::after{animation:ck .35s cubic-bezier(.3,1.6,.5,1)}
 @keyframes ck{from{transform:scale(0)}}
 }
+
+/* ===== RISK METER ===== */
+@property --num{syntax:'<integer>';inherits:false;initial-value:0}
+.head{gap:20px}
+.meter{position:relative;flex:none;width:132px;height:132px}
+.meter svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.meter circle{fill:none;stroke-width:8}
+.meter .tr{stroke:var(--soft)}
+.meter .pg{stroke:var(--c);stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:calc(326.7 - 326.7 * var(--k) / 100);filter:drop-shadow(0 0 6px var(--c))}
+.meter .mv{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.15}
+.meter .mn{--num:var(--k);counter-reset:n var(--num);font-family:"Noto Serif Thai",serif;font-size:32px;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums}
+.meter .mn::before{content:counter(n) "%"}
+.meter .mv span{font-size:12px;font-weight:600;color:var(--c)}
+.hb{min-width:0;flex:1}.hb .sum{font-size:15px;line-height:1.65}
+.cnt{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.cnt span{font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+.cnt .c1{color:var(--stamp);border-color:color-mix(in srgb,var(--stamp) 45%,var(--line))}
+.cnt .c2{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 45%,var(--line))}
+.cnt .c3{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.rk>div:nth-child(1),.rk>.gauge,.rk>div:nth-child(3){display:none}
+@media(max-width:480px){.head{flex-direction:column;text-align:center}.cnt{justify-content:center}.meter{width:150px;height:150px}}
+@media(prefers-reduced-motion:no-preference){
+.meter .pg{animation:ring 1.5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ring{from{stroke-dashoffset:326.7}}
+.meter .mn{animation:cnt 1.5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes cnt{from{--num:0}}
+}
 </style>
 </head>
 <body>
@@ -562,7 +589,8 @@ function render(r,t){
 ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
 const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
 const f=r.red_flags||[];
-let h=`<div class="head"><div class="stamp" style="--c:${c}"><div><b>${s}/10</b><span>คะแนนความปลอดภัย</span></div></div><p class="sum">${esc(r.summary)}</p></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn">เสียง AI จำกัดจำนวนครั้งต่อวัน ถ้าระบบเสียงหลักเต็มหรือขัดข้อง จะสลับไปใช้เสียงสำรองของ Google หรือเสียงในเครื่องให้เอง เสียงอาจต่างจากเดิม ไม่ใช่เว็บมีปัญหา</span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
+const K=Math.round((10-s)*10),KC=K>=70?'var(--stamp)':K>=40?'var(--warn)':'var(--ok)',KL=K>=70?'เสี่ยงสูง':K>=40?'ควรระวัง':'เสี่ยงต่ำ',nH=f.filter(x=>x.level==='high').length,nM=f.filter(x=>x.level==='medium').length,nL=f.length-nH-nM;
+let h=`<div class="head"><div class="meter" style="--k:${K};--c:${KC}" role="img" aria-label="ความเสี่ยงโดยรวม ${K} เปอร์เซ็นต์ ${KL}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" cx="60" cy="60" r="52"/></svg><div class="mv"><b class="mn"></b><span>${KL}</span></div></div><div class="hb"><p class="sum">${esc(r.summary)}</p><div class="cnt"><span class="c1">เสี่ยงสูง ${nH}</span><span class="c2">ควรระวัง ${nM}</span><span class="c3">เสี่ยงต่ำ ${nL}</span><span>ปลอดภัย ${s}/10</span></div></div></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn">เสียง AI จำกัดจำนวนครั้งต่อวัน ถ้าระบบเสียงหลักเต็มหรือขัดข้อง จะสลับไปใช้เสียงสำรองของ Google หรือเสียงในเครื่องให้เอง เสียงอาจต่างจากเดิม ไม่ใช่เว็บมีปัญหา</span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
 h+=`<h2>สัญญาของคุณ (ไฮไลต์จุดน่ากลัว)</h2><div class="doc">${hl(t,f)}</div><p class="hint">ไฮไลต์เฉพาะจุดที่เสี่ยงที่สุด แตะเพื่อดูวิธีแก้ข้อนั้น</p>`;
 h+=`<h2>จุดที่ต้องระวังและวิธีแก้</h2>`;
 if(!f.length)h+=`<p>ไม่พบข้อที่น่ากังวลเป็นพิเศษ</p>`;

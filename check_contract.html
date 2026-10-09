@@ -599,6 +599,61 @@ dialog[open]::backdrop{animation:bk .25s ease}
 :root:not([data-theme="dark"]) .tosl{background:#FBF8F0!important;color:var(--mute)}
 :root:not([data-theme="dark"]) .hs li{background:#FBF8F0}
 }
+/* ===== LIGHT v2 (Soft Light Luxury) ===== */
+
+:root[data-theme="light"]{--bg:#F1EEE5;--card:#FBF9F3;--soft:#EDE8DA;--ink:#182744;--mute:#586579;--line:#DCD4C2;--gold:#987326;--gold2:#B48F3E;--gold-ink:#6F5112;--gold-glow:rgba(152,115,38,.08);--stamp:#9A4E1A;--ok:#1B6E45;--sh:0 1px 2px rgba(24,39,68,.05);--fld:#FDFBF6;--fld-line:#D3CAB5;--btn:linear-gradient(135deg,#8A6A20,#755716)}
+:root[data-theme="light"] body{background:var(--bg);color:var(--ink)}
+:root[data-theme="light"] .bg{background:var(--bg)}
+:root[data-theme="light"] .bg::after{display:none}
+:root[data-theme="light"] .sheet,:root[data-theme="light"] .sign{opacity:.05}
+:root[data-theme="light"] .panel,:root[data-theme="light"] .crbar,:root[data-theme="light"] .prog,:root[data-theme="light"] .doc,:root[data-theme="light"] .flag,:root[data-theme="light"] .head,:root[data-theme="light"] .trustcard,:root[data-theme="light"] .types button,:root[data-theme="light"] .packs button,:root[data-theme="light"] .trust li,:root[data-theme="light"] .hs li,:root[data-theme="light"] .cta2,:root[data-theme="light"] .dz .cap button{box-shadow:none}
+:root[data-theme="light"] .tldr{background:#F4EFE0}
+:root[data-theme="light"] .crbar{background:var(--card);border-color:var(--line)}
+:root[data-theme="light"] .tagline em{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--gold-ink)}
+:root[data-theme="light"] .go,:root[data-theme="light"] .cta1,:root[data-theme="light"] .crbar button,:root[data-theme="light"] #sbar button,:root[data-theme="light"] #bnav .fab,:root[data-theme="light"] .dz .cap #bpick{background:var(--btn);box-shadow:none;color:#fff}
+:root[data-theme="light"] .go.ok{background:#1B6E45}
+:root[data-theme="light"] .sec .sn{background:#8A6A20}
+:root[data-theme="light"] #sbar{background:rgba(251,249,243,.96);border:1px solid var(--line);box-shadow:0 6px 18px -12px rgba(24,39,68,.25)}
+:root[data-theme="light"] #bnav{background:rgba(251,249,243,.97);border:1px solid var(--line);box-shadow:0 6px 18px -12px rgba(24,39,68,.25)}
+:root[data-theme="light"] #bnav button{color:#586579}
+:root[data-theme="light"] #bnav button.on{color:#6F5112;font-weight:600}
+:root[data-theme="light"] #bnav .fab{box-shadow:none}
+:root[data-theme="light"] .types button[aria-pressed="true"],:root[data-theme="light"] .packs button[aria-pressed="true"]{background:#F6EED8;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+:root[data-theme="light"] textarea::placeholder{color:#677387;opacity:1}
+:root[data-theme="light"] textarea,:root[data-theme="light"] #cn,:root[data-theme="light"] #ch_in{background:var(--fld);border-color:var(--fld-line)}
+:root[data-theme="light"] .dz{background:#F7F3E8;border-color:#C9B78A}
+:root[data-theme="light"] dialog{background:var(--card);box-shadow:0 18px 44px -24px rgba(24,39,68,.35)}
+:root[data-theme="light"] .tosl{background:#F7F3E8!important}
+:root[data-theme="light"] .hs li{background:#F7F3E8}
+@media not all and (prefers-color-scheme:dark){
+
+:root:not([data-theme="dark"]){--bg:#F1EEE5;--card:#FBF9F3;--soft:#EDE8DA;--ink:#182744;--mute:#586579;--line:#DCD4C2;--gold:#987326;--gold2:#B48F3E;--gold-ink:#6F5112;--gold-glow:rgba(152,115,38,.08);--stamp:#9A4E1A;--ok:#1B6E45;--sh:0 1px 2px rgba(24,39,68,.05);--fld:#FDFBF6;--fld-line:#D3CAB5;--btn:linear-gradient(135deg,#8A6A20,#755716)}
+:root:not([data-theme="dark"]) body{background:var(--bg);color:var(--ink)}
+:root:not([data-theme="dark"]) .bg{background:var(--bg)}
+:root:not([data-theme="dark"]) .bg::after{display:none}
+:root:not([data-theme="dark"]) .sheet,:root:not([data-theme="dark"]) .sign{opacity:.05}
+:root:not([data-theme="dark"]) .panel,:root:not([data-theme="dark"]) .crbar,:root:not([data-theme="dark"]) .prog,:root:not([data-theme="dark"]) .doc,:root:not([data-theme="dark"]) .flag,:root:not([data-theme="dark"]) .head,:root:not([data-theme="dark"]) .trustcard,:root:not([data-theme="dark"]) .types button,:root:not([data-theme="dark"]) .packs button,:root:not([data-theme="dark"]) .trust li,:root:not([data-theme="dark"]) .hs li,:root:not([data-theme="dark"]) .cta2,:root:not([data-theme="dark"]) .dz .cap button{box-shadow:none}
+:root:not([data-theme="dark"]) .tldr{background:#F4EFE0}
+:root:not([data-theme="dark"]) .crbar{background:var(--card);border-color:var(--line)}
+:root:not([data-theme="dark"]) .tagline em{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--gold-ink)}
+:root:not([data-theme="dark"]) .go,:root:not([data-theme="dark"]) .cta1,:root:not([data-theme="dark"]) .crbar button,:root:not([data-theme="dark"]) #sbar button,:root:not([data-theme="dark"]) #bnav .fab,:root:not([data-theme="dark"]) .dz .cap #bpick{background:var(--btn);box-shadow:none;color:#fff}
+:root:not([data-theme="dark"]) .go.ok{background:#1B6E45}
+:root:not([data-theme="dark"]) .sec .sn{background:#8A6A20}
+:root:not([data-theme="dark"]) #sbar{background:rgba(251,249,243,.96);border:1px solid var(--line);box-shadow:0 6px 18px -12px rgba(24,39,68,.25)}
+:root:not([data-theme="dark"]) #bnav{background:rgba(251,249,243,.97);border:1px solid var(--line);box-shadow:0 6px 18px -12px rgba(24,39,68,.25)}
+:root:not([data-theme="dark"]) #bnav button{color:#586579}
+:root:not([data-theme="dark"]) #bnav button.on{color:#6F5112;font-weight:600}
+:root:not([data-theme="dark"]) #bnav .fab{box-shadow:none}
+:root:not([data-theme="dark"]) .types button[aria-pressed="true"],:root:not([data-theme="dark"]) .packs button[aria-pressed="true"]{background:#F6EED8;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+:root:not([data-theme="dark"]) textarea::placeholder{color:#677387;opacity:1}
+:root:not([data-theme="dark"]) textarea,:root:not([data-theme="dark"]) #cn,:root:not([data-theme="dark"]) #ch_in{background:var(--fld);border-color:var(--fld-line)}
+:root:not([data-theme="dark"]) .dz{background:#F7F3E8;border-color:#C9B78A}
+:root:not([data-theme="dark"]) dialog{background:var(--card);box-shadow:0 18px 44px -24px rgba(24,39,68,.35)}
+:root:not([data-theme="dark"]) .tosl{background:#F7F3E8!important}
+:root:not([data-theme="dark"]) .hs li{background:#F7F3E8}
+}
+@media(max-width:899px){:root[data-theme="light"] body{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}:root[data-theme="light"] html,:root[data-theme="light"]{scroll-padding-bottom:140px}}
+@media not all and (prefers-color-scheme:dark){@media(max-width:899px){:root:not([data-theme="dark"]) body{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}}}
 </style>
 </head>
 <body>

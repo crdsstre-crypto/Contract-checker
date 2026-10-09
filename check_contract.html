@@ -1149,6 +1149,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 </head>
 <body>
 <div class="bg" aria-hidden="true">
+<svg class="cg-net" viewBox="0 0 560 480" aria-hidden="true"><path class="cgn-p" pathLength="1" d="M20 40L150 10" style="--du:7.5s;--de:0s"/><path class="cgn-p" pathLength="1" d="M150 10L260 70" style="--du:6.5s;--de:-2s"/><path class="cgn-p" pathLength="1" d="M120 130L330 170" style="--du:8s;--de:-4s"/><path class="cgn-p" pathLength="1" d="M330 170L210 230" style="--du:6s;--de:-1s"/><path class="cgn-p" pathLength="1" d="M400 60L330 170" style="--du:7s;--de:-5s"/><path class="cgn-p" pathLength="1" d="M470 150L330 170" style="--du:5.5s;--de:-3s"/><path class="cgn-p" pathLength="1" d="M520 230L430 300" style="--du:8.5s;--de:-6s"/><path class="cgn-p" pathLength="1" d="M430 300L300 290" style="--du:6.8s;--de:-2.5s"/><path class="cgn-p" pathLength="1" d="M300 290L150 360" style="--du:7.2s;--de:-4.5s"/><path class="cgn-p" pathLength="1" d="M150 360L90 440" style="--du:9s;--de:-7s"/><circle class="cgn-n" cx="20" cy="40" r="2.6" style="--du:3.20s;--de:-0.00s"/><circle class="cgn-n" cx="150" cy="10" r="2.6" style="--du:3.57s;--de:-0.83s"/><circle class="cgn-n" cx="260" cy="70" r="2.6" style="--du:3.94s;--de:-1.66s"/><circle class="cgn-n" cx="120" cy="130" r="2.6" style="--du:4.31s;--de:-2.49s"/><circle class="cgn-n" cx="330" cy="170" r="2.6" style="--du:4.68s;--de:-3.32s"/><circle class="cgn-n" cx="210" cy="230" r="2.6" style="--du:5.05s;--de:-0.15s"/><circle class="cgn-n" cx="60" cy="260" r="2.6" style="--du:5.42s;--de:-0.98s"/><circle class="cgn-n" cx="400" cy="60" r="2.6" style="--du:3.39s;--de:-1.81s"/><circle class="cgn-n" cx="470" cy="150" r="2.6" style="--du:3.76s;--de:-2.64s"/><circle class="cgn-n" cx="300" cy="290" r="2.6" style="--du:4.13s;--de:-3.47s"/><circle class="cgn-n" cx="150" cy="360" r="2.6" style="--du:4.50s;--de:-0.30s"/><circle class="cgn-n" cx="430" cy="300" r="2.6" style="--du:4.87s;--de:-1.13s"/><circle class="cgn-n" cx="520" cy="230" r="2.6" style="--du:5.24s;--de:-1.96s"/><circle class="cgn-n" cx="90" cy="440" r="2.6" style="--du:3.21s;--de:-2.79s"/></svg>
 <div class="sheet" style="--x:4%;--y:62%;--r:-9deg;--d:9s"><i></i></div>
 <div class="sheet" style="--x:78%;--y:8%;--r:7deg;--d:12s;--w:130px"><i></i></div>
 <div class="sheet" style="--x:88%;--y:44%;--r:-4deg;--d:10s;--w:110px"><i></i></div>
@@ -1292,7 +1293,7 @@ const TL=[["ออกแบบโลโก้และชุดแบรนด�
 const MK={0:"ราคาตลาดต่างกันมากตามฝีมือและขอบเขตงาน ให้ใช้เรทปกติของคุณเป็นเกณฑ์ งานนี้ต้องส่งใน 7 วัน แก้ไม่จำกัด และยกลิขสิทธิ์ทั้งหมดรวมงานต้นแบบ หากเรทปกติของแพ็กเกจนี้สูงกว่า 30,000 บาท ควรบวกเพิ่มสำหรับการโอนลิขสิทธิ์และการแก้ไม่จำกัด",1:"ค่าจ้าง 15,000 บาทต้องครอบคลุมถ่ายเต็มวัน แต่งภาพทั้งหมดใน 24 ชั่วโมง ส่งไฟล์ RAW และยกลิขสิทธิ์ ลองเทียบกับเรทเต็มวันของคุณ หากต่ำกว่าให้คิดเพิ่มสำหรับงานด่วนและการโอนลิขสิทธิ์",2:"เหมา 12,000 บาทต่อ 20 คลิป เฉลี่ยคลิปละ 600 บาท ลองเทียบกับเรทต่อคลิปของคุณและความยาวคลิป และขอเพดานงานต่อเดือน เพราะผู้ว่าจ้างเพิ่มงานได้ตามใจ",10:"วันละ 300 บาท ทำ 6 วันต่อสัปดาห์ (ประมาณ 26 วันต่อเดือน) ได้ราว 7,800 บาทต่อเดือน ควรตรวจกับอัตราค่าจ้างขั้นต่ำปัจจุบันของจังหวัดที่ทำงาน"};
 function mkDraft(r){let o="ร่างข้อความที่ควรเสนอแก้ในสัญญา\n";(r.red_flags||[]).forEach((x,i)=>{o+="\n"+(i+1)+". แก้จาก “"+x.phrase+"”\n   → "+x.suggestion});(r.missing||[]).forEach(m=>{o+="\nเพิ่มข้อกำหนด: "+m});return o}
 function enrich(r,i){if(!r._e){r._e=1;(r.red_flags||[]).forEach(x=>{if(LB[x.phrase])x.legal_basis=LB[x.phrase]});r.tldr=TL[i];r.plain_summary=PS[i];r.good_points=GPS[i];if(MK[i])r.market_note=MK[i];r.fair_draft=mkDraft(r)}return r}
-function tldrH(r){if(!r.tldr||!r.tldr.length)return"";const L=["📋 งาน","💰 เงิน","⏰ เวลา"];return '<div class="tldr"><b>สรุปสั้น ๆ</b><ul>'+r.tldr.slice(0,3).map((v,i)=>'<li>'+L[i]+': '+esc(v)+'</li>').join("")+'</ul></div>'}
+function tldrH(r){if(!r.tldr||!r.tldr.length)return"";const L=["📋 งาน","💰 เงิน","⏰ เวลา"];return '<div class="tldr"><b>สรุปสั้น ๆ</b><ul>'+r.tldr.slice(0,3).map((v,i)=>'<li><span class="te">'+L[i].replace(' ','</span> ')+': '+esc(v)+'</li>').join("")+'</ul></div>'}
 function nego(x){if(!x.you_say&&!x.suggestion)return"";const c=x.client_says||(x.level==="high"?"ข้อนี้เป็นเงื่อนไขมาตรฐานของเรา ทุกคนก็เซ็นแบบนี้":"ข้อนี้ไม่น่ามีปัญหา เราไม่ได้ใช้จริงหรอก");const y=x.you_say||("ขอปรับข้อนี้ให้เป็นธรรมกับทั้งสองฝ่ายนะครับ/คะ โดยแก้เป็น: "+x.suggestion+" เพื่อให้ทำงานร่วมกันได้ราบรื่น");return '<details class="neg"><summary>🎭 ซ้อมเจรจาข้อนี้</summary><p><b>อีกฝ่ายอาจพูดว่า:</b> “'+esc(c)+'”</p><p><b>คุณตอบว่า:</b> “'+esc(y)+'”</p></details>'}
 function extraH(r){let h="";if(Array.isArray(r.key_terms)&&r.key_terms.length){h+='<h2>📌 ข้อมูลสำคัญในสัญญา</h2><div class="kt">'+r.key_terms.slice(0,8).map(function(k){var ok=k&&k.value&&k.value!=="null";return'<div class="'+(ok?"":"nf")+'"><b>'+esc(k&&k.label||"")+'</b><span>'+(ok?esc(k.value):"ไม่พบในสัญญา")+'</span></div>'}).join("")+'</div><p class="hint">ดึงจากข้อความในสัญญาเท่านั้น ถ้าเขียนว่า "ไม่พบในสัญญา" แปลว่ายังไม่มีการระบุ ควรสอบถามหรือเพิ่มข้อความก่อนเซ็น</p>';}if(r.market_note)h+='<h2>เทียบกับเรทตลาด</h2><p>'+esc(r.market_note)+'</p><p class="hint">เป็นข้อสังเกตเบื้องต้น ราคาจริงขึ้นกับฝีมือ ขอบเขตงาน และช่วงเวลา</p>';
 if(r.fair_draft)h+='<h2>ร่างข้อความฉบับแฟร์</h2><pre class="draft" id="fd">'+esc(r.fair_draft)+'</pre><button type="button" class="link" id="cpy">📋 คัดลอกร่างนี้เพื่อส่งให้อีกฝ่าย</button>';
@@ -1346,7 +1347,7 @@ return "สัญญากู้ยืมเงิน\n\nสัญญานี�
 function genRent(v){const P=+v.p||0,d=+v.d||2,m=+v.m||12;
 return "สัญญาเช่า\n\nสัญญานี้ทำขึ้นระหว่าง “"+(v.a||"________")+"” (ผู้ให้เช่า) กับ “"+(v.b||"________")+"” (ผู้เช่า) ลงวันที่ ____/____/______\n\nข้อ 1 ทรัพย์ที่เช่า "+(v.h||"________")+" ผู้เช่าใช้เพื่ออยู่อาศัย ระยะเวลาเช่า "+m+" เดือน นับจากวันที่ ____/____/______\n\nข้อ 2 ค่าเช่า เดือนละ "+NF(P)+" บาท ชำระภายในวันที่ "+(v.y||5)+" ของทุกเดือน ผู้ให้เช่าไม่ขึ้นค่าเช่าในระหว่างอายุสัญญา การปรับค่าเช่าเมื่อต่อสัญญาต้องแจ้งล่วงหน้าอย่างน้อย 60 วัน\n\nข้อ 3 เงินประกัน "+d+" เดือน ("+NF(P*d)+" บาท) ผู้ให้เช่าคืนภายใน 30 วันหลังผู้เช่าส่งมอบทรัพย์คืน หักได้เฉพาะค่าเช่าและสาธารณูปโภคค้างชำระ และความเสียหายจริงที่เกินการสึกหรอตามปกติ พร้อมแสดงรายการและใบเสร็จ\n\nข้อ 4 สภาพทรัพย์ ทั้งสองฝ่ายตรวจและถ่ายรูปสภาพทรัพย์ร่วมกันในวันเข้าอยู่ และใช้เป็นหลักฐานเทียบตอนส่งคืน\n\nข้อ 5 การเข้าทรัพย์ ผู้ให้เช่าเข้าทรัพย์ได้เมื่อแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง ยกเว้นเหตุฉุกเฉิน\n\nข้อ 6 การซ่อมแซม ผู้ให้เช่ารับผิดชอบโครงสร้างและระบบหลัก ผู้เช่ารับผิดชอบความเสียหายที่เกิดจากการใช้งานโดยประมาท\n\nข้อ 7 สาธารณูปโภค คิดตามที่ใช้จริงตามมิเตอร์ในอัตราที่ผู้ให้บริการเรียกเก็บ ไม่บวกเพิ่ม\n\nข้อ 8 การเลิกสัญญา ผู้เช่าเลิกก่อนครบกำหนดได้โดยแจ้งล่วงหน้า 30 วัน และชดเชยค่าเช่าไม่เกิน 1 เดือน ผู้ให้เช่าเลิกสัญญาได้เฉพาะกรณีผู้เช่าผิดสัญญาร้ายแรง และต้องแจ้งเป็นหนังสือให้แก้ไขภายใน 15 วันก่อน\n\nข้อ 9 สัญญานี้ทำเป็นสองฉบับ ข้อความตรงกัน คู่สัญญาอ่านและเข้าใจแล้ว จึงลงนามไว้เป็นหลักฐาน\n\nลงชื่อ ________ ผู้ให้เช่า    ลงชื่อ ________ ผู้เช่า"+(m>36?"\n\nหมายเหตุ: สัญญาเช่าอสังหาริมทรัพย์ที่เกิน 3 ปีควรปรึกษาผู้รู้เรื่องการทำเป็นหนังสือและจดทะเบียน":"")+FT}
 function riskH(r,t){const sc=Math.max(0,Math.min(10,Number(r.safety_score)||0)),k=Math.round((10-sc)*10),c=k>=70?"var(--stamp)":k>=40?"var(--warn)":"var(--ok)",lv=k>=70?"ควรตรวจละเอียด":k>=40?"ควรระวัง":"เสี่ยงต่ำ",fl=r.red_flags||[],hi=fl.filter(x=>x.level==="high").length,md=fl.filter(x=>x.level==="medium").length;
-return '<div class="rk"><div><b class="big" style="color:'+c+'">'+k+'%</b> ความเสี่ยงโดยรวม · <b>'+lv+'</b></div><div class="gauge"><i style="width:'+k+'%;background:'+c+'"></i></div><div>จุดที่ควรตรวจละเอียด '+hi+' จุด · ควรระวัง '+md+' จุด</div><div class="tn"><button type="button" data-pl="1">🗣️ แปลเป็นภาษาชาวบ้าน</button></div><div class="tn">'+fl.slice(0,5).map((x,i)=>'<button type="button" data-j="'+i+'">'+(i+1)+'. '+esc(String(x.phrase).slice(0,22))+' ›</button>').join("")+'</div>'+(fl.length?'<p style="margin:6px 0">🔍 ตรวจอ้างอิง: พบในสัญญาต้นฉบับ <b>'+fl.filter(x=>x.phrase&&NW(t).includes(NW(x.phrase))).length+'/'+fl.length+'</b> ข้อ'+(fl.every(x=>x.phrase&&NW(t).includes(NW(x.phrase)))?'':' (ข้อที่ไม่พบมีป้ายเตือน)')+'</p>':'')+'<p class="hint" style="margin:0">คำนวณจากคะแนนความปลอดภัย ใช้เปรียบเทียบเบื้องต้น ไม่ใช่ความน่าจะเป็นทางกฎหมาย กดปุ่มเพื่อข้ามไปดูวิธีแก้</p></div>'}
+return '<div class="rk"><div><b class="big" style="color:'+c+'">'+k+'%</b> ความเสี่ยงโดยรวม · <b>'+lv+'</b></div><div class="gauge"><i style="width:'+k+'%;background:'+c+'"></i></div><div>จุดที่ควรตรวจละเอียด '+hi+' จุด · ควรระวัง '+md+' จุด</div><div class="tn"><button type="button" data-pl="1"><span class="te te2">🗣️</span> แปลเป็นภาษาชาวบ้าน</button></div><div class="tn">'+fl.slice(0,5).map((x,i)=>'<button type="button" data-j="'+i+'">'+(i+1)+'. '+esc(String(x.phrase).slice(0,22))+' ›</button>').join("")+'</div>'+(fl.length?'<p style="margin:6px 0"><span class="te te3">🔍</span> ตรวจอ้างอิง: พบในสัญญาต้นฉบับ <b>'+fl.filter(x=>x.phrase&&NW(t).includes(NW(x.phrase))).length+'/'+fl.length+'</b> ข้อ'+(fl.every(x=>x.phrase&&NW(t).includes(NW(x.phrase)))?'':' (ข้อที่ไม่พบมีป้ายเตือน)')+'</p>':'')+'<p class="hint" style="margin:0">คำนวณจากคะแนนความปลอดภัย ใช้เปรียบเทียบเบื้องต้น ไม่ใช่ความน่าจะเป็นทางกฎหมาย กดปุ่มเพื่อข้ามไปดูวิธีแก้</p></div>'}
 function chatApi(r){return fetch(CFG.api+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sid:CHS.sid,persona:CHS.p,summary:r.summary,flags:(r.red_flags||[]).slice(0,4).map(x=>({phrase:x.phrase,suggestion:x.suggestion})),history:CHS.h})}).then(async rr=>{const d=await rr.json().catch(()=>({}));if(!rr.ok)throw{code:d.error||"fail"};return{text:d.text}})}
 
 const LB={"ร้อยละ 5 ต่อเดือน":"ป.พ.พ. มาตรา 654 (ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ)","ร้อยละ 24 ต่อปี":"ป.พ.พ. มาตรา 654 (ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ)","วันละ 5,000 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","ค่าปรับวันละ 500 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","ชั่วโมงละ 1,000 บาท":"ป.พ.พ. มาตรา 383 (ศาลลดเบี้ยปรับที่สูงเกินส่วนได้)","โดยไม่ต้องฟ้องศาล":"โดยทั่วไปเจ้าหนี้ไม่มีสิทธิ์ยึดทรัพย์เอง การบังคับชำระหนี้ต้องผ่านศาลและการบังคับคดี"};
@@ -2177,5 +2178,316 @@ bt.addEventListener("click",function(){
 });
 })();
 </script>
+<style id="cg-live">
+/* ===== LIVE MOTION: เคลื่อนไหวต่อเนื่อง นุ่ม เบา ไม่แย่งสายตา ===== */
+@property --cg-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+.cg-net{display:none}
+@media(prefers-reduced-motion:no-preference){
+
+/* --- พื้นหลังเครือข่าย: ลอยช้า ๆ + แสงวิ่งตามเส้น + จุดกะพริบนุ่ม ๆ --- */
+.bg .cg-net{display:block;position:absolute;left:0;top:0;width:560px;height:480px;max-width:none;overflow:visible;pointer-events:none;color:var(--gold)}
+.bg::before,.bg .cg-net{animation:cgn-drift 22s ease-in-out infinite alternate;will-change:transform}
+@keyframes cgn-drift{from{transform:translate3d(-6px,-4px,0)}to{transform:translate3d(8px,6px,0)}}
+.cgn-p{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:.1 1.1;stroke-dashoffset:.1;opacity:0;animation:cgn-run var(--du,7s) cubic-bezier(.45,.05,.55,.95) var(--de,0s) infinite}
+@keyframes cgn-run{0%{stroke-dashoffset:.1;opacity:0}14%{opacity:.5}80%{opacity:.5}100%{stroke-dashoffset:-1;opacity:0}}
+.cgn-n{fill:currentColor;transform-box:fill-box;transform-origin:center;opacity:.25;animation:cgn-tw var(--du,4s) ease-in-out var(--de,0s) infinite}
+@keyframes cgn-tw{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.6;transform:scale(1.6)}}
+:root[data-theme="light"] .bg .cg-net{opacity:.75}
+@media not all and (prefers-color-scheme:dark){:root:not([data-theme="dark"]) .bg .cg-net{opacity:.75}}
+
+/* --- การ์ด 4 ใบ: แสงทองวิ่งรอบขอบช้า ๆ สลับจังหวะแต่ละใบ --- */
+.dgrid .dcard::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.75;
+background:conic-gradient(from var(--cg-a),transparent 0 60%,color-mix(in srgb,var(--gold) 75%,transparent) 80%,transparent 93%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 11s linear infinite}
+.dgrid .dcard:nth-child(2)::before{animation-duration:13s;animation-delay:-3s}
+.dgrid .dcard:nth-child(3)::before{animation-duration:12s;animation-delay:-6s}
+.dgrid .dcard:nth-child(4)::before{animation-duration:14s;animation-delay:-9s}
+@keyframes cgc-spin{to{--cg-a:360deg}}
+
+/* --- ไอคอน: ลอยเบา ๆ + เรืองแสงหายใจ --- */
+.dgrid .dcard .di{animation:cgc-float 5.2s ease-in-out infinite,cgc-glow 5.2s ease-in-out infinite}
+.dgrid .dcard:nth-child(2) .di{animation-delay:-1.3s}
+.dgrid .dcard:nth-child(3) .di{animation-delay:-2.6s}
+.dgrid .dcard:nth-child(4) .di{animation-delay:-3.9s}
+@keyframes cgc-float{50%{transform:translateY(-2.5px)}}
+@keyframes cgc-glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--gold) 55%,transparent))}}
+
+/* ตา: ลูกตามองซ้าย-ขวา + กะพริบ */
+.dgrid .dcard[data-px="demo"] .di circle{transform-box:fill-box;transform-origin:center;animation:cgc-look 7s ease-in-out infinite}
+@keyframes cgc-look{0%,12%{transform:translateX(0)}28%,44%{transform:translateX(-1.5px)}60%,78%{transform:translateX(1.5px)}92%,100%{transform:translateX(0)}}
+.dgrid .dcard[data-px="demo"] .di svg{transform-origin:center;animation:cgc-blink 7s ease-in-out infinite}
+@keyframes cgc-blink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.12)}}
+
+/* เครื่องหมาย + : เต้นเบา ๆ */
+.dgrid .dcard[data-px="genb"] .di path:last-child{transform-box:fill-box;transform-origin:center;animation:cgc-plus 4.5s ease-in-out infinite}
+@keyframes cgc-plus{50%{transform:scale(1.22)}}
+
+/* นาฬิกา: เข็มเดินจริง (สร้างเข็มด้วยสคริปต์ท้ายไฟล์) */
+.cgc-min,.cgc-hr{transform-box:view-box;transform-origin:12px 12px}
+.cgc-min{animation:cgc-rot 12s linear infinite}
+.cgc-hr{animation:cgc-rot 96s linear infinite}
+@keyframes cgc-rot{to{transform:rotate(360deg)}}
+
+/* ตาราง 4 ช่อง: ไล่ไฟทีละช่อง */
+.dgrid #pxmore .di rect{transform-box:fill-box;transform-origin:center;animation:cgc-sq 4.8s ease-in-out infinite}
+.dgrid #pxmore .di rect:nth-child(2){animation-delay:1.2s}
+.dgrid #pxmore .di rect:nth-child(4){animation-delay:2.4s}
+.dgrid #pxmore .di rect:nth-child(3){animation-delay:3.6s}
+@keyframes cgc-sq{0%,100%{opacity:1;transform:scale(1)}30%{opacity:.4;transform:scale(.86)}}
+
+/* ปุ่มหลัก: ลูกศรขยับชวนกด */
+.dcard.main .go-arrow{animation:cgc-nudge 2.8s ease-in-out infinite}
+@keyframes cgc-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+
+/* เข้าฉากครั้งเดียวตอนเปิดหน้า (ไม่ค้าง transform จึงกดแล้วยังยุบได้ปกติ) */
+.dgrid .dcard{animation:cgc-in .7s cubic-bezier(.2,.8,.2,1) backwards}
+.dgrid .dcard:nth-child(2){animation-delay:.08s}
+.dgrid .dcard:nth-child(3){animation-delay:.16s}
+.dgrid .dcard:nth-child(4){animation-delay:.24s}
+@keyframes cgc-in{from{opacity:0;transform:translateY(12px)}}
+}
+</style>
+<script>
+/* ทำเข็มนาฬิกาที่ไอคอน "ประวัติการตรวจ" ให้แยกเป็นสองเข็ม (เข็มยาว/เข็มสั้น) */
+(function(){
+try{
+var p=document.querySelector('.dcard[data-px="histb"] .di svg path');
+if(!p||p.getAttribute("data-cg"))return;
+p.setAttribute("data-cg","1");p.setAttribute("d","M12 12V7");p.setAttribute("class","cgc-min");
+var h=p.cloneNode(false);h.setAttribute("d","M12 12l3 2");h.setAttribute("class","cgc-hr");
+p.parentNode.appendChild(h);
+}catch(e){}
+})();
+</script>
+<style id="cg-live2">
+/* ===== LIVE MOTION 2: แถบเครดิต + การ์ดเลือกประเภทสัญญา ===== */
+@media(prefers-reduced-motion:no-preference){
+
+/* --- แถบเครดิต: แสงทองวิ่งรอบกรอบ + เหรียญเรืองแสง + ปุ่มมีประกายผ่านเป็นระยะ --- */
+.crbar{position:relative}
+.crbar::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.8;
+background:conic-gradient(from var(--cg-a),transparent 0 58%,color-mix(in srgb,var(--ring,var(--gold)) 80%,transparent) 80%,transparent 94%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 12s linear infinite}
+.crbar.low{--ring:var(--stamp)}
+.crbar .coin{animation:cgr-coin 5.5s ease-in-out infinite}
+@keyframes cgr-coin{0%,100%{filter:drop-shadow(0 2px 3px color-mix(in srgb,var(--ink) 22%,transparent))}
+50%{filter:drop-shadow(0 2px 3px color-mix(in srgb,var(--ink) 22%,transparent)) drop-shadow(0 0 9px color-mix(in srgb,var(--gold) 65%,transparent))}}
+.crbar button{position:relative;overflow:hidden}
+.crbar button::after{content:"";position:absolute;top:0;bottom:0;left:0;width:36%;pointer-events:none;
+background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+transform:translateX(-170%) skewX(-20deg);animation:cgr-shine 6s ease-in-out 1.5s infinite}
+@keyframes cgr-shine{0%,62%{transform:translateX(-170%) skewX(-20deg)}100%{transform:translateX(420%) skewX(-20deg)}}
+
+/* --- การ์ดเลือกประเภท: ไอคอนมีชีวิต + ใบที่เลือกมีแสงวิ่งรอบขอบ --- */
+#types button>span{perspective:220px;animation:cgc-float 5.4s ease-in-out infinite,cgc-glow 5.4s ease-in-out infinite}
+#types button:nth-child(2)>span{animation-delay:-1.35s}
+#types button:nth-child(3)>span{animation-delay:-2.7s}
+#types button:nth-child(4)>span{animation-delay:-4.05s}
+#types button[aria-pressed="true"]::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;
+background:conic-gradient(from var(--cg-a),transparent 0 50%,color-mix(in srgb,var(--gold) 95%,#fff) 78%,transparent 92%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 7s linear infinite}
+
+/* กระเป๋า: หูหิ้วยกขึ้นเบา ๆ */
+#types button:nth-child(1) svg path:nth-of-type(1){animation:cgt-lift 4.6s ease-in-out infinite}
+@keyframes cgt-lift{0%,100%{transform:translateY(0)}45%,60%{transform:translateY(-1.4px)}}
+/* เหรียญ: หมุนพลิกเป็นระยะ */
+#types button:nth-child(2) svg{transform-origin:center;animation:cgt-flip 8s ease-in-out infinite}
+@keyframes cgt-flip{0%,72%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
+/* บ้าน: ประตูกะพริบอุ่น ๆ */
+#types button:nth-child(3) svg path:nth-of-type(3){animation:cgt-door 4s ease-in-out infinite}
+@keyframes cgt-door{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
+/* จุดสามจุด: กระเด้งไล่กัน */
+#types button:nth-child(4) svg circle{transform-box:fill-box;transform-origin:center;animation:cgt-dot 2.4s ease-in-out infinite}
+#types button:nth-child(4) svg circle:nth-child(2){animation-delay:.2s}
+#types button:nth-child(4) svg circle:nth-child(3){animation-delay:.4s}
+@keyframes cgt-dot{0%,40%,100%{transform:translateY(0)}20%{transform:translateY(-3px)}}
+}
+</style>
+<style id="cg-live3">
+/* กล่องเตือน: กรอบหนาเท่ากันทุกด้าน */
+.warn{border-width:1px;border-left-width:1px;border-radius:12px}
+/* ===== LIVE MOTION 3: กล่องอัปโหลด + กล่องเตือน ===== */
+@media(prefers-reduced-motion:no-preference){
+
+/* --- กล่องอัปโหลด: แสงทองวิ่งไล่ตามกรอบประ + ไอคอนลอย มีคลื่นวงแหวนแผ่ออก --- */
+.dz::before{content:"";position:absolute;inset:0;border-radius:16px;padding:2px;pointer-events:none;opacity:.8;
+background:conic-gradient(from var(--cg-a),transparent 0 62%,color-mix(in srgb,var(--gold) 85%,transparent) 82%,transparent 95%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 10s linear infinite}
+.dz .dzi{animation:cgc-float 5s ease-in-out infinite,cgz-ripple 3.8s ease-out infinite}
+@keyframes cgz-ripple{0%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 0 color-mix(in srgb,var(--gold) 38%,transparent)}
+70%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 18px transparent}}
+/* ลูกศรอัปโหลด: ไหลขึ้นวนไปเรื่อย ๆ */
+.dz .dzi svg path:nth-of-type(3),.dz .dzi svg path:nth-of-type(4){animation:cgz-up 2.8s ease-out infinite}
+@keyframes cgz-up{0%{transform:translateY(3.5px);opacity:0}30%{opacity:1}70%{opacity:1}100%{transform:translateY(-2.5px);opacity:0}}
+/* ปุ่มกล้อง: เลนส์กะพริบเบา ๆ */
+.dz #bcam svg circle{transform-box:fill-box;transform-origin:center;animation:cgz-lens 3.6s ease-in-out infinite}
+@keyframes cgz-lens{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+/* ปุ่มเลือกไฟล์: ประกายผ่านเป็นระยะ + คลิปหนีบส่ายช้า ๆ */
+.dz #bpick{position:relative;overflow:hidden}
+.dz #bpick::after{content:"";position:absolute;top:0;bottom:0;left:0;width:34%;pointer-events:none;
+background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+transform:translateX(-170%) skewX(-20deg);animation:cgr-shine 6s ease-in-out 3s infinite}
+.dz #bpick svg{transform-origin:50% 60%;animation:cgz-clip 4.5s ease-in-out infinite}
+@keyframes cgz-clip{0%,55%,100%{transform:rotate(0)}68%{transform:rotate(-12deg)}82%{transform:rotate(8deg)}92%{transform:rotate(-3deg)}}
+
+/* --- กล่องเตือน: แสงทองวิ่งรอบกรอบ + ไอคอนเตือนส่ายเรียกสายตาเป็นระยะ --- */
+.warn{position:relative}
+.warn::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.85;
+background:conic-gradient(from var(--cg-a),transparent 0 60%,color-mix(in srgb,var(--gold) 85%,transparent) 80%,transparent 94%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 13s linear infinite}
+.warn .wi{animation:cgc-glow 4.2s ease-in-out infinite}
+.warn .wi svg{transform-origin:50% 85%;animation:cgw-wob 6s ease-in-out infinite}
+@keyframes cgw-wob{0%,68%,100%{transform:rotate(0)}72%{transform:rotate(-9deg)}77%{transform:rotate(8deg)}82%{transform:rotate(-5deg)}87%{transform:rotate(3deg)}92%{transform:rotate(0)}}
+.warn .wi svg circle{animation:cgw-dot 3s ease-in-out infinite}
+@keyframes cgw-dot{0%,100%{opacity:1}50%{opacity:.35}}
+}
+</style>
+<style id="cg-live4">
+/* ===== LIVE MOTION 4: เมนูล่าง — นิ่ง สะอาด ขยับทีละไอคอนสลับกันเบา ๆ ===== */
+@media(prefers-reduced-motion:no-preference){
+
+/* แสงทองบาง ๆ วิ่งผ่านขอบบนของแถบเมนูเป็นระยะ */
+#bnav::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;pointer-events:none;
+background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold) 90%,#fff),transparent) no-repeat -40% 0/36% 100%;
+opacity:.9;animation:cgb-gleam 9s ease-in-out 1.5s infinite}
+@keyframes cgb-gleam{0%{background-position:-40% 0}45%,100%{background-position:140% 0}}
+
+/* ปุ่มที่เลือกอยู่: เส้นบนเลื่อนเข้ามา + เรืองแสงหายใจ + ไอคอนเรืองอ่อน ๆ */
+#bnav button.on::before{transform-origin:center;box-shadow:0 0 0 0 transparent;
+animation:cgb-ind .45s cubic-bezier(.2,.8,.2,1) backwards,cgb-pulse 3.8s ease-in-out .45s infinite}
+@keyframes cgb-ind{from{transform:scaleX(0);opacity:0}}
+@keyframes cgb-pulse{50%{box-shadow:0 0 9px 1px currentColor}}
+#bnav button.on svg{animation:cgb-glow 3.8s ease-in-out infinite}
+@keyframes cgb-glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 5px color-mix(in srgb,currentColor 60%,transparent))}}
+
+/* ไอคอนตื่นทีละอัน วนรอบ 15 วินาที (ช่วงที่เหลือนิ่งสนิท ไม่รก) */
+#bnav button[data-a="home"] svg path:nth-of-type(1){animation:cgb-home 15s ease-in-out 1s infinite}
+@keyframes cgb-home{0%,14%,100%{transform:translateY(0)}5%{transform:translateY(-1.8px)}9%{transform:translateY(.3px)}}
+
+#bnav button[data-a="hist"] svg path{transform-box:view-box;transform-origin:12px 12px;animation:cgb-clock 15s ease-in-out 4s infinite}
+#bnav button[data-a="hist"] svg path.cgb-hr{animation-name:cgb-clock2}
+@keyframes cgb-clock{0%{transform:rotate(0)}12%,100%{transform:rotate(360deg)}}
+@keyframes cgb-clock2{0%{transform:rotate(0)}12%,100%{transform:rotate(30deg)}}
+
+#bnav button[data-a="scan"] svg path:nth-of-type(3){transform-box:fill-box;transform-origin:center;animation:cgb-check 15s ease-in-out 7s infinite}
+@keyframes cgb-check{0%,12%,100%{transform:scale(1)}5%{transform:scale(1.45)}}
+
+#bnav button[data-a="how"] svg{animation:cgb-wob 15s ease-in-out 10s infinite}
+@keyframes cgb-wob{0%,13%,100%{transform:rotate(0)}3%{transform:rotate(-11deg)}6%{transform:rotate(9deg)}9%{transform:rotate(-5deg)}12%{transform:rotate(0)}}
+
+#bnav button[data-a="theme"] svg{animation:cgb-moon 15s ease-in-out 13s infinite}
+@keyframes cgb-moon{0%,14%,100%{transform:rotate(0)}6%{transform:rotate(-18deg)}}
+}
+</style>
+<script>
+/* เมนูล่าง: แยกเข็มนาฬิกาที่ไอคอน "ประวัติ" เป็นสองเข็ม */
+(function(){try{
+var ps=document.querySelectorAll('#bnav button[data-a="hist"] svg path');
+var m=ps[0];if(!m||m.getAttribute("data-cg"))return;
+m.setAttribute("data-cg","1");m.setAttribute("d","M12 12V7");
+var h=m.cloneNode(false);h.setAttribute("d","M12 12l3 2");h.setAttribute("class","cgb-hr");
+m.parentNode.appendChild(h);
+}catch(e){}})();
+</script>
+<style id="cg-live5">
+/* ===== LIVE MOTION 5: การ์ดสรุปสั้น ๆ + การ์ดคะแนนความเสี่ยง (เบา ๆ พอเหมาะ) ===== */
+.te{display:inline-block}
+@media(prefers-reduced-motion:no-preference){
+
+/* แสงทองบาง ๆ วิ่งรอบขอบการ์ด (ช้า ไม่เด่น) */
+.tldr,.rk{position:relative}
+.tldr::before,.rk::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.7;
+background:conic-gradient(from var(--cg-a),transparent 0 62%,color-mix(in srgb,var(--gold) 75%,transparent) 82%,transparent 95%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 14s linear infinite}
+.rk::before{animation-duration:16s;animation-delay:-5s}
+
+/* สรุปสั้น ๆ: บรรทัดไหลเข้าทีละบรรทัด + อีโมจิลอยเบา ๆ สลับจังหวะ */
+.tldr li{animation:cgs-in .6s cubic-bezier(.2,.8,.2,1) backwards}
+.tldr li:nth-child(1){animation-delay:.12s}
+.tldr li:nth-child(2){animation-delay:.24s}
+.tldr li:nth-child(3){animation-delay:.36s}
+@keyframes cgs-in{from{opacity:0;transform:translateX(-10px)}}
+.tldr .te{animation:cgs-bob 5s ease-in-out infinite}
+.tldr li:nth-child(2) .te{animation-delay:-1.7s}
+.tldr li:nth-child(3) .te{animation-delay:-3.4s}
+@keyframes cgs-bob{50%{transform:translateY(-2.5px)}}
+
+/* ชิปในการ์ดความเสี่ยง: ไล่แสงขอบทีละชิปเป็นรอบ ๆ (รอบละ 12 วินาที) */
+.rk .tn button{animation:cgs-chip 12s ease-in-out infinite}
+.rk .tn:not(.tn + .tn) button{animation-delay:0s}
+.rk .tn + .tn button:nth-child(1){animation-delay:1.5s}
+.rk .tn + .tn button:nth-child(2){animation-delay:3s}
+.rk .tn + .tn button:nth-child(3){animation-delay:4.5s}
+.rk .tn + .tn button:nth-child(4){animation-delay:6s}
+.rk .tn + .tn button:nth-child(5){animation-delay:7.5s}
+@keyframes cgs-chip{0%,16%,100%{border-color:var(--line);box-shadow:0 0 0 0 transparent}
+7%{border-color:color-mix(in srgb,var(--gold) 70%,var(--line));box-shadow:0 0 12px -4px color-mix(in srgb,var(--gold) 70%,transparent)}}
+
+/* อีโมจิในการ์ดความเสี่ยง: 🗣️ เต้นเบา ๆ / 🔍 ส่องไปมา */
+.rk .te2{animation:cgs-talk 3.2s ease-in-out infinite}
+@keyframes cgs-talk{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.rk .te3{animation:cgs-scan 5.5s ease-in-out infinite}
+@keyframes cgs-scan{0%,100%{transform:translate(0,0)}30%{transform:translate(3px,-2px)}60%{transform:translate(-1px,1px)}}
+}
+</style>
+<style id="cg-live6">
+/* ===== LIVE MOTION 6: การ์ดภาพรวม + ตัวสัญญาที่ไฮไลต์ + การ์ดจุดเสี่ยง (เน้นน้อย แต่สวย) ===== */
+@media(prefers-reduced-motion:no-preference){
+
+/* --- การ์ดภาพรวม: แสงรอบขอบ + วงคะแนนเรืองหายใจ + วงประโคจรบาง ๆ รอบวง --- */
+.head{position:relative}
+.head::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.7;
+background:conic-gradient(from var(--cg-a),transparent 0 62%,color-mix(in srgb,var(--gold) 75%,transparent) 82%,transparent 95%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 15s linear infinite}
+.meter .pg{animation:ring 1.5s cubic-bezier(.2,.8,.2,1) both,cgm-glow 4.6s ease-in-out 1.6s infinite}
+@keyframes cgm-glow{0%,100%{filter:drop-shadow(0 0 4px var(--c))}50%{filter:drop-shadow(0 0 11px var(--c))}}
+.meter::before{content:"";position:absolute;inset:-10px;border-radius:50%;pointer-events:none;
+border:1px dashed color-mix(in srgb,var(--c) 40%,transparent);animation:cgm-orbit 50s linear infinite}
+@keyframes cgm-orbit{to{transform:rotate(360deg)}}
+.cnt .c1{animation:cg-pop .4s cubic-bezier(.34,1.56,.64,1) backwards,cgm-pulse 4.6s ease-in-out 2s infinite}
+@keyframes cgm-pulse{50%{box-shadow:0 0 12px -3px color-mix(in srgb,var(--stamp) 65%,transparent)}}
+
+/* --- ตัวสัญญา: ไฮไลต์เรืองทีละจุดสลับกัน เลขกำกับเต้นเบา ๆ --- */
+.cg-hl.on mark{animation:cgd-glow 9s ease-in-out 1.6s infinite}
+.cg-hl.on mark:nth-of-type(2){animation-delay:3.1s}
+.cg-hl.on mark:nth-of-type(3){animation-delay:4.6s}
+.cg-hl.on mark:nth-of-type(4){animation-delay:6.1s}
+@keyframes cgd-glow{0%,22%,100%{box-shadow:0 0 0 0 transparent}
+10%{box-shadow:0 0 12px 2px rgba(255,221,64,.28)}}
+.cg-hl.on mark sup{display:inline-block;animation:cgd-sup 9s ease-in-out 1.6s infinite}
+.cg-hl.on mark:nth-of-type(2) sup{animation-delay:3.1s}
+.cg-hl.on mark:nth-of-type(3) sup{animation-delay:4.6s}
+.cg-hl.on mark:nth-of-type(4) sup{animation-delay:6.1s}
+@keyframes cgd-sup{0%,22%,100%{transform:scale(1);color:var(--mute)}10%{transform:scale(1.5);color:var(--gold)}}
+
+/* --- การ์ดจุดเสี่ยง: เฉพาะใบที่เปิดอ่านอยู่ มีแสงรอบขอบ + เลขลำดับแผ่คลื่นเบา ๆ --- */
+.flag{position:relative}
+.flag.open::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;opacity:.65;
+background:conic-gradient(from var(--cg-a),transparent 0 64%,color-mix(in srgb,var(--gold) 70%,transparent) 83%,transparent 95%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+animation:cgc-spin 16s linear infinite}
+.flag.open .num{animation:cgf-ripple 4.6s ease-out infinite}
+@keyframes cgf-ripple{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 45%,transparent)}
+65%,100%{box-shadow:0 0 0 10px transparent}}
+/* ปุ่ม "ดูรายละเอียด" ที่ยังปิดอยู่: ลูกศรขยับลงเบา ๆ ชวนให้กด */
+.flag:not(.open) .ftog::after{animation:cgf-chev 2.8s ease-in-out infinite}
+@keyframes cgf-chev{0%,100%{transform:rotate(45deg) translate(0,0)}50%{transform:rotate(45deg) translate(2px,2px)}}
+}
+</style>
 </body>
 </html>

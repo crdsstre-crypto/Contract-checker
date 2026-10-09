@@ -703,6 +703,14 @@ dialog[open]::backdrop{animation:bk .25s ease}
 .ckp{font-size:13px;color:var(--mute);margin:-4px 0 8px}
 .kbd{font-size:12px;color:var(--mute);margin:4px 0 8px}
 @media(hover:none){.kbd{display:none}}
+.qa{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.qa input{flex:1 1 200px;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.qa button{font:inherit;font-weight:600;padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.qa button.on{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.qa button:disabled{opacity:.5;cursor:wait}
+#qa_cap{min-height:1.6em;font-size:14px;color:var(--mute);margin:4px 0}
+.qa_a{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;white-space:pre-wrap}
+.qa_a small{display:block;color:var(--mute);margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -1039,8 +1047,39 @@ if(u)w.push("มี "+u+" จุดที่อ่านจากรูปไม
 if(g>3)w.push("มีตัวอักษรเพี้ยนหลายจุด อาจแปลงจากรูปหรือไฟล์ผิดพลาด");
 if(t.length<150)w.push("ข้อความสั้นมาก อาจขาดบางหน้าหรือบางข้อ");
 return w}
+function askH(){
+return '<h2>🎤 ถามเรื่องสัญญานี้</h2><p class="hint">พิมพ์หรือกดไมค์แล้วพูด เช่น “ช่วยสรุปข้อที่เกี่ยวกับค่าปรับให้หน่อย” AI ตอบจากสัญญาฉบับนี้เท่านั้น ถามได้ 6 ครั้งต่อผลตรวจ ไม่หักเครดิต การพูดใช้ระบบรู้จำเสียงของเบราว์เซอร์ ซึ่งบางเบราว์เซอร์อาจส่งเสียงไปประมวลผลที่เซิร์ฟเวอร์ของผู้พัฒนาเบราว์เซอร์</p><div class="qa"><input id="qa_i" type="text" maxlength="300" placeholder="พิมพ์คำถามเกี่ยวกับสัญญานี้…" aria-label="คำถามเกี่ยวกับสัญญา"><button type="button" id="qa_mic" aria-pressed="false">🎤 พูด</button><button type="button" id="qa_go">ถาม</button></div><p id="qa_cap" role="status" aria-live="polite"></p><div id="qa_out" aria-live="polite"></div>'}
+let QREC=null;
+function qaStop(){try{if(QREC)QREC.abort()}catch(e){}QREC=null;const m=$("qa_mic");if(m){m.textContent="🎤 พูด";m.classList.remove("on");m.setAttribute("aria-pressed","false")}}
+async function qaAsk(){
+const i=$("qa_i"),cap=$("qa_cap"),o=$("qa_out"),b=$("qa_go");if(!i)return;
+const q=i.value.trim();if(q.length<3){cap.textContent="พิมพ์หรือพูดคำถามให้ยาวขึ้นอีกนิด";return}
+if(!window.RID){cap.textContent="ถามได้หลังตรวจสัญญาจริง (ผลตัวอย่างและผลจากประวัติยังไม่รองรับ)";return}
+qaStop();b.disabled=true;cap.textContent="กำลังหาคำตอบจากสัญญา…";
+try{
+const rr=await fetch(CFG.api+"/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,rid:window.RID,q})});
+const d=await rr.json().catch(()=>({}));
+if(rr.status===403&&d.error==="tos"){needTos();cap.textContent="";return}
+if(!rr.ok){cap.textContent=d.error==="ask_max"?"ถามครบ 6 ครั้งของผลตรวจนี้แล้ว":d.error==="expired"?"ผลตรวจหมดอายุแล้ว (เก็บไว้ 1 ชั่วโมง) ตรวจสัญญาใหม่เพื่อถามต่อ":d.error==="rate_limited"?"ถามถี่เกินไป รอสักครู่แล้วลองใหม่":"ตอบไม่ได้ชั่วคราว ลองใหม่อีกครั้ง";return}
+const el=document.createElement("div");el.className="qa_a";el.innerHTML="<small>คำถาม: "+esc(q)+"</small>"+esc(d.answer||"");o.prepend(el);i.value="";cap.textContent="ถามได้อีก "+d.left+" ครั้ง"
+}catch(e){cap.textContent="เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง"}finally{b.disabled=false}}
+function bindAsk(){
+const i=$("qa_i");if(!i)return;
+$("qa_go").onclick=qaAsk;i.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();qaAsk()}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition,m=$("qa_mic");
+if(!SR){m.hidden=true;$("qa_cap").textContent="เบราว์เซอร์นี้ไม่รองรับการพูด พิมพ์คำถามแทนได้";return}
+m.onclick=()=>{
+if(QREC){qaStop();$("qa_cap").textContent="ปิดไมค์แล้ว";return}
+const r=new SR();r.lang="th-TH";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+let fin="";
+r.onstart=()=>{m.textContent="⏹ ปิดไมค์";m.classList.add("on");m.setAttribute("aria-pressed","true");$("qa_cap").textContent="🎙️ กำลังฟัง… พูดคำถามได้เลย"};
+r.onresult=ev=>{let it="";for(let k=ev.resultIndex;k<ev.results.length;k++){const t=ev.results[k][0].transcript;if(ev.results[k].isFinal)fin+=t;else it+=t}
+i.value=(fin+it).trim();$("qa_cap").textContent="🎙️ ได้ยินว่า: “"+(fin+it).trim()+"”"};
+r.onerror=ev=>{const c=ev.error;$("qa_cap").textContent=c==="not-allowed"||c==="service-not-allowed"?"ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน เปิดสิทธิ์ในการตั้งค่าเบราว์เซอร์ หรือพิมพ์แทนได้":c==="no-speech"?"ไม่ได้ยินเสียง ลองกดไมค์แล้วพูดอีกครั้ง":c==="aborted"?"":"ใช้ไมค์ไม่ได้ ("+c+") พิมพ์คำถามแทนได้";if(c!=="aborted")qaStop()};
+r.onend=()=>{const had=QREC===r;QREC=null;qaStop();if(had&&fin.trim().length>=3){i.value=fin.trim();qaAsk()}else if(had&&!fin.trim()&&!/ไม่ได้ยิน|ไม่ได้รับอนุญาต|ใช้ไมค์ไม่ได้/.test($("qa_cap").textContent))$("qa_cap").textContent="ไม่ได้ยินเสียง ลองใหม่อีกครั้ง"};
+QREC=r;try{r.start()}catch(e){QREC=null;$("qa_cap").textContent="เริ่มฟังไม่ได้ ลองใหม่อีกครั้ง"}}}
 function render(r,t){
-ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
+qaStop();ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
 const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
 const f=r.red_flags||[];
 const K=Math.round((10-s)*10),KC=K>=70?'var(--stamp)':K>=40?'var(--warn)':'var(--ok)',KL=K>=70?'ควรตรวจละเอียด':K>=40?'ควรระวัง':'เสี่ยงต่ำ',nH=f.filter(x=>x.level==='high').length,nM=f.filter(x=>x.level==='medium').length,nL=f.length-nH-nM;
@@ -1052,7 +1091,7 @@ f.forEach((x,i)=>{const l=LV[x.level]||LV.medium;h+=`<div class="flag" id="f${i}
 h+=confH(r,t);
 if((r.missing||[]).length)h+=`<h2>สิ่งที่สัญญายังไม่ได้ระบุ</h2><ul>${r.missing.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
 if((r.before_sign||[]).length)h+=`<h2>ก่อนเซ็นควรทำ</h2><ul class="steps">${r.before_sign.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
-window.LT=t;h+=extraH(r);$("out").innerHTML='<div class="seg" id="seg" role="tablist"><button type="button" class="on" data-seg="ana" role="tab" aria-selected="true">ภาพรวม</button><button type="button" data-seg="rpt" role="tab" aria-selected="false">รายงาน</button></div><div id="ana">'+h+'</div><div id="rpt" hidden>'+reportH(r,t)+'</div>';bindX(r,t);bindRpt(r,t);bindTTS(r);$("out").scrollIntoView({behavior:"smooth"});
+window.LT=t;h+=extraH(r);h+=askH();$("out").innerHTML='<div class="seg" id="seg" role="tablist"><button type="button" class="on" data-seg="ana" role="tab" aria-selected="true">ภาพรวม</button><button type="button" data-seg="rpt" role="tab" aria-selected="false">รายงาน</button></div><div id="ana">'+h+'</div><div id="rpt" hidden>'+reportH(r,t)+'</div>';bindX(r,t);bindRpt(r,t);bindTTS(r);bindAsk();$("out").scrollIntoView({behavior:"smooth"});
 }
 function jump(e){const m=e.target.closest("mark");if(!m)return;if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;const el=$("f"+m.dataset.i);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.remove("pulse");void el.offsetWidth;el.classList.add("pulse")}
 $("out").addEventListener("click",jump);$("out").addEventListener("keydown",jump);

@@ -711,6 +711,121 @@ dialog[open]::backdrop{animation:bk .25s ease}
 #qa_cap{min-height:1.6em;font-size:14px;color:var(--mute);margin:4px 0}
 .qa_a{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;white-space:pre-wrap}
 .qa_a small{display:block;color:var(--mute);margin-bottom:4px}
+/* ===== จัดระเบียบหน้า: เมนูหลักก่อน เครื่องมือรองพับเก็บ ไม่มีแถบลอยบังเนื้อหา ===== */
+main{padding-top:12px;padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+.top{display:none!important}
+.more{display:none!important}
+#demo{display:none!important}
+
+/* หัวหน้า */
+.dtop{display:flex;align-items:center;gap:12px;padding:6px 0 16px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.dtop .brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.dtop .logo{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--btn,linear-gradient(135deg,var(--gold2),var(--gold)));color:var(--on-gold)}
+.dtop .logo svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dtop b{display:block;font-family:"Noto Serif Thai",serif;font-size:21px;line-height:1.25}
+.dtop small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+#theme{display:none;position:static!important;width:42px;height:42px;padding:0;place-items:center;font-size:0!important;border-radius:50%}
+#theme::before{font-size:20px;line-height:1}
+:root[data-theme="dark"] #theme::before{content:"☀︎"}
+:root[data-theme="light"] #theme::before{content:"☾"}
+@media(min-width:900px){#theme{display:grid}}
+
+/* หน้าแรก: การ์ดเมนูหลัก */
+.dash{margin:0 0 22px}
+.dash h1{font-size:clamp(26px,7vw,32px);line-height:1.3;margin:0 0 6px;letter-spacing:-.01em}
+.dsub{color:var(--mute);font-size:15px;margin:0 0 16px}
+.dcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--ink);padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--card);cursor:pointer;box-shadow:var(--sh);transition:transform .15s,border-color .2s}
+.dcard:hover{border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.dcard:active{transform:scale(.985)}
+.dcard .di{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--gold-glow);color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 30%,transparent)}
+.dcard svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dcard b{display:block;font-size:17px;line-height:1.35}
+.dcard small{display:block;color:var(--mute);font-size:13.5px;line-height:1.45;margin-top:2px}
+.dcard .go-arrow{margin-left:auto;flex:none;display:grid;place-items:center;color:var(--mute)}
+.dcard.main{padding:18px 16px;background:var(--btn,linear-gradient(135deg,var(--gold2),var(--gold)));color:var(--on-gold);border-color:transparent;box-shadow:0 14px 30px -16px var(--gold)}
+.dcard.main small,.dcard.main .go-arrow{color:inherit;opacity:.85}
+.dcard.main .di{background:rgba(255,255,255,.22);color:inherit;border-color:rgba(255,255,255,.28)}
+.dcard.main b{font-size:19px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.dgrid .dcard{flex-direction:column;align-items:flex-start;gap:10px;padding:14px}
+.dgrid .dcard b{font-size:15.5px}
+.dcard.row{margin:0}
+.dmore{margin:22px 0 0}
+.dmore>p{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.dchips{display:flex;flex-wrap:wrap;gap:8px}
+.dchips button{font:inherit;font-size:14px;min-height:42px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.dchips button[hidden]{display:none}
+.dchips button:hover{border-color:var(--gold)}
+.dmore .dnote{margin:12px 0 0;font-size:12.5px;line-height:1.6;color:var(--mute);font-weight:400}
+.dash .scope{margin:14px 0 0}
+
+/* เครดิตให้เล็กลง */
+.crbar{padding:8px 12px;margin-bottom:14px}
+.crbar .coin{width:32px;height:32px}
+.crbar .num2{font-size:24px}
+
+/* ข้อความในแผงตรวจให้เบาลง */
+.panel{margin-top:0}
+.warn{margin:10px 0 0;padding:8px 12px;font-size:12.5px;line-height:1.55}
+.panel .note{margin:10px 0}
+.dz>span{margin-bottom:12px}
+
+/* แถบลอยต้องไม่บังเนื้อหา */
+.seg{position:static!important;top:auto!important;margin-bottom:16px}
+#sbar{bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;padding:6px 6px 6px 14px!important;gap:10px!important;border-radius:14px!important}
+#sbar div{font-size:13px}
+#sbar span{display:none}
+#sbar button{min-height:40px;padding:0 16px!important;border-radius:10px!important;font-size:14px}
+body:has(#txt:focus) #sbar,body:has(#ana) #sbar{display:none!important}
+@media(min-width:900px){#sbar{bottom:16px!important;left:50%!important;right:auto!important;width:min(520px,calc(100% - 32px));transform:translateX(-50%)}}
+.tstop{bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+
+/* ผลตรวจ: หัวข้อเล็กลง อ่านง่ายขึ้น */
+#out h2{font-size:clamp(19px,5vw,22px);line-height:1.4;margin:26px 0 10px}
+#ttsn{font-size:12px;color:var(--mute)}
+.flag.pulse{scroll-margin-top:16px}
+
+/* เครื่องมือหลังตรวจ จัดเป็น 4 หมวด พับเก็บ */
+.tgrps{margin-top:30px}
+.tgrps>h2{margin:0 0 4px!important}
+.tgrps>.hint{margin:0 0 12px}
+.tgrp{margin:0 0 10px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--sh);overflow:hidden}
+.tgrp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:64px;padding:12px 16px}
+.tgrp>summary::-webkit-details-marker{display:none}
+.tgrp>summary::after{content:"";flex:none;margin-left:auto;width:9px;height:9px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .25s}
+.tgrp[open]>summary::after{transform:rotate(-135deg)}
+.tgrp .ti{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--gold-glow);color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 30%,transparent)}
+.tgrp .ti svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tgrp summary b{display:block;font-size:16.5px;line-height:1.35}
+.tgrp summary small{display:block;color:var(--mute);font-size:13px;line-height:1.4}
+.tgrp .tin{padding:2px 16px 16px;border-top:1px solid var(--line)}
+.tgrp .tin h2{font-size:17px!important;margin:20px 0 8px!important}
+.tgrp #xtools>h2{display:none}
+
+/* ความน่าเชื่อถือ: พับเก็บไว้ท้ายหน้า */
+details.trustcard{padding:0;margin:26px 0 8px}
+details.trustcard>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:56px;padding:12px 18px;font-weight:600;font-size:15.5px}
+details.trustcard>summary::-webkit-details-marker{display:none}
+details.trustcard>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .25s}
+details.trustcard[open]>summary::after{transform:rotate(-135deg)}
+details.trustcard .tcin{padding:0 18px 18px;border-top:1px solid var(--line);padding-top:14px}
+details.trustcard .note{margin:14px 0 0;padding-top:12px;font-size:12.5px}
+
+@media(max-width:380px){.dgrid{grid-template-columns:1fr}}
+
+/* พื้นหลังเบาลง ไม่แย่งความสนใจจากเนื้อหา */
+.sheet{opacity:.22!important}
+.sign{display:none!important}
+:root[data-theme="light"] .sheet{opacity:.35!important}
+
+/* หัวผลตรวจ: ให้ข้อความสรุปใช้ความกว้างเต็ม */
+.head{flex-direction:column;align-items:center;text-align:center}
+.head .hb{width:100%}
+.head .cnt{justify-content:center}
+@media(min-width:640px){.head{flex-direction:row;text-align:left;align-items:center}.head .cnt{justify-content:flex-start}}
+
+.head .hb .sum{display:block}
+
 </style>
 </head>
 <body>
@@ -726,31 +841,32 @@ dialog[open]::backdrop{animation:bk .25s ease}
 <path class="pen u" pathLength="1" d="M6 82 C70 72 130 78 192 68"/>
 </svg></div></div>
 <main>
-<button id="theme" type="button" aria-label="สลับโหมดมืดหรือสว่าง"></button>
-<div class="top">
-<div class="mwrap"><div class="bubble" id="bub">วางสัญญามาได้เลย</div>
-<svg class="mascot" id="mascot" viewBox="0 0 125 118" aria-hidden="true">
-<rect class="s paper" x="26" y="8" width="60" height="82" rx="9"/>
-<circle class="eye ink" cx="46" cy="38" r="5"/><circle class="eye ink" cx="66" cy="38" r="5"/>
-<circle class="cheek" cx="38" cy="50" r="5"/><circle class="cheek" cx="74" cy="50" r="5"/>
-<path class="s" d="M50 52 Q56 59 62 52"/>
-<circle class="s seal" cx="56" cy="72" r="8"/>
-<path class="s" d="M26 62 L14 74"/>
-<path class="s" d="M44 94 V104 M68 94 V104"/>
-<g class="lens"><path class="s" d="M86 64 L92 68 L99 58"/><circle class="s glass" cx="106" cy="48" r="12"/></g>
-</svg></div>
-<h1>เช็กสัญญา</h1>
+<header class="dtop"><div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-3 7a3.5 3.5 0 007 0z"/><path d="M19 7l-3 7a3.5 3.5 0 007 0z"/><path d="M8 21h8"/></svg></span><div><b>เช็กสัญญา</b><small>ผู้ช่วยตรวจสัญญาของคุณ</small></div></div>
+<button id="theme" type="button" aria-label="สลับโหมดมืดหรือสว่าง"></button></header>
+<div class="top" aria-hidden="true"><div class="mwrap"><div class="bubble" id="bub">วางสัญญามาได้เลย</div>
+<svg class="mascot" id="mascot" viewBox="0 0 125 118" aria-hidden="true"><rect class="s paper" x="26" y="8" width="60" height="82" rx="9"/></svg></div></div>
+<section class="dash" aria-labelledby="dH">
+<h1 id="dH">วันนี้อยากให้ช่วยอะไร?</h1>
+<p class="dsub">เลือกสิ่งที่ต้องการ ระบบจะพาไปยังเครื่องมือที่เหมาะสม</p>
+<button type="button" class="dcard main" id="hgo"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5"/><circle cx="16.5" cy="16.5" r="3"/><path d="M21 21l-2-2"/></svg></span><span><b>ตรวจสัญญา</b><small>ค้นหาจุดเสี่ยงและทำความเข้าใจข้อสัญญา</small></span><span class="go-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></button>
+<div class="dgrid">
+<button type="button" class="dcard" data-px="demo"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span><b>ดูตัวอย่างผลตรวจ</b><small>ลองฟรี ไม่เสียเครดิต</small></span></button>
+<button type="button" class="dcard" data-px="genb"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15h6"/></svg></span><span><b>สร้างสัญญาฉบับแฟร์</b><small>จ้างงาน / กู้ยืม / เช่า · ฟรี</small></span></button>
 </div>
-<p class="tagline hero-in">รู้ทันข้อสัญญาที่ควรระวัง<br><em>ก่อนเซ็นสัญญาสำคัญ</em></p><p class="lead hero-in">AI ช่วยวิเคราะห์สัญญา ค้นหาข้อกำหนดที่มีความเสี่ยง พร้อมอธิบายสิ่งที่คุณควรรู้ก่อนตัดสินใจ</p><div class="cta hero-in"><button type="button" class="cta1" id="hgo">✦ เริ่มตรวจสอบสัญญา</button><button type="button" class="cta2" id="hhow">ดูวิธีการทำงาน ↓</button></div><ul class="trust hero-in" aria-label="จุดเด่นของบริการ"><li>รองรับ PDF, Word และรูปภาพ</li><li>วิเคราะห์ข้อสัญญาที่ควรตรวจสอบ</li><li>ช่วยเสนอแนวทางแก้ไขข้อความ</li></ul><p class="scope hero-in">เครื่องมือ AI ช่วยอธิบายสัญญาเบื้องต้น ไม่ใช่สำนักงานกฎหมายและไม่ใช่คำปรึกษาทางกฎหมาย</p>
+<button type="button" class="dcard row" data-px="histb"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>ประวัติการตรวจ</b><small>ดูสรุปผลที่เคยตรวจไว้ในเครื่องนี้</small></span><span class="go-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
+<div class="dmore"><p>เครื่องมือเพิ่มเติม</p><div class="dchips"><button type="button" id="hhow">วิธีใช้งาน</button><button type="button" data-px="mdb">ข้อมูลของฉัน</button><button type="button" data-px="refb" id="pxref" hidden>ชวนเพื่อนรับเครดิต</button></div>
+<p class="dnote">หลังตรวจเสร็จ จะมีเครื่องมือเปรียบเทียบสัญญา ซ้อมเจรจา คำนวณค่าปรับ/ดอกเบี้ย และตั้งเตือนวันสำคัญอยู่ในหน้ารายงาน</p></div>
+<p class="scope">เครื่องมือ AI ช่วยอธิบายสัญญาเบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>
+</section>
 
 <div class="crbar" id="cr"><span class="coin" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="cg" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset=".55" style="stop-color:var(--c2)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><linearGradient id="cr2" x1="32" y1="36" x2="8" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><clipPath id="cc"><circle cx="20" cy="20" r="18"/></clipPath></defs><circle cx="20" cy="20" r="18.5" fill="url(#cr2)"/><circle cx="20" cy="20" r="16.4" fill="url(#cg)"/><circle cx="20" cy="20" r="12.6" fill="none" stroke="var(--c3)" stroke-opacity=".45" stroke-width="1"/><circle cx="20" cy="20" r="13.4" fill="none" stroke="var(--c1)" stroke-opacity=".7" stroke-width=".8"/><path class="hl" d="M13.4 21.4l4.6 4.6 8.8-10.2" transform="translate(.7 .9)"/><path class="eng" d="M13.4 21.4l4.6 4.6 8.8-10.2"/><g clip-path="url(#cc)"><rect class="sh" x="-6" y="-4" width="9" height="48" fill="#fff" opacity=".38" transform="rotate(24 20 20)"/></g></svg></span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button></div>
 <section class="panel">
 <p class="sec">① เลือกประเภทสัญญา</p><div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
 <p class="sec">② อัปโหลดสัญญา</p>
-<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>วางไฟล์สัญญาของคุณที่นี่</b><span>ลากไฟล์มาวาง หรือแตะเพื่อเลือกไฟล์จากอุปกรณ์ · รองรับ PDF, DOCX และรูปภาพ</span>
+<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>อัปโหลดสัญญา</b><span>ลากไฟล์มาวาง หรือถ่ายรูป · PDF, Word, รูปภาพ</span>
 <div class="cap" id="cap">
 <button type="button" id="bcam">📷 ถ่ายรูปสัญญา</button>
-<button type="button" id="bpick">📎 เลือกรูป / PDF / Word / ไฟล์ข้อความ</button>
+<button type="button" id="bpick">📎 เลือกไฟล์</button>
 <button type="button" id="bstop" class="stop" hidden>หยุดอ่าน</button>
 <input type="file" id="fcam" accept="image/*" capture="environment" hidden>
 <input type="file" id="fpick" accept="image/*,.pdf,application/pdf,.txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
@@ -759,7 +875,7 @@ dialog[open]::backdrop{animation:bk .25s ease}
 <p id="ocrst" role="status"></p>
 <div class="tw"><textarea id="txt" placeholder="วางข้อความสัญญาที่นี่ หรือถ่ายรูป/อัปโหลดไฟล์ด้านบน…"></textarea><button type="button" id="clr" class="clr" aria-label="ล้างข้อความ" hidden>✕ ล้าง</button></div>
 <details class="opt"><summary>ตัวเลือกเพิ่มเติม (ชื่อลูกค้า)</summary><input id="cn" placeholder="ชื่อลูกค้า/บริษัท (ไม่บังคับ — ใช้เช็กสมุดบันทึกลูกค้าของคุณ)" style="margin-bottom:8px"></details>
-<p class="warn">⚠️ <b>เว็บนี้เป็นเครื่องมือช่วยอำนวยความสะดวกด้วย AI เท่านั้น ไม่ใช่สำนักงานกฎหมาย และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต</b> ผลวิเคราะห์ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น</p>
+<p class="warn">⚠️ <b>AI ไม่ใช่ทนายความ</b> ผลวิเคราะห์ใช้เป็นหลักฐานทางกฎหมายไม่ได้ สัญญามูลค่าสูงควรให้ทนายตรวจก่อนเซ็น</p>
 <label class="note" style="display:block;margin:8px 0"><input type="checkbox" id="mk" checked> 🔒 ปิดบังข้อมูลส่วนตัว (เลขบัตร เบอร์โทร เลขบัญชี อีเมล) ก่อนส่งให้ AI<br><small>รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังข้อมูลส่วนตัวก่อนถ่ายหรืออัปโหลด</small></label>
 <button type="button" class="chip" id="demo">⚡ ลองกดดูตัวอย่างสัญญาฟรีแลนซ์โดนเอาเปรียบ</button>
 <div class="row">
@@ -771,7 +887,7 @@ dialog[open]::backdrop{animation:bk .25s ease}
 <div id="prog" class="prog" hidden></div><div class="skel" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="out" aria-live="polite"></div><p class="scope">ผลนี้สร้างโดย AI เพื่อช่วยทำความเข้าใจเบื้องต้น AI อาจผิดพลาดได้ ไม่ใช่คำปรึกษาทางกฎหมาย และไม่ควรนำไปใช้เป็นหลักฐานทางกฎหมาย สัญญาสำคัญควรให้ทนายความตรวจก่อนเซ็น</p>
 <div class="more"><button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button><button type="button" class="link" style="display:inline-block" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button></div>
-<section class="trustcard" aria-labelledby="tcH"><h2 id="tcH">ความน่าเชื่อถือและความเป็นส่วนตัว</h2>
+<details class="trustcard"><summary><span>ความน่าเชื่อถือและความเป็นส่วนตัว</span></summary><div class="tcin">
 <ul>
 <li><b>AI อาจวิเคราะห์ผิดพลาดได้</b><span>ผลลัพธ์เป็นข้อมูลประกอบการตัดสินใจ ไม่ใช่คำปรึกษาทางกฎหมาย</span></li>
 <li><b>สัญญาสำคัญควรให้ผู้เชี่ยวชาญตรวจ</b><span>สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และมีบริการขอให้ทนายความตรวจซ้ำในหน้ารายงาน</span></li>
@@ -780,8 +896,7 @@ dialog[open]::backdrop{animation:bk .25s ease}
 <li><b>ประวัติอยู่ในเครื่องของคุณ</b><span>เก็บเฉพาะสรุปผลความเสี่ยง ไม่เก็บเนื้อหาสัญญา ลบได้ทุกเมื่อ</span></li>
 <li><b>ลบข้อมูลของคุณได้เอง</b><span>ดาวน์โหลดสำเนาหรือลบข้อมูลที่เมนู “ข้อมูลของฉัน” และระบบบันทึกเวอร์ชันกับเวลาที่คุณยอมรับข้อกำหนด</span></li>
 </ul>
-<div class="tcb"><button type="button" class="link" data-tc="histb">เปิดประวัติ / ล้างประวัติ</button><button type="button" class="link" data-tc="tos_f">ข้อกำหนดและความเป็นส่วนตัว</button><button type="button" class="link" id="mdb">ข้อมูลของฉัน (ดู/ลบ)</button></div></section>
-<p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและนโยบายความเป็นส่วนตัว (เวอร์ชัน 1.2)</button></p>
+<div class="tcb"><button type="button" class="link" data-tc="histb">เปิดประวัติ / ล้างประวัติ</button><button type="button" class="link" data-tc="tos_f">ข้อกำหนดและความเป็นส่วนตัว</button><button type="button" class="link" id="mdb">ข้อมูลของฉัน (ดู/ลบ)</button></div><p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและนโยบายความเป็นส่วนตัว (เวอร์ชัน 1.2)</button></p></div></details>
 </main>
 <div id="sbar" hidden><div><b id="sbn">สัญญา</b><span>✓ พร้อมตรวจ</span></div><button type="button" id="sgo">ตรวจสัญญา</button></div>
 <dialog id="how"><div class="pw">
@@ -1452,7 +1567,7 @@ if(ta){
 var R={"สัญญาจ้างฟรีแลนซ์":["ผู้รับจ้าง / ฟรีแลนซ์","ผู้ว่าจ้าง"],"สัญญากู้ยืมเงิน":["ผู้กู้","ผู้ให้กู้"],"สัญญาเช่า":["ผู้เช่า","ผู้ให้เช่า"]};
 var d=document.createElement("div");d.className="rolebox";d.innerHTML='<label for="role">คุณเป็นฝ่ายไหน</label><select id="role"></select>';tp.parentNode.insertBefore(d,tp.nextSibling);
 var sel=d.querySelector("select"),cur="__";
-function upd(){var t;try{t=type}catch(_){t=""}if(t===cur)return;cur=t;var o=R[t];if(!o){d.hidden=true;sel.innerHTML='<option value=""></option>';return}d.hidden=false;sel.innerHTML='<option value="">ให้ AI ดูในมุมฝ่ายที่เสียเปรียบกว่า</option>'+o.map(function(x){return'<option value="'+x+'">'+x+'</option>'}).join("")}
+function upd(){var t;try{t=type}catch(_){t=""}if(t===cur)return;cur=t;var o=R[t];if(!o){d.hidden=true;sel.innerHTML='<option value=""></option>';return}d.hidden=false;sel.innerHTML='<option value="">อัตโนมัติ (ฝ่ายที่เสียเปรียบ)</option>'+o.map(function(x){return'<option value="'+x+'">'+x+'</option>'}).join("")}
 upd();setInterval(upd,400)})();
 /* 5) ค้นหาในประวัติ */
 var hl=$("hist_l");
@@ -1511,6 +1626,52 @@ function build(){
 }
 var o=$("out");if(o)new MutationObserver(build).observe(o,{childList:true});
 })();
+</script>
+<script>
+(function(){try{
+var $=function(i){return document.getElementById(i)};
+/* การ์ดหน้าแรกเรียกปุ่มเดิม (ไม่แตะตรรกะเดิม) */
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-px]");if(!b)return;var t=$(b.getAttribute("data-px"));if(t)t.click()});
+var rf=$("refb"),px=$("pxref");if(rf&&px&&rf.style.display!=="none"&&rf.style.display!=="")px.hidden=false;
+/* จัดเครื่องมือหลังตรวจเป็น 4 หมวด */
+var IC={
+neg:'<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/><path d="M9 11h6M9 14h4"/>',
+chk:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 14l2 2 4-4"/>',
+mng:'<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/><circle cx="12" cy="15" r="2.5"/>',
+calc:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M8 7h8"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/>'};
+var G=[
+{k:"neg",t:"สร้างและเจรจา",s:"ร่างข้อความ · ข้อความส่งลูกค้า · ซ้อมเจรจา",m:/ร่างข้อความฉบับแฟร์|เทียบกับเรทตลาด|สร้างข้อความส่งลูกค้า|ซ้อมเจรจา/},
+{k:"chk",t:"ตรวจเพิ่มเติม",s:"เทียบสัญญาฉบับแก้ไข · สแกนข้อความแอบแฝง",m:/เทียบกับสัญญาฉบับแก้ไข|สแกนข้อความแอบแฝง/},
+{k:"mng",t:"จัดการสัญญา",s:"ถาม AI · สมุดบันทึกลูกค้า · ทนายตรวจซ้ำ",m:/ถามเรื่องสัญญา|สมุดบันทึกลูกค้า|ทนายความตรวจซ้ำ/},
+{k:"calc",t:"คำนวณและตั้งเตือน",s:"ค่าปรับ · ดอกเบี้ย · วันสำคัญ"}];
+function group(){
+var a=$("ana");if(!a||a.getAttribute("data-grp"))return;
+var kids=[].slice.call(a.children),secs=[],cur=null;
+kids.forEach(function(n){if(n.tagName==="H2"){cur={h:n,nodes:[n]};secs.push(cur)}else if(cur)cur.nodes.push(n)});
+var hit={};
+secs.forEach(function(s){var t=s.h.textContent;for(var i=0;i<G.length;i++){if(G[i].m&&G[i].m.test(t)){(hit[G[i].k]=hit[G[i].k]||[]).push(s);break}}});
+[].forEach.call(a.querySelectorAll("p.hint"),function(p){if(/^⚖️ ผลนี้เป็นการวิเคราะห์เบื้องต้น/.test(p.textContent.trim()))p.remove()});
+var xt=$("xtools");
+if(!Object.keys(hit).length&&!xt)return;
+a.setAttribute("data-grp","1");
+var wrap=document.createElement("div");wrap.className="tgrps";
+wrap.innerHTML='<h2>เครื่องมือเพิ่มเติม</h2><p class="hint">เลือกเปิดเฉพาะหมวดที่ต้องใช้</p>';
+G.forEach(function(g){
+var list=hit[g.k]||[],hasX=g.k==="calc"&&xt;
+if(!list.length&&!hasX)return;
+var d=document.createElement("details");d.className="tgrp";d.setAttribute("data-g",g.k);
+d.innerHTML='<summary><span class="ti"><svg viewBox="0 0 24 24" aria-hidden="true">'+IC[g.k]+'</svg></span><span><b>'+g.t+'</b><small>'+g.s+'</small></span></summary><div class="tin"></div>';
+var tin=d.querySelector(".tin");
+list.forEach(function(s){s.nodes.forEach(function(n){tin.appendChild(n)})});
+if(hasX)tin.appendChild(xt);
+wrap.appendChild(d)});
+var first=null;for(var j=0;j<kids.length&&!first;j++){if(kids[j].tagName==="H2"&&/ช่วยเรารายงาน/.test(kids[j].textContent))first=kids[j]}
+if(first)a.insertBefore(wrap,first);else a.appendChild(wrap);
+}
+var out=$("out");
+if(out){new MutationObserver(function(){setTimeout(group,0);setTimeout(group,250)}).observe(out,{childList:true});group()}
+}catch(_){}})();
+
 </script>
 </body>
 </html>

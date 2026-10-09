@@ -666,6 +666,17 @@ dialog[open]::backdrop{animation:bk .25s ease}
 }
 @media(max-width:899px){:root[data-theme="light"] body{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}:root[data-theme="light"] html,:root[data-theme="light"]{scroll-padding-bottom:140px}}
 @media not all and (prefers-color-scheme:dark){@media(max-width:899px){:root:not([data-theme="dark"]) body{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}}}
+/* ===== UX เพิ่มเติม (ใช้ตัวแปรสี ใช้ได้ทั้งสองธีม) ===== */
+.fchips{display:flex;flex-direction:column;gap:6px;margin:0 0 10px}
+.fchip{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:13.5px;color:var(--ink)}
+.fchip b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.fchip span{color:var(--mute);font-size:12.5px;flex:none}
+.fchip button{flex:none;font:inherit;font-size:13px;min-height:32px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}
+.dnote{font-size:12.5px;color:var(--mute);margin:0 0 8px}
+#hq{width:100%;margin:0 0 10px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-sizing:border-box}
+#hq:focus{outline:0;border-color:var(--gold)}
+.kbd{font-size:12px;color:var(--mute);margin:4px 0 8px}
+@media(hover:none){.kbd{display:none}}
 </style>
 </head>
 <body>
@@ -1318,6 +1329,53 @@ var f=document.getElementById("f"+m.dataset.i);if(f&&!f.classList.contains("open
 </script>
 <script>
 (function(){try{document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-tc]");if(!b)return;var t=document.getElementById(b.getAttribute("data-tc"));t&&t.click()})}catch(_){}})();
+</script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var MAXMB=25,ok=/\.(pdf|docx|txt|md|jpe?g|png|webp|heic|gif)$/i;
+function sz(n){return n>=1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB"}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+/* 1) รายการไฟล์ + ตรวจขนาด/ชนิดก่อนส่งต่อ */
+var box=document.createElement("div");box.className="fchips";box.id="fchips";box.setAttribute("aria-live","polite");
+var ost=$("ocrst");if(ost&&ost.parentNode)ost.parentNode.insertBefore(box,ost);
+var shown=[];
+function draw(){box.innerHTML=shown.map(function(f){return'<div class="fchip"><span aria-hidden="true">📄</span><b>'+esc(f.name)+'</b><span>'+sz(f.size)+'</span></div>'}).join("")+(shown.length?'<div class="fchip" style="justify-content:space-between"><span>เปลี่ยนไฟล์? กดลบแล้วเลือกใหม่</span><button type="button" id="fclr">ลบไฟล์/ข้อความ</button></div>':"")}
+box.addEventListener("click",function(e){if(e.target.id==="fclr"){shown=[];draw();var c=$("clr");c&&c.click()}});
+function guard(files,e){
+  var list=[].slice.call(files||[]);if(!list.length)return;
+  var bad=list.filter(function(f){return f.size>MAXMB*1048576||(f.type&&!/^(image\/|application\/pdf|text\/plain|application\/vnd\.openxmlformats)/.test(f.type)&&!ok.test(f.name))||(!f.type&&!ok.test(f.name))})[0];
+  var er=$("err");
+  if(bad){e.stopImmediatePropagation();e.preventDefault();var big=bad.size>MAXMB*1048576;
+    if(er)er.textContent=big?("ไฟล์ "+bad.name+" ใหญ่เกินไป ("+sz(bad.size)+") รองรับไม่เกิน "+MAXMB+" MB ลองลดขนาดหรือแบ่งเป็นหลายไฟล์"):("ไฟล์ "+bad.name+" เป็นชนิดที่ไม่รองรับ ใช้ได้เฉพาะ PDF, Word (.docx), รูปภาพ หรือไฟล์ข้อความ");
+    ["fpick","fcam"].forEach(function(i){var x=$(i);if(x)try{x.value=""}catch(_){}});return}
+  shown=list;draw()}
+document.addEventListener("change",function(e){var t=e.target;if(t&&(t.id==="fpick"||t.id==="fcam"))guard(t.files,e)},true);
+document.addEventListener("drop",function(e){var d=e.target.closest&&e.target.closest("#dz");if(d&&e.dataTransfer)guard(e.dataTransfer.files,e)},true);
+/* 2) Ctrl/⌘ + Enter = ตรวจสัญญา */
+var ta=$("txt");
+if(ta){
+  ta.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();var g=$("go");g&&!g.disabled&&g.click()}});
+  var k=document.createElement("p");k.className="kbd";k.textContent="เคล็ดลับ: กด Ctrl + Enter (Mac: ⌘ + Enter) เพื่อเริ่มตรวจ";ta.parentNode.parentNode.insertBefore(k,ta.parentNode.nextSibling);
+  /* 3) ช่องพิมพ์ขยายตามข้อความ */
+  var fit=function(){ta.style.height="auto";var m=Math.round(window.innerHeight*.6);ta.style.height=Math.min(Math.max(ta.scrollHeight+2,220),Math.max(m,220))+"px"};
+  var lastLen=-1;ta.addEventListener("input",fit);setInterval(function(){if(ta.value.length!==lastLen){lastLen=ta.value.length;fit()}},500);
+  /* 4) บันทึกร่างอัตโนมัติ (เก็บเฉพาะในแท็บนี้ ปิดแท็บแล้วหาย) */
+  var ss=null;try{ss=window.sessionStorage}catch(_){}
+  if(ss){
+    try{var dv=ss.getItem("draft");if(dv&&!ta.value){ta.value=dv;ta.dispatchEvent(new Event("input"));var os=$("ocrst");if(os)os.textContent="กู้คืนร่างล่าสุดให้แล้ว (เก็บชั่วคราวในแท็บนี้เท่านั้น ปิดแท็บแล้วจะหายไป)"}}catch(_){}
+    var tm=null,prev=ta.value;
+    setInterval(function(){if(ta.value!==prev){prev=ta.value;clearTimeout(tm);tm=setTimeout(function(){try{prev?ss.setItem("draft",prev.slice(0,60000)):ss.removeItem("draft")}catch(_){}},400)}},500);
+  }
+}
+/* 5) ค้นหาในประวัติ */
+var hl=$("hist_l");
+if(hl&&hl.parentNode){
+  var q=document.createElement("input");q.id="hq";q.type="search";q.placeholder="ค้นหาประวัติ (ประเภทสัญญา คำสรุป วันที่)";q.setAttribute("aria-label","ค้นหาประวัติ");hl.parentNode.insertBefore(q,hl);
+  var ap=function(){var v=q.value.trim().toLowerCase(),n=0;[].forEach.call(hl.querySelectorAll(".df"),function(r){var hit=!v||r.textContent.toLowerCase().indexOf(v)>-1;r.style.display=hit?"":"none";if(hit)n++});var m=$("hqn");if(v&&!n){if(!m){m=document.createElement("p");m.id="hqn";m.className="hint";m.textContent="ไม่พบรายการที่ตรงกับคำค้น";hl.appendChild(m)}}else if(m)m.remove()};
+  q.addEventListener("input",ap);new MutationObserver(function(){if(q.value)ap()}).observe(hl,{childList:true});
+}
+})();
 </script>
 </body>
 </html>

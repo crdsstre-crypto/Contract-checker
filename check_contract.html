@@ -475,6 +475,38 @@ dialog[open]::backdrop{animation:bk .25s ease}
 .disc{background:var(--soft);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:14px}.disc ul{margin:6px 0 0;padding-left:18px}.disc li{margin:4px 0}
 .mdw label{display:block;margin:10px 0;font-weight:400}.mdw .danger{border:1px solid var(--stamp);border-radius:10px;padding:10px 12px;margin-top:12px}
 @media print{body *{visibility:hidden!important}#rpt,#rpt *{visibility:visible!important}#rpt{display:block!important;position:absolute;left:0;top:0;width:100%}:root{--bg:#fff;--card:#fff;--ink:#000;--mute:#333;--line:#999;--soft:#f2f2f2}.acts2{display:none!important}}
+
+/* ===== การ์ดแพ็กเกจแบบพรีเมียม + ขั้นตอนชำระเงิน ===== */
+.packs button.pk{align-items:flex-start;text-align:left;padding:34px 12px 12px;min-height:122px;gap:3px}
+.pk-tag{position:absolute;left:10px;top:10px;overflow:hidden;font-style:normal;font-size:11.5px;font-weight:700;line-height:1;padding:5px 9px;border-radius:99px;white-space:nowrap;background:var(--soft);color:var(--mute);border:1px solid var(--line)}
+.pk.pop .pk-tag{background:color-mix(in srgb,var(--stamp) 18%,transparent);color:var(--stamp);border-color:color-mix(in srgb,var(--stamp) 45%,transparent)}
+.pk.best .pk-tag{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.pk.pop{border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.pk.best{min-height:108px}
+.packs button.pk .pk-price{font-size:26px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
+.pk-price small{font-size:15px;font-weight:600;margin-left:3px}
+.packs button.pk .pk-main{font-size:15px;font-weight:600;color:var(--ink)}
+.packs button.pk .pk-sub{font-size:12px;line-height:1.4;color:var(--mute)}
+.packs button.pk[aria-pressed="true"]::after{top:10px;right:12px;font-size:14px}
+#pay .sec{display:flex;align-items:center;margin:16px 0 6px}
+.sec .sn{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--on-gold);font-size:12px;font-weight:700;margin-right:8px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 8px}
+.sum>div{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sum small{display:block;font-size:12px;color:var(--mute)}.sum b{font-size:19px;color:var(--gold)}
+.stat{font-size:13px;margin:0 0 10px;padding:7px 10px;border-radius:8px;background:var(--soft);color:var(--mute);transition:color .25s,background .25s}
+.stat.busy{color:var(--gold)}.stat.ok{color:var(--ok)}.stat.err{color:var(--stamp)}
+.go.busy{opacity:.85;pointer-events:none}
+.go.busy::before{content:"";display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%}
+.go.ok{background:var(--ok);color:#06210f}
+@media(prefers-reduced-motion:no-preference){
+.packs.enter button{animation:pkin .3s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+@keyframes pkin{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.pk.best .pk-tag::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shim 3.6s ease-in-out infinite}
+@keyframes shim{0%,55%{transform:translateX(-120%)}90%,100%{transform:translateX(120%)}}
+.go.busy::before{animation:spin2 .8s linear infinite}
+.go.ok{animation:okp .45s ease-out}@keyframes okp{40%{transform:scale(1.03)}}
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.packs button.pk:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 10px 26px -14px var(--gold)}}
 </style>
 </head>
 <body>
@@ -566,9 +598,9 @@ dialog[open]::backdrop{animation:bk .25s ease}
 <p class="hint" id="pbal"></p><p class="err" id="pmsg"></p>
 <button class="link" id="rcpb" type="button" style="display:none">🧾 ใบเสร็จของฉัน</button>
 <label class="tosl"><input type="checkbox" id="pay_cb"> ฉันยอมรับ<a href="#" id="pay_tos">ข้อกำหนดการใช้งาน</a> รวมถึงข้อจำกัดความรับผิด (สูงสุดไม่เกินจำนวนเงินที่ชำระในช่วง 30 วันก่อนเกิดเหตุ) และเครดิตไม่สามารถขอคืนเงินได้ เว้นแต่ระบบขัดข้อง</label>
-<div class="packs" id="packs"></div>
-<div class="types" id="meth"></div>
-<div id="pbody"></div>
+<p class="sec"><span class="sn">1</span>เลือกแพ็กเกจ</p><div class="packs" id="packs"></div>
+<p class="sec"><span class="sn">2</span>เลือกช่องทางชำระเงิน</p><div class="types" id="meth"></div>
+<p class="sec"><span class="sn">3</span>ชำระเงินและตรวจสอบ</p><div id="pbody"></div>
 </div></dialog>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -966,7 +998,7 @@ async function JR(u,o,n=0){let r;try{r=await fetch(CFG.api+u,o)}catch(e){if(n<2)
 if([502,503,504].includes(r.status)&&n<2){await new Promise(s=>setTimeout(s,5000));return JR(u,o,n+1)}
 const d=await r.json().catch(()=>({}));if(!d.ok&&!d.error)d.error="http_"+r.status;return d}
 const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
-function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจได้อีก <b id=\"crc\">"+Math.floor(cred/CFG.cost)+"</b> ครั้ง";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").textContent="คงเหลือ "+cred+" เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
+function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจได้อีก <b id=\"crc\">"+Math.floor(cred/CFG.cost)+"</b> ครั้ง";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").innerHTML="คงเหลือ <b id=\"pbn\">"+(+cred||0)+"</b> เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
 async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}
 async function spend(){if(CFG.api){try{cred=(await J("/spend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,n:CFG.cost})})).credits}catch(e){}}else{cred=Math.max(0,cred-CFG.cost);lset(cred)}showCr();$("cr").classList.remove("pop");void $("cr").offsetWidth;$("cr").classList.add("pop")}
 function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
@@ -974,12 +1006,16 @@ const tl=(i,v)=>i+String(v.length).padStart(2,"0")+v;
 function ppay(id,amt){id=id.replace(/\D/g,"");const t=id.length>=15?"03":id.length>=13?"02":"01",v=t==="01"?"0066"+id.slice(1):id;const p=tl("00","01")+tl("01","12")+tl("29",tl("00","A000000677010111")+tl(t,v))+tl("53","764")+tl("54",amt.toFixed(2))+tl("58","TH")+"6304";return p+crc(p)}
 function drawPay(){
 const P=CFG.packs[pk];
-$("packs").innerHTML=CFG.packs.map((x,i)=>`<button type="button" data-p="${i}" aria-pressed="${i===pk}"${x.days?' style="grid-column:1/-1"':""}><b>${x.b} ฿${x.days?" / "+x.days+" วัน":""}</b><span>${x.days?"แพ็กเกจรายเดือน ตรวจได้วันละ "+CFG.passDaily+" ครั้ง นาน "+x.days+" วัน":x.c+" เครดิต"}</span></button>`).join("");
+$("packs").innerHTML=CFG.packs.map((x,i)=>{const mo=!!x.days,cls=mo?"best":x.b===100?"pop":"",tag=mo?"แพ็กเกจรายเดือนสุดคุ้ม":x.b===50?"เริ่มต้น":x.b===100?"ยอดนิยม":"เติมเพิ่ม",
+main=mo?"ตรวจได้วันละ "+CFG.passDaily+" ครั้ง นาน "+x.days+" วัน":x.c+" เครดิต",
+sub=mo?"เฉลี่ยต่ำสุด ≈ "+(x.b/(CFG.passDaily*x.days)).toFixed(0)+" ฿ ต่อครั้ง ถ้าใช้ครบทุกวัน":"≈ "+(x.b/(x.c/CFG.cost)).toFixed(1)+" ฿ ต่อการตรวจ 1 ครั้ง";
+return `<button type="button" class="pk ${cls}" style="--i:${i}${mo?";grid-column:1/-1":""}" data-p="${i}" aria-pressed="${i===pk}"><i class="pk-tag">${tag}</i><b class="pk-price">${x.b}<small>฿${mo?" / "+x.days+" วัน":""}</small></b><span class="pk-main">${main}</span><span class="pk-sub">${sub}</span></button>`}).join("");
 $("meth").innerHTML=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney"].map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===mt}">${m}</button>`).join("");
 const mn=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney Wallet"][mt];
-let h="";
-if(mt===1)h=`<div class="acc"><p>${esc(CFG.bank.name)}</p><p><b>${esc(CFG.bank.no)}</b> <button class="link" style="display:inline;margin:0" type="button" data-cp="${esc(CFG.bank.no.replace(/\D/g,""))}">คัดลอก</button></p><p>ชื่อบัญชี ${esc(CFG.bank.acct)}</p><p>ยอดที่ต้องโอน <b>${P.b} บาท</b></p></div>`;
-else h=`<div class="qr" id="qr"></div><p class="hint" style="text-align:center">${mt===2?`สแกนด้วยแอป TrueMoney หรือโอนเข้าเบอร์ <b>${esc(CFG.truemoney)}</b>`:"สแกนด้วยแอปธนาคารใดก็ได้"} · ยอด ${P.b} บาท</p>`;
+const sumH=`<div class="sum"><div><small>ยอดที่ต้องชำระ</small><b>${P.b} ฿</b></div><div><small>${P.days?"สิทธิ์ที่ได้รับ":"เครดิตที่ได้รับ"}</small><b>${P.days?P.days+" วัน":P.c+" เครดิต"}</b></div></div><p class="stat" id="pst">สถานะ: รอการชำระเงิน — เครดิตจะเพิ่มหลังตรวจสอบการชำระเงินสำเร็จเท่านั้น</p>`;
+let h=sumH;
+if(mt===1)h+=`<div class="acc"><p>${esc(CFG.bank.name)}</p><p><b>${esc(CFG.bank.no)}</b> <button class="link" style="display:inline;margin:0" type="button" data-cp="${esc(CFG.bank.no.replace(/\D/g,""))}">คัดลอก</button></p><p>ชื่อบัญชี ${esc(CFG.bank.acct)}</p><p>ยอดที่ต้องโอน <b>${P.b} บาท</b></p></div>`;
+else h+=`<div class="qr" id="qr"></div><p class="hint" style="text-align:center">${mt===2?`สแกนด้วยแอป TrueMoney หรือโอนเข้าเบอร์ <b>${esc(CFG.truemoney)}</b>`:"สแกนด้วยแอปธนาคารใดก็ได้"} · ยอด ${P.b} บาท</p>`;
 if(P.days)h+=`<p class="hint">*ตรวจได้สูงสุด ${CFG.passDaily} ครั้งต่อวัน (รีเซ็ตเที่ยงคืน) ไม่ต่ออายุอัตโนมัติ เมื่อครบ ${P.days} วันจะกลับไปใช้เครดิตตามปกติ</p>`;
 h+=`<p class="ref">รหัสอ้างอิง <b>${ref}</b></p><a class="go" id="paid" href="${esc(CFG.contact)}" target="_blank" rel="noopener">โอนแล้ว ส่งสลิปยืนยัน</a>`;
 if(CFG.api)h+=`<label class="go" id="slipb" style="display:block;text-align:center;cursor:pointer;margin-top:10px">แนบสลิป · เติมเครดิตอัตโนมัติ<input type="file" id="slipf" accept="image/*" hidden></label><p class="hint" style="text-align:center">ใช้รูปสลิปต้นฉบับจากแอปธนาคาร (ไม่ครอบตัด) เห็น QR เล็กบนสลิปชัดเจน</p>`;
@@ -987,7 +1023,7 @@ if(!CFG.api)h+=`<button class="link" id="dpay" type="button">โหมดทด�
 $("pbody").innerHTML=h;
 if(mt!==1){const q=$("qr");q.innerHTML="";if(window.QRCode)new QRCode(q,{text:ppay(mt===2?CFG.truemoney:CFG.promptpay,P.b),width:200,height:200,correctLevel:QRCode.CorrectLevel.M});else q.textContent="โหลด QR ไม่สำเร็จ"}
 $("pay").dataset.mn=mn}
-function openPay(msg){ref="CK"+Math.floor(1e4+Math.random()*9e4);$("pmsg").textContent=msg||"";showCr();drawPay();payGate();if(!$("pay").open)$("pay").showModal()}
+function openPay(msg){ref="CK"+Math.floor(1e4+Math.random()*9e4);$("pmsg").textContent=msg||"";$("packs").classList.add("enter");showCr();drawPay();payGate();setTimeout(()=>$("packs").classList.remove("enter"),900);if(!$("pay").open)$("pay").showModal()}
 $("cradd").onclick=()=>openPay();$("crn").onclick=()=>openPay();
 $("px").onclick=()=>$("pay").close();
 $("pay").addEventListener("click",e=>{
@@ -1044,20 +1080,25 @@ if(rr.status===429&&d.error==="tts_cap"){$("ttsn").textContent=" วันนี
 browserTTS(r,b)}catch(e){clearInterval(window._tp);ttsOn=false;browserTTS(r,b)}}}
 /* ===== ตรวจสลิปอัตโนมัติ (อ่าน QR บนสลิปในเครื่อง ส่งเฉพาะข้อความ QR ให้เซิร์ฟเวอร์) ===== */
 const SLIPERR={tos:"กรุณายอมรับข้อกำหนดการใช้งานก่อน",amount_mismatch:"ยอดบนสลิปไม่ตรงกับแพ็กเกจที่เลือก",duplicate:"สลิปนี้ถูกใช้เติมเครดิตไปแล้ว",recv_mismatch:"สลิปนี้ไม่ได้โอนเข้าบัญชีของร้าน",bad_slip:"ตรวจสลิปไม่ผ่าน",not_configured:"ระบบตรวจสลิปอัตโนมัติยังไม่เปิดใช้ กด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ",upstream:"ระบบตรวจสลิปขัดข้อง ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่",bad_request:"ข้อมูลสลิปไม่ถูกต้อง ลองใช้รูปสลิปต้นฉบับที่ไม่ครอบตัด หรือเลือกแพ็กเกจใหม่",not_found:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_404:"เซิร์ฟเวอร์ยังเป็นเวอร์ชันเก่าที่ไม่มีระบบตรวจสลิป (ต้องอัปเดตโค้ดบน Render)",http_502:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_503:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่",http_504:"เซิร์ฟเวอร์กำลังเริ่มทำงาน รอประมาณ 1 นาทีแล้วลองใหม่"};
+function countUp(a,b){const els=[$("crn"),$("pbn")].filter(Boolean);if(b<=a||passUntil>Date.now()||matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+const t0=performance.now(),D=900,c=$("cr");if(c){c.classList.add("pop");setTimeout(()=>c.classList.remove("pop"),1300)}
+(function f(t){const p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3),v=p<1?Math.round(a+(b-a)*e):b;els.forEach(x=>{if(x.id!=="crn"||passUntil<=Date.now())x.textContent=v});if(p<1)requestAnimationFrame(f)})(t0)}
+function pst(t,k){const e=$("pst");if(e){e.textContent="สถานะ: "+t;e.className="stat "+(k||"")}}
+function setBtn(on,ok){const b=$("slipb");if(!b)return;if(b.dataset.t===undefined)b.dataset.t=b.childNodes[0].nodeValue;b.childNodes[0].nodeValue=on?"กำลังตรวจสลิป…":ok?"✓ สำเร็จ":b.dataset.t;b.classList.toggle("busy",on);b.classList.toggle("ok",!!ok);if(ok)setTimeout(()=>{b.classList.remove("ok");b.childNodes[0].nodeValue=b.dataset.t},2600)}
 async function slipQR(f){const url=URL.createObjectURL(f),im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url});
 const sc=Math.min(1,3000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
 const g=c.getContext("2d");g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
 if(!window.jsQR)return null;const d=g.getImageData(0,0,c.width,c.height),r=jsQR(d.data,d.width,d.height,{inversionAttempts:"attemptBoth"});return r&&r.data}
 $("pay").addEventListener("change",async e=>{
 if(e.target.id!=="slipf"||!e.target.files[0])return;const f=e.target.files[0],m=$("pmsg");e.target.value="";
-m.style.color="";m.textContent="กำลังอ่านสลิป…";
+m.style.color="";m.textContent="กำลังอ่านสลิป…";pst("กำลังอ่านสลิป…","busy");setBtn(true);
 try{const q=await slipQR(f);
 if(!q){m.textContent="อ่าน QR บนสลิปไม่ได้ ลองใช้สลิปต้นฉบับที่ไม่ครอบตัด หรือกด 'โอนแล้ว ส่งสลิปยืนยัน' ให้แอดมินตรวจ";return}
 m.textContent="กำลังตรวจกับธนาคาร… (ถ้าเซิร์ฟเวอร์เพิ่งตื่นอาจใช้เวลาประมาณ 1 นาที)";
 const d=await JR("/slip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,payload:q,baht:CFG.packs[pk].b,ref})});
-if(d.ok){cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;showCr();m.textContent=d.days?"✅ เปิดแพ็กเกจรายเดือนแล้ว ใช้ได้ถึง "+new Date(d.passUntil).toLocaleDateString("th-TH"):"✅ เติมเครดิตสำเร็จ +"+d.added+" เครดิต";setTimeout(()=>{if($("pay").open)$("pay").close()},1800)}
-else m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ"+(d.error?" (รหัส: "+d.error+")":""))+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")
-}catch(x){console.error("slip",x);m.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ รอสักครู่แล้วลองใหม่อีกครั้ง"}});
+if(d.ok){const was=cred;cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;showCr();countUp(was,cred);pst("✅ ตรวจสลิปสำเร็จแล้ว","ok");setBtn(false,true);m.textContent=d.days?"✅ เปิดแพ็กเกจรายเดือนแล้ว ใช้ได้ถึง "+new Date(d.passUntil).toLocaleDateString("th-TH"):"✅ เติมเครดิตสำเร็จ +"+d.added+" เครดิต";setTimeout(()=>{if($("pay").open)$("pay").close()},2800)}
+else{pst("ยังไม่ได้รับการยืนยันการชำระเงิน","err");m.textContent=(SLIPERR[d.error]||"ตรวจสลิปไม่สำเร็จ"+(d.error?" (รหัส: "+d.error+")":""))+(d.msg&&d.error==="bad_slip"?" ("+d.msg+")":"")}
+}catch(x){console.error("slip",x);pst("ยังไม่ได้รับการยืนยันการชำระเงิน","err");m.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ รอสักครู่แล้วลองใหม่อีกครั้ง"}finally{if($("slipb")&&$("slipb").classList.contains("busy"))setBtn(false)}});
 loadCr();
 if(CFG.api){$("refb").style.display="inline-block";$("rcpb").style.display="inline-block"}
 try{if(localStorage.getItem("tos")===TOSV)claimRef()}catch(e){}

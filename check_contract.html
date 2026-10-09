@@ -2,6 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#101A30">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>เช็กสัญญา — ตรวจความเสี่ยงสัญญาฟรีแลนซ์และกู้ยืมเงิน</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
@@ -826,6 +827,113 @@ details.trustcard .note{margin:14px 0 0;padding-top:12px;font-size:12.5px}
 
 .head .hb .sum{display:block}
 
+
+/* ======================================================================
+   CHAMPAGNE GOLD x MIDNIGHT NAVY — เลเยอร์ปรับดีไซน์ (ต่อท้าย ไม่ลบของเดิม)
+   พาเลต: Midnight Navy #101A30 · Deep Blue #142440 · Champagne Gold #DCC28A
+          Warm Ivory #F5F0E5 · Muted Slate #A9B5CC
+   ====================================================================== */
+:root{--hl:transparent;--gl:16%}
+:root[data-theme="dark"]{--bg:#101A30;--card:#142440;--soft:#12203A;--line:#26385C;--ink:#F5F0E5;--mute:#A9B5CC;--gold:#DCC28A;--gold2:#EBDAB0;--gold-glow:rgba(220,194,138,.14);--aura:rgba(220,194,138,.10);--warn:#DCC28A;--ok:#5FCFA6;--hl:rgba(255,255,255,.07);--gl:38%;--sh:0 1px 0 rgba(255,255,255,.04) inset,0 18px 38px -20px rgba(2,7,18,.85),0 2px 6px rgba(2,7,18,.35)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101A30;--card:#142440;--soft:#12203A;--line:#26385C;--ink:#F5F0E5;--mute:#A9B5CC;--gold:#DCC28A;--gold2:#EBDAB0;--gold-glow:rgba(220,194,138,.14);--aura:rgba(220,194,138,.10);--warn:#DCC28A;--ok:#5FCFA6;--hl:rgba(255,255,255,.07);--gl:38%;--sh:0 1px 0 rgba(255,255,255,.04) inset,0 18px 38px -20px rgba(2,7,18,.85),0 2px 6px rgba(2,7,18,.35)}}
+
+/* ---------- พื้นหลัง: เส้นเอกสารจาง ๆ + เครือข่ายเส้นทองมุมซ้ายบน ---------- */
+.bg{background:radial-gradient(900px 520px at 85% -5%,rgba(220,194,138,.10),transparent 70%),radial-gradient(760px 520px at -10% 105%,rgba(95,207,166,.05),transparent 70%),repeating-linear-gradient(transparent 0 33px,rgba(220,194,138,.05) 33px 34px)}
+.bg::before{content:"";position:absolute;top:0;left:0;width:min(130%,680px);height:560px;background:var(--gold);opacity:.15;pointer-events:none;
+-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 560 480%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.1%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M20 40L150 10%22/%3E%3Cpath d=%22M150 10L260 70%22/%3E%3Cpath d=%22M260 70L120 130%22/%3E%3Cpath d=%22M120 130L20 40%22/%3E%3Cpath d=%22M120 130L330 170%22/%3E%3Cpath d=%22M260 70L330 170%22/%3E%3Cpath d=%22M330 170L210 230%22/%3E%3Cpath d=%22M210 230L120 130%22/%3E%3Cpath d=%22M210 230L60 260%22/%3E%3Cpath d=%22M60 260L120 130%22/%3E%3Cpath d=%22M260 70L400 60%22/%3E%3Cpath d=%22M400 60L330 170%22/%3E%3Cpath d=%22M400 60L470 150%22/%3E%3Cpath d=%22M470 150L330 170%22/%3E%3Cpath d=%22M470 150L520 230%22/%3E%3Cpath d=%22M520 230L430 300%22/%3E%3Cpath d=%22M430 300L330 170%22/%3E%3Cpath d=%22M430 300L300 290%22/%3E%3Cpath d=%22M300 290L210 230%22/%3E%3Cpath d=%22M300 290L150 360%22/%3E%3Cpath d=%22M150 360L210 230%22/%3E%3Cpath d=%22M150 360L60 260%22/%3E%3Cpath d=%22M150 360L90 440%22/%3E%3Cpath d=%22M60 260L90 440%22/%3E%3Cpath d=%22M330 170L300 290%22/%3E%3C/g%3E%3Cg fill=%22%23000%22%3E%3Ccircle cx=%2220%22 cy=%2240%22 r=%222.6%22/%3E%3Ccircle cx=%22150%22 cy=%2210%22 r=%222.6%22/%3E%3Ccircle cx=%22260%22 cy=%2270%22 r=%222.6%22/%3E%3Ccircle cx=%22120%22 cy=%22130%22 r=%222.6%22/%3E%3Ccircle cx=%22330%22 cy=%22170%22 r=%222.6%22/%3E%3Ccircle cx=%22210%22 cy=%22230%22 r=%222.6%22/%3E%3Ccircle cx=%2260%22 cy=%22260%22 r=%222.6%22/%3E%3Ccircle cx=%22400%22 cy=%2260%22 r=%222.6%22/%3E%3Ccircle cx=%22470%22 cy=%22150%22 r=%222.6%22/%3E%3Ccircle cx=%22300%22 cy=%22290%22 r=%222.6%22/%3E%3Ccircle cx=%22150%22 cy=%22360%22 r=%222.6%22/%3E%3Ccircle cx=%22430%22 cy=%22300%22 r=%222.6%22/%3E%3Ccircle cx=%22520%22 cy=%22230%22 r=%222.6%22/%3E%3Ccircle cx=%2290%22 cy=%22440%22 r=%222.6%22/%3E%3C/g%3E%3C/svg%3E") no-repeat 0 0/560px auto;mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 560 480%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.1%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M20 40L150 10%22/%3E%3Cpath d=%22M150 10L260 70%22/%3E%3Cpath d=%22M260 70L120 130%22/%3E%3Cpath d=%22M120 130L20 40%22/%3E%3Cpath d=%22M120 130L330 170%22/%3E%3Cpath d=%22M260 70L330 170%22/%3E%3Cpath d=%22M330 170L210 230%22/%3E%3Cpath d=%22M210 230L120 130%22/%3E%3Cpath d=%22M210 230L60 260%22/%3E%3Cpath d=%22M60 260L120 130%22/%3E%3Cpath d=%22M260 70L400 60%22/%3E%3Cpath d=%22M400 60L330 170%22/%3E%3Cpath d=%22M400 60L470 150%22/%3E%3Cpath d=%22M470 150L330 170%22/%3E%3Cpath d=%22M470 150L520 230%22/%3E%3Cpath d=%22M520 230L430 300%22/%3E%3Cpath d=%22M430 300L330 170%22/%3E%3Cpath d=%22M430 300L300 290%22/%3E%3Cpath d=%22M300 290L210 230%22/%3E%3Cpath d=%22M300 290L150 360%22/%3E%3Cpath d=%22M150 360L210 230%22/%3E%3Cpath d=%22M150 360L60 260%22/%3E%3Cpath d=%22M150 360L90 440%22/%3E%3Cpath d=%22M60 260L90 440%22/%3E%3Cpath d=%22M330 170L300 290%22/%3E%3C/g%3E%3Cg fill=%22%23000%22%3E%3Ccircle cx=%2220%22 cy=%2240%22 r=%222.6%22/%3E%3Ccircle cx=%22150%22 cy=%2210%22 r=%222.6%22/%3E%3Ccircle cx=%22260%22 cy=%2270%22 r=%222.6%22/%3E%3Ccircle cx=%22120%22 cy=%22130%22 r=%222.6%22/%3E%3Ccircle cx=%22330%22 cy=%22170%22 r=%222.6%22/%3E%3Ccircle cx=%22210%22 cy=%22230%22 r=%222.6%22/%3E%3Ccircle cx=%2260%22 cy=%22260%22 r=%222.6%22/%3E%3Ccircle cx=%22400%22 cy=%2260%22 r=%222.6%22/%3E%3Ccircle cx=%22470%22 cy=%22150%22 r=%222.6%22/%3E%3Ccircle cx=%22300%22 cy=%22290%22 r=%222.6%22/%3E%3Ccircle cx=%22150%22 cy=%22360%22 r=%222.6%22/%3E%3Ccircle cx=%22430%22 cy=%22300%22 r=%222.6%22/%3E%3Ccircle cx=%22520%22 cy=%22230%22 r=%222.6%22/%3E%3Ccircle cx=%2290%22 cy=%22440%22 r=%222.6%22/%3E%3C/g%3E%3C/svg%3E") no-repeat 0 0/560px auto}
+:root[data-theme="light"] .bg::before{opacity:.10}
+@media not all and (prefers-color-scheme:dark){:root:not([data-theme="dark"]) .bg::before{opacity:.10}}
+
+/* ---------- ไอคอนเส้นทองชุดเดียวกันทั้งหน้า ---------- */
+.di,.ti,.dzi,#types button>span{color:var(--gold);background:linear-gradient(145deg,color-mix(in srgb,var(--gold) 20%,transparent),color-mix(in srgb,var(--gold) 6%,transparent));border:1px solid color-mix(in srgb,var(--gold) 36%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.di svg,.ti svg,.dzi svg,#types button>span svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#types button>span{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;font-size:0;margin:0 0 12px}
+.dz .dzi{display:grid;place-items:center;width:58px;height:58px;border-radius:17px;margin:0 auto 12px;font-size:0}
+.dz .dzi svg{width:28px;height:28px}
+.dz .cap button{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.dz .cap button svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.warn{display:flex;gap:10px;align-items:flex-start}
+.warn .wi{flex:none;line-height:0;margin-top:2px}
+.warn .wi svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.li svg{width:15px;height:15px;vertical-align:-3px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- แสงทอง Champagne หลังโลโก้และปุ่มหลัก ---------- */
+.dtop .brand{position:relative}
+.dtop .brand::before{content:"";position:absolute;left:-24px;top:50%;width:100px;height:100px;margin-top:-50px;border-radius:50%;z-index:-1;pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--gold) var(--gl),transparent) 0,transparent 66%)}
+.dtop .logo{box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 55%,transparent),0 10px 26px -8px color-mix(in srgb,var(--gold) 80%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.dcard.main{background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 52%),var(--btn,linear-gradient(135deg,var(--gold2),var(--gold)));
+box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 55%,transparent),0 18px 38px -14px color-mix(in srgb,var(--gold) 85%,transparent),0 0 56px -12px color-mix(in srgb,var(--gold) 70%,transparent),inset 0 1px 0 rgba(255,255,255,.45)}
+#go{box-shadow:0 14px 34px -10px color-mix(in srgb,var(--gold) 85%,transparent),0 0 40px -14px var(--gold),0 1px 0 rgba(255,255,255,.35) inset}
+#go:disabled{box-shadow:none}
+
+/* ---------- ความลึกของการ์ด: ขอบบนสว่าง เงาซ้อนชั้น ลำดับความสำคัญชัด ---------- */
+.panel,.dcard:not(.main),.tgrp,.head,.flag,.crbar,.trustcard,.sample{box-shadow:var(--sh),inset 0 1px 0 var(--hl)}
+.dcard:not(.main){border-color:color-mix(in srgb,var(--gold) 14%,var(--line))}
+.dchips button{background:transparent}
+.tgrp{transition:border-color .25s,box-shadow .3s}
+.tgrp[open]{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));box-shadow:var(--sh),0 0 0 1px color-mix(in srgb,var(--gold) 14%,transparent),0 22px 44px -28px var(--gold)}
+.tgrp .tin{background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 5%,transparent),transparent 120px)}
+
+/* ---------- การ์ดตัวอย่างผลตรวจ (หน้าแรก) ---------- */
+.sample{position:relative;display:block;width:100%;margin:14px 0 0;padding:16px;text-align:left;font:inherit;color:var(--ink);cursor:pointer;overflow:hidden;
+border-radius:20px;border:1px solid color-mix(in srgb,var(--gold) 32%,var(--line));
+background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 10%,var(--card)),var(--card) 62%);transition:transform .2s,border-color .25s,box-shadow .3s}
+.sample:active{transform:scale(.985)}
+.sm-tag{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;padding:4px 11px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--gold-ink,var(--gold));border-radius:99px;border:1px solid color-mix(in srgb,var(--gold) 42%,transparent);background:var(--gold-glow)}
+.sm-body{display:flex;align-items:center;gap:18px}
+.sm-ring{position:relative;flex:none;width:96px;height:96px}
+.sm-ring svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+.sm-ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.sm-ring .t{stroke:color-mix(in srgb,var(--line) 85%,transparent)}
+.sm-ring .p{stroke:var(--stamp);stroke-dasharray:289;stroke-dashoffset:calc(289 - 289 * var(--k) / 100);filter:drop-shadow(0 0 5px color-mix(in srgb,var(--stamp) 55%,transparent))}
+.sm-n{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.sm-n b{font:700 24px/1 "Noto Serif Thai",serif;font-variant-numeric:tabular-nums}
+.sm-n small{margin-top:4px;font-size:11.5px;font-weight:600;color:var(--stamp)}
+.sm-list{flex:1;min-width:0;display:grid;gap:9px}
+.sm-i{display:flex;align-items:center;gap:9px;min-width:0;font-size:14.5px;line-height:1.4}
+.sm-i::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--c,var(--gold));box-shadow:0 0 8px var(--c,var(--gold))}
+.sm-i span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm-cta{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:14.5px;font-weight:600;color:var(--gold-ink,var(--gold))}
+.sm-cta svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- แอนิเมชันสั้น ๆ (ปิดอัตโนมัติถ้าผู้ใช้ตั้งลดการเคลื่อนไหว) ---------- */
+@media(prefers-reduced-motion:no-preference){
+.dtop,.dash>*{animation:cg-rise .55s cubic-bezier(.2,.8,.2,1) backwards}
+.dash>:nth-child(2){animation-delay:.05s}.dash>:nth-child(3){animation-delay:.1s}.dash>:nth-child(4){animation-delay:.15s}
+.dash>:nth-child(5){animation-delay:.2s}.dash>:nth-child(6){animation-delay:.25s}.dash>:nth-child(7){animation-delay:.3s}.dash>:nth-child(8){animation-delay:.35s}
+@keyframes cg-rise{from{opacity:0;transform:translateY(14px)}}
+.dash>.dcard.main{animation:cg-rise .55s cubic-bezier(.2,.8,.2,1) .1s backwards,cg-breathe 5.5s ease-in-out 1s infinite}
+@keyframes cg-breathe{50%{box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 70%,transparent),0 22px 46px -12px color-mix(in srgb,var(--gold) 100%,transparent),0 0 78px -10px color-mix(in srgb,var(--gold) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.45)}}
+.dtop .logo{animation:cg-glow 5.5s ease-in-out infinite}
+@keyframes cg-glow{50%{box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 70%,transparent),0 12px 34px -6px var(--gold),inset 0 1px 0 rgba(255,255,255,.4)}}
+.sm-ring .p{animation:cg-ring 1.5s cubic-bezier(.2,.8,.2,1) .35s backwards}
+@keyframes cg-ring{from{stroke-dashoffset:289}}
+.tgrp[open] .tin{animation:cg-tin .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes cg-tin{from{opacity:0;transform:translateY(-6px)}}
+}
+@media(hover:hover){
+.dcard{transition:transform .2s,border-color .25s,box-shadow .3s}
+.dcard:hover{transform:translateY(-2px)}
+.dcard:not(.main):hover,.sample:hover{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));box-shadow:var(--sh),0 18px 34px -22px var(--gold)}
+.dcard:hover:active{transform:scale(.985)}
+}
+
+/* ---------- มือถือ + หน้าจอใหญ่ ---------- */
+main{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+@media(max-width:380px){.sm-body{flex-direction:column;align-items:flex-start}.sm-ring{width:88px;height:88px}.sm-list{width:100%}}
+@media(min-width:960px){
+main{max-width:900px}
+.dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);column-gap:28px;align-items:start}
+.dash>h1,.dash>.dsub,.dash>.dmore,.dash>.scope{grid-column:1/-1}
+.dash>.dcard.main,.dash>.dgrid,.dash>.dcard.row{grid-column:1}
+.dash>.sample{grid-column:2;grid-row:3/6;margin-top:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+}
+/* แก้ไขหลังทดสอบ */
+.dz .cap button[hidden]{display:none}
+.sm-ring svg{overflow:visible}
+.sm-tag{align-self:flex-start}
+@media(max-width:480px){.rolebox label{flex:0 0 100%}#role{flex:1 1 100%;min-width:100%}}
+
 </style>
 </head>
 <body>
@@ -863,10 +971,10 @@ details.trustcard .note{margin:14px 0 0;padding-top:12px;font-size:12.5px}
 <section class="panel">
 <p class="sec">① เลือกประเภทสัญญา</p><div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
 <p class="sec">② อัปโหลดสัญญา</p>
-<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>อัปโหลดสัญญา</b><span>ลากไฟล์มาวาง หรือถ่ายรูป · PDF, Word, รูปภาพ</span>
+<div class="dz" id="dz"><div class="dzi" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6"/><path d="M9.5 13.5L12 11l2.5 2.5"/></svg></div><b>อัปโหลดสัญญา</b><span>ลากไฟล์มาวาง หรือถ่ายรูป · PDF, Word, รูปภาพ</span>
 <div class="cap" id="cap">
-<button type="button" id="bcam">📷 ถ่ายรูปสัญญา</button>
-<button type="button" id="bpick">📎 เลือกไฟล์</button>
+<button type="button" id="bcam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.5h6.8L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.4"/></svg><span>ถ่ายรูปสัญญา</span></button>
+<button type="button" id="bpick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5l-7.8 7.8a5 5 0 01-7-7l8.2-8.2a3.3 3.3 0 014.7 4.7l-8.2 8.2a1.7 1.7 0 01-2.4-2.4l7.4-7.4"/></svg><span>เลือกไฟล์</span></button>
 <button type="button" id="bstop" class="stop" hidden>หยุดอ่าน</button>
 <input type="file" id="fcam" accept="image/*" capture="environment" hidden>
 <input type="file" id="fpick" accept="image/*,.pdf,application/pdf,.txt,.md,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
@@ -875,8 +983,8 @@ details.trustcard .note{margin:14px 0 0;padding-top:12px;font-size:12.5px}
 <p id="ocrst" role="status"></p>
 <div class="tw"><textarea id="txt" placeholder="วางข้อความสัญญาที่นี่ หรือถ่ายรูป/อัปโหลดไฟล์ด้านบน…"></textarea><button type="button" id="clr" class="clr" aria-label="ล้างข้อความ" hidden>✕ ล้าง</button></div>
 <details class="opt"><summary>ตัวเลือกเพิ่มเติม (ชื่อลูกค้า)</summary><input id="cn" placeholder="ชื่อลูกค้า/บริษัท (ไม่บังคับ — ใช้เช็กสมุดบันทึกลูกค้าของคุณ)" style="margin-bottom:8px"></details>
-<p class="warn">⚠️ <b>AI ไม่ใช่ทนายความ</b> ผลวิเคราะห์ใช้เป็นหลักฐานทางกฎหมายไม่ได้ สัญญามูลค่าสูงควรให้ทนายตรวจก่อนเซ็น</p>
-<label class="note" style="display:block;margin:8px 0"><input type="checkbox" id="mk" checked> 🔒 ปิดบังข้อมูลส่วนตัว (เลขบัตร เบอร์โทร เลขบัญชี อีเมล) ก่อนส่งให้ AI<br><small>รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังข้อมูลส่วนตัวก่อนถ่ายหรืออัปโหลด</small></label>
+<p class="warn"><span class="wi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l9.2 16H2.8z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.3" r=".6" fill="currentColor"/></svg></span><span><b>AI ไม่ใช่ทนายความ</b> ผลวิเคราะห์ใช้เป็นหลักฐานทางกฎหมายไม่ได้ สัญญามูลค่าสูงควรให้ทนายตรวจก่อนเซ็น</span></p>
+<label class="note" style="display:block;margin:8px 0"><input type="checkbox" id="mk" checked> <span class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 018 0v2.5"/></svg></span> ปิดบังข้อมูลส่วนตัว (เลขบัตร เบอร์โทร เลขบัญชี อีเมล) ก่อนส่งให้ AI<br><small>รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังข้อมูลส่วนตัวก่อนถ่ายหรืออัปโหลด</small></label>
 <button type="button" class="chip" id="demo">⚡ ลองกดดูตัวอย่างสัญญาฟรีแลนซ์โดนเอาเปรียบ</button>
 <div class="row">
 <button class="go" id="go" type="button">ตรวจสัญญา · ใช้ 1 เครดิต</button>
@@ -941,7 +1049,7 @@ const TYPES=["สัญญาจ้างฟรีแลนซ์","สัญญ
 let type=TYPES[0];
 const $=id=>document.getElementById(id);
 const tw=$("types");
-const TM={"สัญญาจ้างฟรีแลนซ์":["💼","จ้างงาน","ค่าจ้าง / ลิขสิทธิ์"],"สัญญากู้ยืมเงิน":["💰","กู้ยืม","ดอกเบี้ย / ผิดนัด / ค้ำ"],"สัญญาเช่า":["🏠","เช่า","ค่าเช่า / มัดจำ / ยกเลิก"],"อื่น ๆ":["⋯","อื่น ๆ","ตรวจความเสี่ยงทั่วไป"]};
+const TM={"สัญญาจ้างฟรีแลนซ์":["<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2\"/><path d=\"M3 13h18\"/></svg>","จ้างงาน","ค่าจ้าง / ลิขสิทธิ์"],"สัญญากู้ยืมเงิน":["<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M14.6 9.3c-.5-.8-1.5-1.3-2.6-1.3-1.4 0-2.5.8-2.5 2 0 2.9 5 1.5 5 4.1 0 1.2-1.1 2-2.5 2-1.1 0-2.1-.5-2.6-1.3\"/><path d=\"M12 6.5V8M12 16v1.5\"/></svg>","กู้ยืม","ดอกเบี้ย / ผิดนัด / ค้ำ"],"สัญญาเช่า":["<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 11l9-8 9 8\"/><path d=\"M5 10v10h14V10\"/><path d=\"M10 20v-5h4v5\"/></svg>","เช่า","ค่าเช่า / มัดจำ / ยกเลิก"],"อื่น ๆ":["<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"6\" cy=\"12\" r=\"1.3\" fill=\"currentColor\"/><circle cx=\"12\" cy=\"12\" r=\"1.3\" fill=\"currentColor\"/><circle cx=\"18\" cy=\"12\" r=\"1.3\" fill=\"currentColor\"/></svg>","อื่น ๆ","ตรวจความเสี่ยงทั่วไป"]};
 function drawTypes(){tw.innerHTML="";TYPES.forEach(t=>{const b=document.createElement("button");b.type="button";const m=TM[t]||["📄",t,""];b.innerHTML='<span aria-hidden="true">'+m[0]+'</span><b>'+m[1]+'</b><small>'+m[2]+'</small>';b.setAttribute("aria-label",t);b.setAttribute("aria-pressed",t===type);b.onclick=()=>{type=t;drawTypes()};tw.appendChild(b)})}
 drawTypes();
 const DEMO=`สัญญาจ้างทำของ\nข้อ 1 ผู้รับจ้างต้องส่งมอบงานออกแบบโลโก้และชุดแบรนด์ภายใน 7 วัน นับจากวันลงนาม\nข้อ 2 ค่าจ้าง 30,000 บาท จ่ายเมื่อผู้ว่าจ้างพอใจในผลงานและอนุมัติแล้วเท่านั้น\nข้อ 3 หากส่งงานล่าช้า ผู้รับจ้างต้องชำระค่าปรับวันละ 5,000 บาท\nข้อ 4 ผู้ว่าจ้างมีสิทธิ์ให้แก้ไขงานได้ไม่จำกัดจำนวนครั้งโดยไม่คิดค่าใช้จ่ายเพิ่ม\nข้อ 5 ลิขสิทธิ์และสิทธิ์ในผลงานทั้งหมด รวมถึงงานต้นแบบที่ไม่ได้ใช้ เป็นของผู้ว่าจ้างโดยสมบูรณ์\nข้อ 6 ผู้ว่าจ้างยกเลิกสัญญาเมื่อใดก็ได้โดยไม่ต้องชำระค่าตอบแทนใด ๆ`;
@@ -1671,6 +1779,34 @@ if(first)a.insertBefore(wrap,first);else a.appendChild(wrap);
 var out=$("out");
 if(out){new MutationObserver(function(){setTimeout(group,0);setTimeout(group,250)}).observe(out,{childList:true});group()}
 }catch(_){}})();
+
+</script>
+<script>
+/* ===== Champagne Gold layer: การ์ดตัวอย่างผลตรวจ + สัมผัสตอบสนอง ===== */
+(function(){
+try{
+  var dm=document.querySelector(".dash .dmore");
+  if(dm&&typeof PRE!=="undefined"&&PRE[0]&&typeof esc==="function"){
+    var r=PRE[0],all=r.red_flags||[],fl=all.filter(function(x){return x.level!=="low"}).slice(0,3);
+    var k=Math.max(0,Math.min(100,Math.round((10-(Number(r.safety_score)||0))*10)));
+    var lv=k>=70?"เสี่ยงสูง":k>=40?"ควรระวัง":"เสี่ยงต่ำ";
+    var b=document.createElement("button");
+    b.type="button";b.className="sample";b.id="smpcard";
+    b.setAttribute("aria-label","ดูตัวอย่างผลตรวจ สัญญาฟรีแลนซ์ ความเสี่ยง "+k+" เปอร์เซ็นต์");
+    b.innerHTML='<span class="sm-tag">ตัวอย่างผลตรวจ · ฟรี ไม่เสียเครดิต</span>'
+      +'<span class="sm-body"><span class="sm-ring" style="--k:'+k+'"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="t" cx="50" cy="50" r="46"/><circle class="p" cx="50" cy="50" r="46"/></svg>'
+      +'<span class="sm-n"><b>'+k+'%</b><small>'+esc(lv)+'</small></span></span>'
+      +'<span class="sm-list">'+fl.map(function(x){return '<span class="sm-i" style="--c:'+(x.level==="high"?"var(--stamp)":"var(--gold)")+'"><span>'+esc(x.phrase)+'</span></span>'}).join("")+'</span></span>'
+      +'<span class="sm-cta"><span>ดูผลตรวจเต็มของสัญญาตัวอย่าง</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>';
+    b.addEventListener("click",function(){var d=document.getElementById("demo");if(d)d.click()});
+    dm.parentNode.insertBefore(b,dm);
+  }
+}catch(e){}
+/* สัมผัสตอบสนองบนมือถือ (เฉพาะเครื่องที่รองรับ) */
+document.addEventListener("click",function(e){
+  try{if(navigator.vibrate&&e.target.closest&&e.target.closest(".dcard,.sample,#types button"))navigator.vibrate(8)}catch(_){}
+},true);
+})();
 
 </script>
 </body>

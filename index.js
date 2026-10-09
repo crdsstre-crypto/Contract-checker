@@ -11,7 +11,7 @@ const E=process.env,DIR=E.DATA_DIR||__dirname,fp=n=>path.join(DIR,n);
 const PORT=+E.PORT||3000,RAWKEY=E.ANTHROPIC_API_KEY||"",KEY=RAWKEY.trim().replace(/^['"“”]+|['"“”]+$/g,"").replace(/\s+/g,""),ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
 const API_URL=E.API_URL||"https://api.anthropic.com/v1/messages",SLIP_URL=E.SLIPOK_URL||"https://api.slipok.com/api/line/apikey/";
 const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==undefined?+E.REF_BONUS:1,REF_MAX=+E.REF_MAX||10,NEW_PER_IP=+E.NEW_PER_IP||5;
-const TOSV=E.TOS_VERSION||"1.1",TOS_REQ=E.TOS_REQUIRED!=="0";
+const TOSV=E.TOS_VERSION||"1.2",TOS_REQ=E.TOS_REQUIRED!=="0";
 const PASS_BAHT=+E.PASS_BAHT||399,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||5; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
 const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";

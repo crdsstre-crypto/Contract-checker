@@ -382,6 +382,17 @@ table{max-width:100%}
 .flag{animation-duration:.35s!important}
 }
 @media(prefers-reduced-motion:reduce){.fbody,.ftog::after{transition:none}}
+
+/* ===== TRUST CARD ===== */
+.trustcard{margin:26px 0 8px;padding:18px;border-radius:var(--r);border:1px solid color-mix(in srgb,var(--gold) 22%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--card) 92%,var(--gold)) 0,var(--card) 120px);box-shadow:var(--sh)}
+.trustcard h2{margin:0 0 12px;font-size:clamp(18px,4.8vw,21px)}
+.trustcard ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.trustcard li{position:relative;padding-left:22px;font-size:14px;line-height:1.6;color:var(--mute)}
+.trustcard li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.trustcard li b{display:block;font-size:15px;color:var(--ink)}
+.trustcard .tcb{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px}
+.trustcard .tcb .link{min-height:44px;margin:0}
+@media(min-width:640px){.trustcard ul{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -442,6 +453,15 @@ table{max-width:100%}
 <div id="prog" class="prog" hidden></div><div class="skel" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="out" aria-live="polite"></div>
 <div class="more"><button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button><button type="button" class="link" style="display:inline-block" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button></div>
+<section class="trustcard" aria-labelledby="tcH"><h2 id="tcH">ความน่าเชื่อถือและความเป็นส่วนตัว</h2>
+<ul>
+<li><b>AI อาจวิเคราะห์ผิดพลาดได้</b><span>ผลลัพธ์เป็นข้อมูลประกอบการตัดสินใจ ไม่ใช่คำปรึกษาทางกฎหมาย</span></li>
+<li><b>สัญญาสำคัญควรให้ผู้เชี่ยวชาญตรวจ</b><span>สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และมีบริการขอให้ทนายความตรวจซ้ำในหน้ารายงาน</span></li>
+<li><b>ตรวจอ้างอิงได้</b><span>แสดงข้อความต้นฉบับของแต่ละจุดเสี่ยง บอกว่าพบในสัญญาจริงหรือไม่ และแสดงมาตรากฎหมายประกอบเมื่อมี</span></li>
+<li><b>ปิดบังข้อมูลส่วนตัว</b><span>ปิดบังเลขบัตร เบอร์โทร เลขบัญชี และอีเมลในข้อความก่อนส่งให้ AI รูปภาพปิดบังอัตโนมัติไม่ได้ ควรบังเองก่อนอัปโหลด</span></li>
+<li><b>ประวัติอยู่ในเครื่องของคุณ</b><span>เก็บเฉพาะสรุปผลความเสี่ยง ไม่เก็บเนื้อหาสัญญา ลบได้ทุกเมื่อ</span></li>
+</ul>
+<div class="tcb"><button type="button" class="link" data-tc="histb">เปิดประวัติ / ล้างประวัติ</button><button type="button" class="link" data-tc="tos_f">ข้อกำหนดการใช้งาน</button></div></section>
 <p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและข้อจำกัดความรับผิด (เวอร์ชัน 1.0)</button></p>
 </main>
 <div id="sbar" hidden><div><b id="sbn">สัญญา</b><span>✓ พร้อมตรวจ</span></div><button type="button" id="sgo">ตรวจสัญญา</button></div>
@@ -987,6 +1007,9 @@ new MutationObserver(enh).observe(out,{childList:true});enh();
 out.addEventListener("click",function(e){var m=e.target.closest&&e.target.closest("mark");if(!m)return;
 var f=document.getElementById("f"+m.dataset.i);if(f&&!f.classList.contains("open"))setOpen(f,true)});
 }catch(_){}})();
+</script>
+<script>
+(function(){try{document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-tc]");if(!b)return;var t=document.getElementById(b.getAttribute("data-tc"));t&&t.click()})}catch(_){}})();
 </script>
 </body>
 </html>

@@ -332,6 +332,33 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 body:has(#txt:focus) #bnav{display:none}
 body:has(#txt:focus) #sbar{bottom:0;left:0;right:0;max-width:none;border-radius:0}
 @media(min-width:900px){#bnav{display:none}body{padding-bottom:0}#sbar{bottom:0;left:0;right:0;max-width:none;border-radius:0}}
+
+/* ===== MIDNIGHT GOLD x AI GLASS ===== */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#080B12;--card:#111827;--soft:#0e1522;--line:#232c3b;--ink:#F3F4F6;--mute:#9CA3AF;--gold:#D6B56D;--gold-glow:rgba(214,181,109,.12);--stamp:#EF4444;--warn:#F59E0B;--ok:#34D399;--aura:rgba(214,181,109,.11)}}
+:root[data-theme="dark"]{--bg:#080B12;--card:#111827;--soft:#0e1522;--line:#232c3b;--ink:#F3F4F6;--mute:#9CA3AF;--gold:#D6B56D;--gold-glow:rgba(214,181,109,.12);--stamp:#EF4444;--warn:#F59E0B;--ok:#34D399;--aura:rgba(214,181,109,.11)}
+:root{--aura:transparent}
+body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;background:radial-gradient(38% 30% at 18% 12%,var(--aura),transparent 70%),radial-gradient(34% 28% at 88% 58%,color-mix(in srgb,var(--aura) 60%,transparent),transparent 70%)}
+.tagline{font-size:clamp(28px,8vw,40px);line-height:1.25;font-weight:700;margin:6px 0 12px;letter-spacing:-.01em}
+.lead{font-size:16px;color:var(--mute)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 16px}
+.cta1,.cta2{font:inherit;font-weight:600;min-height:52px;padding:0 24px;border-radius:14px;cursor:pointer;transition:transform .15s,box-shadow .25s,border-color .25s}
+.cta1{border:0;color:var(--on-gold);background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,color-mix(in srgb,var(--gold) 80%,#000));box-shadow:0 12px 28px -10px var(--gold),0 1px 0 rgba(255,255,255,.35) inset}
+.cta2{color:var(--ink);background:color-mix(in srgb,var(--card) 70%,transparent);border:1px solid var(--line)}
+.cta2:hover{border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.cta1:active,.cta2:active{transform:scale(.97)}
+@media(max-width:480px){.cta1{width:100%}.cta2{width:100%}}
+.dz .cap{gap:10px}
+.dz .cap button{min-height:52px;border-radius:14px;padding:0 18px;font:inherit;cursor:pointer}
+#bpick{border:0;color:var(--on-gold);font-weight:600;background:linear-gradient(135deg,var(--gold2),var(--gold) 55%,color-mix(in srgb,var(--gold) 80%,#000));box-shadow:0 10px 24px -10px var(--gold)}
+.dz.pulse{box-shadow:0 0 0 4px var(--gold-glow),0 10px 34px -10px var(--gold)}
+@media(hover:hover) and (pointer:fine){
+.panel{background-image:radial-gradient(280px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--gold) 11%,transparent),transparent 65%),linear-gradient(180deg,color-mix(in srgb,var(--card) 92%,var(--gold)) 0,var(--card) 140px)}
+.flag,.head{background-image:radial-gradient(260px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--gold) 11%,transparent),transparent 65%)}}
+@media(prefers-reduced-motion:no-preference){
+body::before{animation:aura 26s ease-in-out infinite alternate}
+@keyframes aura{to{transform:translate3d(4%,3%,0) scale(1.08)}}
+.hero-in:nth-of-type(1){animation-delay:0s}.tagline{animation-delay:.05s!important}.lead{animation-delay:.15s!important}.cta{animation-delay:.25s!important}.trust{animation-delay:.35s!important}
+}
 </style>
 </head>
 <body>
@@ -362,15 +389,13 @@ body:has(#txt:focus) #sbar{bottom:0;left:0;right:0;max-width:none;border-radius:
 </svg></div>
 <h1>เช็กสัญญา</h1>
 </div>
-<p class="tagline hero-in">เช็กสัญญา <em>ก่อนที่สัญญาจะเช็กคุณ</em></p>
-<p class="lead hero-in">AI วิเคราะห์จุดเสี่ยงในสัญญาให้ภายในไม่กี่วินาที พร้อมคำแนะนำแก้ประโยคให้แฟร์ขึ้นก่อนคุณเซ็น</p>
-<ul class="trust hero-in" aria-label="จุดเด่นของบริการ"><li>ปิดบังข้อมูลส่วนตัวก่อนส่ง</li><li>อ้างอิงกรอบกฎหมายไทย</li><li>มีร่างสัญญาฉบับแก้ให้</li></ul>
+<p class="tagline hero-in">รู้ทันทุกข้อสัญญา<br><em>ก่อนเซ็นสัญญาสำคัญ</em></p><p class="lead hero-in">AI ช่วยวิเคราะห์สัญญา ค้นหาข้อกำหนดที่มีความเสี่ยง พร้อมอธิบายสิ่งที่คุณควรรู้ก่อนตัดสินใจ</p><div class="cta hero-in"><button type="button" class="cta1" id="hgo">✦ เริ่มตรวจสอบสัญญา</button><button type="button" class="cta2" id="hhow">ดูวิธีการทำงาน ↓</button></div><ul class="trust hero-in" aria-label="จุดเด่นของบริการ"><li>รองรับ PDF, Word และรูปภาพ</li><li>วิเคราะห์ข้อสัญญาที่ควรตรวจสอบ</li><li>ช่วยเสนอแนวทางแก้ไขข้อความ</li></ul>
 
 <div class="crbar" id="cr"><span class="coin" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="cg" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset=".55" style="stop-color:var(--c2)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><linearGradient id="cr2" x1="32" y1="36" x2="8" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><clipPath id="cc"><circle cx="20" cy="20" r="18"/></clipPath></defs><circle cx="20" cy="20" r="18.5" fill="url(#cr2)"/><circle cx="20" cy="20" r="16.4" fill="url(#cg)"/><circle cx="20" cy="20" r="12.6" fill="none" stroke="var(--c3)" stroke-opacity=".45" stroke-width="1"/><circle cx="20" cy="20" r="13.4" fill="none" stroke="var(--c1)" stroke-opacity=".7" stroke-width=".8"/><path class="hl" d="M13.4 21.4l4.6 4.6 8.8-10.2" transform="translate(.7 .9)"/><path class="eng" d="M13.4 21.4l4.6 4.6 8.8-10.2"/><g clip-path="url(#cc)"><rect class="sh" x="-6" y="-4" width="9" height="48" fill="#fff" opacity=".38" transform="rotate(24 20 20)"/></g></svg></span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button></div>
 <section class="panel">
 <p class="sec">① เลือกประเภทสัญญา</p><div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
 <p class="sec">② อัปโหลดสัญญา</p>
-<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>วางสัญญาของคุณที่นี่</b><span>ถ่ายรูป หรือเลือกไฟล์ · PDF • Word • รูปภาพ</span>
+<div class="dz" id="dz"><div class="dzi" aria-hidden="true">📄</div><b>วางไฟล์สัญญาของคุณที่นี่</b><span>ลากไฟล์มาวาง หรือแตะเพื่อเลือกไฟล์จากอุปกรณ์ · รองรับ PDF, DOCX และรูปภาพ</span>
 <div class="cap" id="cap">
 <button type="button" id="bcam">📷 ถ่ายรูปสัญญา</button>
 <button type="button" id="bpick">📎 เลือกรูป / PDF / Word / ไฟล์ข้อความ</button>
@@ -910,6 +935,13 @@ else if(x){x.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(funct
 var nv=g("bnav");nv&&nv.addEventListener("click",function(e){var b=e.target.closest("button[data-a]");if(!b)return;
 if(navigator.vibrate)try{navigator.vibrate(8)}catch(_){}go(b.dataset.a)});
 window.addEventListener("scroll",function(){var b=nv&&nv.querySelector('[data-a="home"]');b&&b.classList.toggle("on",window.scrollY<200)},{passive:true});
+}catch(_){}})();
+</script>
+<script>
+(function(){try{var g=function(i){return document.getElementById(i)};
+var go=g("hgo");go&&go.addEventListener("click",function(){var d=g("dz");if(!d)return;d.scrollIntoView({behavior:"smooth",block:"center"});d.classList.add("pulse");setTimeout(function(){d.classList.remove("pulse")},1400)});
+var hw=g("hhow");hw&&hw.addEventListener("click",function(){var b=g("howbtn");b&&b.click()});
+document.addEventListener("pointermove",function(e){if(e.pointerType!=="mouse")return;var t=e.target.closest&&e.target.closest(".panel,.flag,.head");if(!t)return;var r=t.getBoundingClientRect();t.style.setProperty("--mx",(e.clientX-r.left)+"px");t.style.setProperty("--my",(e.clientY-r.top)+"px")},{passive:true});
 }catch(_){}})();
 </script>
 </body>

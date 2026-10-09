@@ -28,28 +28,38 @@ let used={};try{used=JSON.parse(fs.readFileSync(USED,"utf8"))}catch(e){}
 const save=()=>{fs.writeFileSync(DB_FILE+".tmp",JSON.stringify(db));fs.renameSync(DB_FILE+".tmp",DB_FILE)};
 const rd=f=>{try{return fs.readFileSync(f,"utf8").split("\n").filter(Boolean).map(l=>JSON.parse(l))}catch(e){return[]}};
 const ap=(f,o)=>fs.appendFileSync(f,JSON.stringify(o)+"\n");
+const LED=fp("ledger.jsonl"),led=(uid,kind,n,bal,ref)=>ap(LED,{ts:Date.now(),uid,kind,n,bal,ref:String(ref||"")}); // สมุดบัญชีเครดิต: ทุกการเพิ่ม/ใช้/คืน/ปรับ มีบันทึก ย้อนตรวจได้
 const cid=v=>String(v||"").replace(/[^\w-]/g,"").slice(0,32);
 const hash=s=>crypto.createHash("sha256").update(String(s)).digest("hex").slice(0,16);
 const today=()=>new Date(Date.now()+7*36e5).toISOString().slice(0,10);
-function getUser(id,ip){id=cid(id);if(!id||id.startsWith("__"))return null;let x=db[id];if(x)return x;
+function getUser(id,ip){id=cid(id);if(!id||id.startsWith("__"))return null;let x=db[id];if(x)return x;if(id.length<16)return null; // บัญชีใหม่ต้องมี uid ยาว ≥16 ตัว (ของเดิมที่มีอยู่แล้วยังใช้ได้)
+  
   const m=db.__ipn=db.__ipn||{},k=hash(ip),d=today();if(!m[k]||m[k].d!==d)m[k]={d,n:0};m[k].n++;
-  x=db[id]={credits:(m[k].n<=NEW_PER_IP&&!(db.__gone&&db.__gone[hash(id)]))?FREE:0,created:Date.now()};save();return x}
+  x=db[id]={credits:(m[k].n<=NEW_PER_IP&&!(db.__gone&&db.__gone[hash(id)]))?FREE:0,created:Date.now()};save();if(x.credits)led(id,"free",x.credits,x.credits,"signup");return x}
 const packOf=b=>b===PASS_BAHT?{credits:0,days:PASS_DAYS}:PACKS[b]?{credits:PACKS[b],days:0}:(Number.isInteger(b)&&b>=MINB&&b<=MAXB&&Math.floor(b/RATE(b))>0)?{credits:Math.floor(b/RATE(b)),days:0}:null;
 const passOn=x=>(x.passUntil||0)>Date.now();
-function take(x){if(passOn(x)){const d=today();if(!x.pd||x.pd.d!==d)x.pd={d,n:0};if(x.pd.n>=PASS_DAILY)return"cap";x.pd.n++;save();return"pass"}
-  if(x.credits<COST)return"none";x.credits-=COST;save();return"credit"}
-const give=(x,k)=>{if(k==="pass"&&x.pd)x.pd.n=Math.max(0,x.pd.n-1);else if(k==="credit")x.credits+=COST;save()};
+function take(x,id,why){if(passOn(x)){const d=today();if(!x.pd||x.pd.d!==d)x.pd={d,n:0};if(x.pd.n>=PASS_DAILY)return"cap";x.pd.n++;save();led(id,"pass_use",0,x.credits,why);return"pass"}
+  if(x.credits<COST)return"none";x.credits-=COST;save();led(id,"use",-COST,x.credits,why);return"credit"}
+const give=(x,k,id,why)=>{if(k==="pass"&&x.pd)x.pd.n=Math.max(0,x.pd.n-1);else if(k==="credit")x.credits+=COST;save();if(id)led(id,k==="pass"?"refund_pass":"refund",k==="credit"?COST:0,x.credits,why)};
 const tosOk=x=>!TOS_REQ||(x.tos&&x.tos.v===TOSV);
-const grant=(x,id,baht,pk,ref,how,tx)=>{if(pk.days)x.passUntil=Math.max(Date.now(),x.passUntil||0)+pk.days*864e5;else x.credits+=pk.credits;save();ap(PAY,{ts:Date.now(),uid:id,baht,credits:pk.credits,days:pk.days||0,ref,how,tx:tx||""})};
+const grant=(x,id,baht,pk,ref,how,tx)=>{if(pk.days)x.passUntil=Math.max(Date.now(),x.passUntil||0)+pk.days*864e5;else x.credits+=pk.credits;save();ap(PAY,{ts:Date.now(),uid:id,baht,credits:pk.credits,days:pk.days||0,ref,how,tx:tx||""});led(id,pk.days?"topup_pass":"topup",pk.credits,x.credits,ref)};
+
+/* ---------- บัญชีผู้ใช้ (อีเมล + รหัสผ่าน, scrypt ไม่ต้องติดตั้งแพ็กเกจ) ---------- */
+const MAILK=E.RESEND_KEY||"",MAILFROM=E.MAIL_FROM||"",BASE=(E.BASE_URL||"").replace(/\/$/,""),NEEDV=E.REQUIRE_VERIFY?E.REQUIRE_VERIFY==="1":!!MAILK; // ตั้ง RESEND_KEY+MAIL_FROM+BASE_URL เพื่อเปิดยืนยันอีเมล (เปิดแล้วต้องยืนยันก่อนเติมเงิน)
+async function sendVerify(x,id){const t=crypto.randomBytes(24).toString("hex"),m=db.__vt=db.__vt||{};for(const k in m)if(m[k].id===id||m[k].exp<Date.now())delete m[k];m[hash(t)]={id,exp:Date.now()+864e5};save();
+  const r=await fetch("https://api.resend.com/emails",{method:"POST",signal:AbortSignal.timeout(20000),headers:{authorization:"Bearer "+MAILK,"content-type":"application/json"},body:JSON.stringify({from:MAILFROM,to:[x.email],subject:"ยืนยันอีเมล เช็กสัญญา",text:"กดลิงก์เพื่อยืนยันอีเมล (ใช้ได้ 24 ชั่วโมง):\n"+BASE+"/auth/verify?t="+t+"\n\nถ้าคุณไม่ได้สมัคร ไม่ต้องทำอะไร"})});if(!r.ok)throw new Error("mail "+r.status)}
+const scr=(p,s)=>new Promise((ok,no)=>crypto.scrypt(String(p),s,32,(e,k)=>e?no(e):ok(k)));
+const emOK=e=>e.length<=254&&/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(e),eh=e=>hash(e);
+const histAdd=(x,rid,type,j)=>{const f=Array.isArray(j.red_flags)?j.red_flags:[];(x.hist=x.hist||[]).unshift({id:rid,ts:Date.now(),type,score:Number(j.safety_score)||0,summary:String(j.plain_summary||j.summary||"").slice(0,300),flags:f.length,high:f.filter(v=>v&&v.level==="high").length});x.hist.length=Math.min(x.hist.length,50);save()}; // เก็บเฉพาะสรุป ไม่เก็บเนื้อหาสัญญา
 
 /* ---------- ลบข้อมูลเก่าอัตโนมัติ (ตรงกับข้อกำหนดข้อ "ระยะเวลาเก็บและการลบข้อมูล") ---------- */
 const RETAIN=+E.RETAIN_DAYS||180;
 const wr=(f,arr)=>fs.writeFileSync(f,arr.map(o=>JSON.stringify(o)).join("\n")+(arr.length?"\n":""));
-function purge(){const lim=Date.now()-RETAIN*864e5;for(const f of [FB,LAW,ORD]){const all=rd(f),keep=all.filter(o=>(o.ts||0)>=lim);if(keep.length!==all.length)wr(f,keep)}}
+function purge(){const lim=Date.now()-RETAIN*864e5;for(const f of [FB,LAW,ORD]){const all=rd(f),keep=all.filter(o=>(o.ts||0)>=lim);if(keep.length!==all.length)wr(f,keep)}let ch=false;for(const k in db){const h=db[k]&&db[k].hist;if(Array.isArray(h)){const n=h.filter(v=>v.ts>=lim);if(n.length!==h.length){db[k].hist=n;ch=true}}}if(ch)save()}
 try{purge()}catch(e){console.log("purge:",e.message)}setInterval(()=>{try{purge()}catch(e){console.log("purge:",e.message)}},864e5).unref();
 
 /* ---------- จำกัดความถี่ ---------- */
-const hits=new Map();
+const hits=new Map(),busy=new Set(); // คำขอตรวจที่กำลังทำอยู่ (กันหักเครดิตซ้ำ)
 const limited=(k,max,ms=60000)=>{const n=Date.now(),a=(hits.get(k)||[]).filter(t=>n-t<ms);a.push(n);hits.set(k,a);return a.length>max};
 setInterval(()=>{const n=Date.now();for(const[k,a]of hits)if(!a.length||n-a[a.length-1]>120000)hits.delete(k)},60000).unref();
 const sessions=new Map();
@@ -197,6 +207,9 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(limited("ip"+ip,120))return send(res,429,{error:"rate_limited"});
 
   /* ----- GET ----- */
+  if(req.method==="GET"&&P==="/auth/verify"){const m=db.__vt||{},k=hash(String(u.searchParams.get("t")||"")),e=m[k],y=e&&e.exp>Date.now()&&db[e.id];
+    if(y){y.verified=Date.now();delete m[k];save()}
+    res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});return res.end('<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;max-width:420px;margin:15vh auto;padding:16px;text-align:center"><h2>'+(y?"ยืนยันอีเมลสำเร็จ ✓":"ลิงก์ไม่ถูกต้องหรือหมดอายุ")+'</h2><p><a href="/">กลับไปหน้าตรวจสัญญา</a></p>')}
   if(req.method==="GET"&&P==="/balance"){const x=getUser(u.searchParams.get("uid"),ip);return x?send(res,200,{credits:x.credits,passUntil:x.passUntil||0}):send(res,400,{error:"uid"})}
   if(req.method==="GET"&&P==="/receipts"){const id=cid(u.searchParams.get("uid"));
     const items=rd(PAY).map((r,i)=>({no:"RC"+String(i+1).padStart(5,"0"),ts:r.ts,uid:r.uid,baht:r.baht,credits:r.credits,days:r.days||0})).filter(r=>r.uid===id&&r.baht>0).reverse().map(({uid,...r})=>r);
@@ -214,7 +227,8 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       const x=getUser(o.uid,"admin");if(!x)return send(res,400,{error:"uid"});grant(x,o.uid,o.baht,{credits:o.credits,days:o.days||0},ref,"admin");return send(res,200,{ok:true,credits:x.credits})}
     if(P==="/admin/credit"||P==="/admin/add"){const id=cid(u.searchParams.get("uid")),n=Math.trunc(+u.searchParams.get("n")),x=getUser(id,"admin");
       if(!x||!n||Math.abs(n)>1000)return send(res,400,{error:"bad"});x.credits=Math.max(0,x.credits+n);save();
-      ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});return send(res,200,{credits:x.credits})}
+      ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});led(id,"adjust",n,x.credits,"admin");return send(res,200,{credits:x.credits})}
+    if(P==="/admin/ledger"){const q=cid(u.searchParams.get("uid"));return send(res,200,{items:rd(LED).filter(o=>!q||o.uid===q).slice(-200).reverse()})}
     if(P==="/admin/feedback")return send(res,200,{items:rd(FB).slice(-100).reverse()});
     if(P==="/admin/lawyer")return send(res,200,{items:rd(LAW).slice(-100).reverse()});
     if(P==="/admin/ai-test"){const o={api_key:!!KEY,model:MODEL,key_len:KEY.length,key_start:KEY.slice(0,7),key_had_extra_chars:RAWKEY!==KEY,api_host:(()=>{try{return new URL(API_URL).host}catch(_){return"?"}})()};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
@@ -245,27 +259,42 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   const b=await body(req),id=cid(b.uid);
   if(P==="/my-data/export"){if(limited("md"+ip,10))return send(res,429,{error:"rate_limited"});
     const u=id&&!id.startsWith("__")?db[id]:null,pick=f=>rd(f).filter(o=>o.uid===id);
-    return send(res,200,{exported_at:Date.now(),uid:id,account:u||null,payments:pick(PAY),orders:pick(ORD),feedback:pick(FB),lawyer_requests:pick(LAW),note:"ระบบไม่บันทึกเนื้อหาสัญญาถาวร ยกเว้นข้อความที่คุณเลือกแนบตอนรายงานปัญหาหรือขอให้ทนายความตรวจ (ถ้ามี จะอยู่ในส่วน feedback และ lawyer_requests)"})}
+    return send(res,200,{exported_at:Date.now(),uid:id,account:u?{...u,pw:undefined}:null,payments:pick(PAY),ledger:pick(LED),orders:pick(ORD),feedback:pick(FB),lawyer_requests:pick(LAW),note:"ระบบไม่บันทึกเนื้อหาสัญญาถาวร ยกเว้นข้อความที่คุณเลือกแนบตอนรายงานปัญหาหรือขอให้ทนายความตรวจ (ถ้ามี จะอยู่ในส่วน feedback และ lawyer_requests)"})}
   if(P==="/my-data/delete"){if(b.confirm!==true)return send(res,400,{error:"confirm"});if(limited("md"+ip,5))return send(res,429,{error:"rate_limited"});
     if(!id||id.startsWith("__"))return send(res,400,{error:"uid"});const had=!!db[id];
-    if(had){delete db[id];(db.__gone=db.__gone||{})[hash(id)]=Date.now();save()}
-    const anon="deleted-"+hash(id);wr(PAY,rd(PAY).map(o=>o.uid===id?{...o,uid:anon}:o));
+    if(had){if(db[id].email&&db.__email)delete db.__email[eh(db[id].email)];delete db[id];(db.__gone=db.__gone||{})[hash(id)]=Date.now();save()}
+    const anon="deleted-"+hash(id);for(const f of [PAY,LED])wr(f,rd(f).map(o=>o.uid===id?{...o,uid:anon}:o));
     for(const f of [ORD,FB,LAW])wr(f,rd(f).filter(o=>o.uid!==id));
     for(const[k,v]of results)if(v.uid===id)results.delete(k);for(const[k,v]of sessions)if(v.uid===id)sessions.delete(k);
     return send(res,200,{ok:true,deleted:had})}
   if(P==="/feedback"){const o={ts:Date.now(),uid:id,kind:String(b.kind||"").slice(0,20),idx:b.idx??null,type:String(b.type||"").slice(0,60),score:b.score??null,sample:!!b.sample,flag:b.flag||null,comment:String(b.comment||"").slice(0,500),text:b.text?String(b.text).slice(0,20000):null};
     ap(FB,o);return send(res,200,{ok:true})}
+  if(P==="/auth/login"){const em=String(b.email||"").trim().toLowerCase().slice(0,254),pw=String(b.password||"").slice(0,100);
+    if(limited("lg"+ip,10,9e5)||limited("lge"+eh(em),8,9e5))return send(res,429,{error:"rate_limited"});
+    const k=(db.__email||{})[eh(em)],y=k&&db[k];
+    if(!y||!y.pw){await scr(pw,"0".repeat(32));return send(res,401,{error:"bad_login"})}
+    const h=await scr(pw,y.pw.s);if(!crypto.timingSafeEqual(h,Buffer.from(y.pw.h,"hex")))return send(res,401,{error:"bad_login"});
+    return send(res,200,{uid:k,email:em})}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
+
+  if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");
+    if(!emOK(em)||pw.length<8||pw.length>100)return send(res,400,{error:"bad_input"});if(x.pw)return send(res,409,{error:"has_account"});
+    if(limited("rg"+ip,5,36e5))return send(res,429,{error:"rate_limited"});const m=db.__email=db.__email||{};if(m[eh(em)])return send(res,409,{error:"email_taken"});
+    const sl=crypto.randomBytes(16).toString("hex"),h=(await scr(pw,sl)).toString("hex");if(m[eh(em)]||x.pw)return send(res,409,{error:"email_taken"}); // เช็กซ้ำหลัง await กันสมัครพร้อมกัน
+    x.email=em;x.pw={s:sl,h};m[eh(em)]=id;save();if(MAILK)sendVerify(x,id).catch(e=>console.log("ส่งอีเมลยืนยันไม่สำเร็จ:",e.message));return send(res,200,{ok:true,email:em,mail:!!MAILK})}
+  if(P==="/auth/resend"){if(!MAILK||!x.email||x.verified)return send(res,400,{error:"bad"});if(limited("vr"+id,3,36e5))return send(res,429,{error:"rate_limited"});try{await sendVerify(x,id);return send(res,200,{ok:true})}catch(e){console.log("ส่งอีเมลไม่สำเร็จ:",e.message);return send(res,502,{error:"mail_failed"})}}
+  if(P==="/profile")return send(res,200,{verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
+  if(P==="/history/delete"){x.hist=b.hid?(x.hist||[]).filter(h=>h.id!==String(b.hid)):[];save();return send(res,200,{ok:true})}
 
   if(P==="/accept"){if(b.v!==TOSV)return send(res,400,{error:"version"});x.tos={v:TOSV,ts:Date.now()};save();return send(res,200,{ok:true})}
   if(P==="/referral"){if(!tosOk(x))return send(res,403,{error:"tos"});const r=cid(b.ref),y=db[r];
     if(!r||r===id||r.startsWith("__")||x.refd)return send(res,409,{error:"used"});if(!y)return send(res,404,{error:"no_ref"});
     if((y.refn||0)>=REF_MAX)return send(res,409,{error:"ref_max"});if(limited("ref"+ip,3,864e5))return send(res,429,{error:"rate_limited"});
-    x.credits+=REF_BONUS;y.credits+=REF_BONUS;x.refd=r;y.refn=(y.refn||0)+1;save();return send(res,200,{credits:x.credits})}
-  if(P==="/order"){const baht=+b.baht,pk=packOf(baht);if(!pk)return send(res,400,{error:"bad_pack"});
+    x.credits+=REF_BONUS;y.credits+=REF_BONUS;x.refd=r;y.refn=(y.refn||0)+1;save();led(id,"referral",REF_BONUS,x.credits,r);led(r,"referral",REF_BONUS,y.credits,id);return send(res,200,{credits:x.credits})}
+  if(P==="/order"){if(NEEDV&&!x.verified)return send(res,403,{error:"verify_email"});const baht=+b.baht,pk=packOf(baht);if(!pk)return send(res,400,{error:"bad_pack"});
     ap(ORD,{ts:Date.now(),uid:id,ref:cid(b.ref).slice(0,16),baht,credits:pk.credits,days:pk.days,method:String(b.method||"").slice(0,30)});return send(res,200,{ok:true})}
   if(P==="/spend"){if(!tosOk(x))return send(res,403,{error:"tos"});if(+b.n!==COST)return send(res,400,{error:"bad_n"});
-    const tk=take(x);if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits});return send(res,200,{credits:x.credits,passUntil:x.passUntil||0})}
+    const tk=take(x,id,"spend");if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits});return send(res,200,{credits:x.credits,passUntil:x.passUntil||0})}
   if(P==="/lawyer-request"){if(b.consent!==true)return send(res,400,{error:"consent"});if(!String(b.contact||"").trim())return send(res,400,{error:"contact"});
     ap(LAW,{ts:Date.now(),uid:id,tosv:(db[id]&&db[id].tos&&db[id].tos.v)||null,disclosed:b.disclosed===true,name:String(b.name||"").slice(0,100),contact:String(b.contact).slice(0,200),note:String(b.note||"").slice(0,500),type:String(b.type||"").slice(0,60),summary:b.summary||null,text:b.text?String(b.text).slice(0,20000):null});
     return send(res,200,{ok:true})}
@@ -274,10 +303,10 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const type=String(b.type||"อื่น ๆ").slice(0,60),text=String(b.text||"");
     if(text.length<40)return send(res,400,{error:"too_short"});if(text.length>20000)return send(res,400,{error:"too_long"});
     if(!KEY)return send(res,500,{error:"no_key"});
-    const tk=take(x);if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits});
-    try{const role=String(b.role||"").replace(/[^ก-๙a-zA-Z0-9 /().-]/g,"").trim().slice(0,30);const meta={},cap=Math.min(6500,Math.max(4000,2500+text.length)),out=await ai(PROMPT(type,maskPII(text),role),cap,meta),jj=jr(out);if(!jj&&meta.stop==="max_tokens")throw new Error("ตอบยาวเกินเพดาน ถูกตัด");let rid="";if(jj){rid=crypto.randomBytes(9).toString("hex");results.set(rid,{uid:id,r:jj,t:maskPII(text).slice(0,20000),q:0,exp:Date.now()+36e5});if(results.size>300)results.delete(results.keys().next().value)}
+    const bk=id+hash(text+type);if(busy.has(bk))return send(res,409,{error:"duplicate"});busy.add(bk);const tk=take(x,id,"analyze");if(tk==="cap"||tk==="none")busy.delete(bk);if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits});
+    try{const role=String(b.role||"").replace(/[^ก-๙a-zA-Z0-9 /().-]/g,"").trim().slice(0,30);const meta={},cap=Math.min(6500,Math.max(4000,2500+text.length)),out=await ai(PROMPT(type,maskPII(text),role),cap,meta),jj=jr(out);if(!jj&&meta.stop==="max_tokens")throw new Error("ตอบยาวเกินเพดาน ถูกตัด");let rid="";if(jj){rid=crypto.randomBytes(9).toString("hex");results.set(rid,{uid:id,r:jj,t:maskPII(text).slice(0,20000),q:0,exp:Date.now()+36e5});histAdd(x,rid,type,jj);if(results.size>300)results.delete(results.keys().next().value)}
       return send(res,200,{result:out,credits:x.credits,passUntil:x.passUntil||0,rid})}
-    catch(e){console.log("AI ตรวจสัญญาล้มเหลว:",e&&e.message);give(x,tk);return send(res,502,{error:"ai_failed",credits:x.credits})}}
+    catch(e){console.log("AI ตรวจสัญญาล้มเหลว:",e&&e.message);give(x,tk,id,"analyze_fail");return send(res,502,{error:"ai_failed",credits:x.credits})}finally{busy.delete(bk)}}
 
   if(P==="/ask"){if(!tosOk(x))return send(res,403,{error:"tos"});if(limited("ask"+ip,12))return send(res,429,{error:"rate_limited"});
     const e=results.get(String(b.rid||""));if(!e||e.uid!==id||e.exp<Date.now()||!e.t)return send(res,404,{error:"expired"});
@@ -289,7 +318,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(P==="/chat/start"){if(!tosOk(x))return send(res,403,{error:"tos"});if(limited("cs"+ip,10))return send(res,429,{error:"rate_limited"});
     const free=b.free===true;
     if(free){if(limited("free"+id,3,864e5))return send(res,402,{error:"no_credit"})}
-    else{const tk=take(x);if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits})}
+    else{const tk=take(x,id,"chat");if(tk==="cap")return send(res,429,{error:"pass_cap"});if(tk==="none")return send(res,402,{error:"no_credit",credits:x.credits})}
     const sid=crypto.randomBytes(12).toString("hex");sessions.set(sid,{uid:id,turns:free?4:8,exp:Date.now()+36e5});
     return send(res,200,{sid,credits:x.credits})}
   if(P==="/chat"){const s=sessions.get(String(b.sid||""));if(!s||s.uid!==id)return send(res,402,{error:"no_session"});
@@ -310,7 +339,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       try{{const o=await speak(await spoken(e.r));e.audio=o.audio;e.via=o.via;e.elerr=o.err||""}}catch(err){x.tt.n--;save();return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}
       let c=0;for(const v of results.values())if(v.audio)c++;if(c>40)for(const v of results.values())if(v.audio&&v!==e){delete v.audio;break}} // ไม่เก็บเสียงเกิน 40 รายการ กันหน่วยความจำเต็ม
     return send(res,200,{audio:e.audio,via:e.via||"",elerr:e.elerr||"",used:(x.tt&&x.tt.d===today())?x.tt.n:0,cap:TTS_DAILY})}
-  if(P==="/slip"){if(!tosOk(x))return send(res,403,{error:"tos"});if(limited("slip"+ip,15))return send(res,429,{error:"rate_limited"});
+  if(P==="/slip"){if(!tosOk(x))return send(res,403,{error:"tos"});if(NEEDV&&!x.verified)return send(res,403,{error:"verify_email"});if(limited("slip"+ip,15))return send(res,429,{error:"rate_limited"});
     if(!SLIP_BRANCH||!SLIP_KEY)return send(res,501,{error:"not_configured"});
     const baht=+b.baht,payload=String(b.payload||""),ref=cid(b.ref)||"slip";
     const pk=packOf(baht);if(!pk||payload.length<20||payload.length>600)return send(res,400,{error:"bad_request"});

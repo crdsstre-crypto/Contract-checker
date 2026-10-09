@@ -431,6 +431,31 @@ dialog{border-radius:20px;overflow:auto;max-width:440px;width:calc(100% - 32px)}
 dialog[open]{animation:dlg .25s cubic-bezier(.2,.8,.2,1)}
 @keyframes dlg{from{opacity:0;transform:translateY(10px) scale(.98)}}
 }
+
+/* ===== FINAL POLISH: tokens, disabled vs busy, dialog sizing, motion ===== */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--mute:#A1A1AA;--stamp:#F87171;--ok:#34D399}}
+:root[data-theme="dark"]{--mute:#A1A1AA;--stamp:#F87171;--ok:#34D399}
+/* disabled = dim; busy = spinner (busy is when the mascot is in its busy state) */
+.go:disabled{opacity:.45;filter:none;cursor:not-allowed}
+.go:disabled::before{content:none}
+body:has(.mascot.busy) #go:disabled{opacity:1;cursor:wait;filter:saturate(.75) brightness(.92)}
+body:has(.mascot.busy) #go:disabled::before{content:"";display:inline-block;width:14px;height:14px;margin-right:9px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%}
+/* dialogs: size, scroll, sticky header, safe area */
+dialog{max-height:85vh;max-height:85dvh;overscroll-behavior:contain}
+dialog .pw{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+dialog .ph{position:sticky;top:0;z-index:2;margin:-20px -20px 12px;padding:16px 20px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+body:has(dialog[open]){overflow:hidden}
+#qr img,#qr canvas{display:block;margin:0 auto;max-width:100%;height:auto}
+@media(prefers-reduced-motion:no-preference){
+dialog[open]{animation:dlg .25s cubic-bezier(.2,.8,.2,1)}
+@keyframes dlg{from{opacity:0;transform:translateY(12px) scale(.98)}}
+dialog[open]::backdrop{animation:bk .25s ease}
+@keyframes bk{from{opacity:0}}
+.packs button[aria-pressed="true"]{animation:pk .3s cubic-bezier(.3,1.5,.5,1)}
+@keyframes pk{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+#pbody>*{animation:fup .3s ease both}
+@keyframes fup{from{opacity:0;transform:translateY(6px)}}
+}
 </style>
 </head>
 <body>

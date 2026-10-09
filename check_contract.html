@@ -1111,6 +1111,40 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 .sx-swap.out{opacity:0;transform:translateY(-6px)}
 .sx-swap.in{animation:sx-up .45s cubic-bezier(.2,.8,.2,1) both}
 }
+
+/* ======================================================================
+   SAMPLE CAROUSEL — ตัวอย่างหลายแบบ ลูกศรซ้าย/ขวาอยู่ในกล่องสี่เหลี่ยม สีความเสี่ยงเปลี่ยนตามระดับ
+   ====================================================================== */
+:root{--r-hi:#C0392B;--r-mid:#B86A0C;--r-lo:#1F7A4D}
+:root[data-theme="dark"]{--r-hi:#F0656B;--r-mid:#F2A444;--r-lo:#43D18F}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--r-hi:#F0656B;--r-mid:#F2A444;--r-lo:#43D18F}}
+.sample{--lc:var(--r-hi);cursor:default}
+.sample[data-lv="medium"]{--lc:var(--r-mid)}
+.sample[data-lv="low"]{--lc:var(--r-lo)}
+.sample:active{transform:none}
+.sample .sx-view{display:block;cursor:pointer}
+.sample .sx-tag{flex:1;min-width:0}
+.sx-ty{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sx-ct{flex:none;margin-left:2px;font-variant-numeric:tabular-nums;opacity:.75}
+.sample .sx-lv{color:var(--lc);border-color:color-mix(in srgb,var(--lc) 65%,transparent);background:color-mix(in srgb,var(--lc) 10%,transparent);transition:color .3s,border-color .3s,background .3s}
+.sample .sx-q{display:flex;align-items:flex-end;min-height:2.8em;font-size:18.5px;line-height:1.4}
+.sample .sx-q i{background-image:linear-gradient(transparent 60%,color-mix(in srgb,var(--lc) 34%,transparent) 60% 94%,transparent 94%)}
+.sample .sx-more{display:block;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;color:var(--mute)}
+.sx-bar{display:flex;align-items:center;gap:10px;margin-top:12px}
+.sx-nav{flex:none;width:44px;height:44px;display:grid;place-items:center;padding:0;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--gold-ink,var(--gold));cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.sx-nav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sx-nav:active{transform:scale(.92);border-color:var(--lc)}
+.sx-nav:focus-visible,.sx-cta:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.sx-cta{flex:1;min-width:0;height:44px;display:flex;align-items:center;justify-content:center;gap:8px;margin:0;padding:0;border:0;background:none;font:inherit;font-size:14.5px;font-weight:600;color:var(--gold-ink,var(--gold));cursor:pointer}
+.sx-cta svg{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.sx-cta:active svg{transform:translateX(4px)}
+@keyframes sx-lvpop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:none}}
+@media(prefers-reduced-motion:no-preference){
+.sample.sx-prep .sx-bar{opacity:0}
+.sample.sx-on .sx-bar{animation:sx-up .5s cubic-bezier(.2,.8,.2,1) 1s both}
+.sample .sx-lv.pop{animation:sx-lvpop .42s cubic-bezier(.3,1.4,.5,1)}
+.sample.sx-live .sx-cta svg{animation:sx-nudge 4s ease-in-out infinite}
+}
 </style>
 </head>
 <body>
@@ -1968,8 +2002,8 @@ try{
     var r=PRE[0],all=r.red_flags||[],fl=all.filter(function(x){return x.level!=="low"}).slice(0,3);
     var k=Math.max(0,Math.min(100,Math.round((10-(Number(r.safety_score)||0))*10)));
     var lv=k>=70?"เสี่ยงสูง":k>=40?"ควรระวัง":"เสี่ยงต่ำ";
-    var b=document.createElement("button");
-    b.type="button";b.className="sample";b.id="smpcard";
+    var b=document.createElement("div");
+    b.setAttribute("role","group");b.className="sample";b.id="smpcard";
     b.setAttribute("aria-label","ดูตัวอย่างผลตรวจ สัญญาฟรีแลนซ์ ระดับ"+lv);
     var nl=all.filter(function(x){return x.level!=="low"}),f0=nl[0]||all[0]||{phrase:"",why:""};
     b.innerHTML='<span class="sx-top"><span class="sx-tag">ตัวอย่างผลตรวจ · ฟรี ไม่เสียเครดิต</span><span class="sx-lv">'+esc(lv)+'</span></span>'
@@ -1978,19 +2012,84 @@ try{
       +(f0.suggestion?'<span class="sx-fix"><b>ทางแก้</b> <span class="sx-fix-t">'+esc(f0.suggestion)+'</span></span>':'')+'</span>'
       +(nl.length>1?'<span class="sx-more"><span class="sx-n">พบ '+nl.length+' จุด</span>'+nl.slice(0,3).map(function(x,k){return '<em style="--i:'+k+'"'+(k===0?' class="on"':'')+'>'+esc(x.phrase)+'</em>'}).join("")+'</span>':'')
       +'<span class="sm-cta"><span>ดูผลตรวจตัวอย่าง</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>';
-    b.addEventListener("click",function(){var d=document.getElementById("demo");if(d)d.click()});
+    b.addEventListener("click",function(e){if(e.target.closest&&e.target.closest(".sx-nav"))return;var d=document.getElementById("demo");if(d)d.click()});
     var hg=document.getElementById("hgo");if(hg&&hg.parentNode)hg.parentNode.insertBefore(b,hg.nextSibling);else dm.parentNode.insertBefore(b,dm);
     try{sxInit(b,nl)}catch(_){b.classList.add("sx-static")}
   }
 }catch(e){}
+function sxItems(){
+  var items=[],per=[],tyOf=[],ttl=[];
+  if(typeof SAMPLES!=="undefined")Object.keys(SAMPLES).forEach(function(k){SAMPLES[k].forEach(function(x){tyOf.push(k);ttl.push(x[0])})});
+  PRE.forEach(function(r,i){
+    per[i]=(r.red_flags||[]).filter(function(x){return x.level==="high"||x.level==="medium"}).map(function(x){
+      return {type:tyOf[i]||"สัญญา",title:ttl[i]||"",lv:x.level,phrase:x.phrase,why:x.why||"",fix:x.suggestion||"",n:(r.red_flags||[]).length};
+    });
+  });
+  var main=[];
+  for(var rd=0;rd<6;rd++)per.forEach(function(l){if(l[rd])main.push(l[rd])});
+  var good=[
+    {type:"สัญญาจ้างฟรีแลนซ์",phrase:"แก้ไขได้ 2 รอบ",why:"จำกัดจำนวนรอบแก้ไขชัดเจน ทั้งสองฝ่ายรู้ขอบเขตงานตรงกัน ลดโอกาสแก้งานไม่จบ",fix:"คงข้อนี้ไว้ และระบุราคาของรอบที่เกินให้ชัดเจนเผื่อมีแก้เพิ่ม"},
+    {type:"สัญญากู้ยืมเงิน",phrase:"ดอกเบี้ยร้อยละ 7.5 ต่อปี",why:"เป็นตัวเลขชัดเจนและต่ำกว่าเพดานดอกเบี้ยตามกฎหมาย อ่านแล้วไม่ต้องตีความ",fix:"แนบตารางผ่อนชำระท้ายสัญญา และเก็บหลักฐานการโอนเงินทุกงวด"},
+    {type:"สัญญาเช่า",phrase:"คืนเงินประกันภายใน 30 วัน",why:"ระบุกำหนดเวลาคืนเงินชัดเจน ลดปัญหายื้อเงินประกันหลังย้ายออก",fix:"ขอแนบรายการสภาพห้องก่อนเข้าอยู่ ไว้ใช้เทียบตอนคืนห้อง"},
+    {type:"สัญญาจ้างฟรีแลนซ์",phrase:"มัดจำร้อยละ 50 ก่อนเริ่มงาน",why:"ได้เงินส่วนหนึ่งก่อนลงมือทำ ลดความเสี่ยงที่งานเสร็จแล้วไม่ได้เงิน",fix:"เขียนให้ชัดว่ามัดจำไม่คืนหากผู้ว่าจ้างยกเลิกเอง"},
+    {type:"สัญญากู้ยืมเงิน",phrase:"ชำระล่วงหน้าได้โดยไม่มีค่าปรับ",why:"ปิดหนี้ก่อนกำหนดได้โดยไม่เสียค่าใช้จ่ายเพิ่ม ช่วยประหยัดดอกเบี้ย",fix:"ให้ระบุว่าผู้ให้กู้ต้องออกหลักฐานการปิดบัญชีทุกครั้ง"},
+    {type:"สัญญาเช่า",phrase:"ซ่อมแซมตามปกติเป็นหน้าที่ผู้ให้เช่า",why:"แบ่งหน้าที่ซ่อมบำรุงสมเหตุสมผล ผู้เช่ารับผิดเฉพาะความเสียหายที่ตนก่อ",fix:"ระบุช่องทางแจ้งซ่อมและกรอบเวลาที่ต้องดำเนินการ"}
+  ].map(function(g){g.lv="low";g.title="ตัวอย่างข้อที่ดี";g.n=0;return g});
+  var gi=0;
+  main.forEach(function(m,i){items.push(m);if((i+1)%8===0&&gi<good.length)items.push(good[gi++])});
+  while(gi<good.length)items.push(good[gi++]);
+  return items;
+}
 function sxInit(b,nl){
-  var RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  if(RM||!window.IntersectionObserver){b.classList.add("sx-static");return}
-  b.classList.add("sx-prep");
-  var fl=nl.slice(0,3),sw=b.querySelector(".sx-swap"),qi=b.querySelector(".sx-q i"),why=b.querySelector(".sx-why"),fx=b.querySelector(".sx-fix-t"),chips=[].slice.call(b.querySelectorAll(".sx-more em"));
-  var vis=false,started=false,live=false,cur=0,busy=false;
+  var items=sxItems();if(!items.length)return;
+  var RM=matchMedia("(prefers-reduced-motion:reduce)").matches,IO=!!window.IntersectionObserver,anim=!RM&&IO;
+  var LAB={high:"เสี่ยงสูง",medium:"เสี่ยงปานกลาง",low:"เสี่ยงต่ำ"};
+  var arrow='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>';
+  b.innerHTML='<div class="sx-view">'
+    +'<span class="sx-top"><span class="sx-tag"><span class="sx-ty"></span><span class="sx-ct"></span></span><span class="sx-lv"></span></span>'
+    +'<span class="sx-swap"><span class="sx-q"><span>\u201C<i></i>\u201D</span></span><span class="sx-why"></span><span class="sx-fix"><b></b> <span class="sx-fix-t"></span></span></span>'
+    +'<span class="sx-more"></span></div>'
+    +'<div class="sx-bar"><button type="button" class="sx-nav" data-d="-1" aria-label="ตัวอย่างก่อนหน้า"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>'
+    +'<button type="button" class="sx-cta"><span>ดูผลตรวจตัวอย่าง · ฟรี</span>'+arrow+'</button>'
+    +'<button type="button" class="sx-nav" data-d="1" aria-label="ตัวอย่างถัดไป"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>';
+  b.removeAttribute("aria-label");b.setAttribute("aria-label","ตัวอย่างผลตรวจสัญญา เลื่อนดูได้ด้วยปุ่มลูกศร");
+  var view=b.querySelector(".sx-view"),ty=b.querySelector(".sx-ty"),ct=b.querySelector(".sx-ct"),lvEl=b.querySelector(".sx-lv"),
+      qi=b.querySelector(".sx-q i"),why=b.querySelector(".sx-why"),fxb=b.querySelector(".sx-fix b"),fxt=b.querySelector(".sx-fix-t"),more=b.querySelector(".sx-more");
+  var idx=0,busy=false,vis=false,started=false,live=false,pauseUntil=0;
   function hl(d){qi.style.setProperty("--hd",d+"s");qi.classList.remove("hl");void qi.offsetWidth;qi.classList.add("hl")}
   function sync(){b.classList.toggle("sx-live",live&&vis)}
+  function fill(){
+    var it=items[idx];
+    b.setAttribute("data-lv",it.lv);
+    ty.textContent=it.type;ct.textContent=(idx+1)+"/"+items.length;
+    lvEl.textContent=LAB[it.lv]||"";
+    qi.textContent=it.phrase;why.textContent=it.why;
+    fxb.textContent=it.lv==="low"?"ข้อแนะนำ":"ทางแก้";fxt.textContent=it.fix;
+    more.textContent=it.lv==="low"?"ข้อนี้ถือว่าเป็นธรรมต่อผู้เซ็น":"พบ "+it.n+" จุดในสัญญานี้ · "+it.title;
+  }
+  fill();
+  if(!anim){b.classList.add("sx-static")}
+  function go(n,dir){
+    if(busy)return;
+    var next=(n+items.length)%items.length;
+    if(!anim||!view.animate){idx=next;fill();return}
+    busy=true;
+    var dx=14*dir,dog=setTimeout(function(){busy=false;try{view.getAnimations().forEach(function(x){x.cancel()})}catch(_){}},1800);
+    var out=view.animate([{opacity:1,transform:"translateX(0)"},{opacity:0,transform:"translateX("+(-dx)+"px)"}],{duration:170,easing:"ease-in",fill:"forwards"});
+    out.onfinish=function(){
+      try{idx=next;fill();lvEl.classList.remove("pop");void lvEl.offsetWidth;lvEl.classList.add("pop");hl(.12)}catch(_){}
+      out.cancel();
+      var inn=view.animate([{opacity:0,transform:"translateX("+dx+"px)"},{opacity:1,transform:"translateX(0)"}],{duration:280,easing:"cubic-bezier(.2,.8,.2,1)"});
+      inn.onfinish=inn.oncancel=function(){clearTimeout(dog);busy=false};
+    };
+  }
+  b.addEventListener("click",function(e){
+    var n=e.target.closest&&e.target.closest(".sx-nav");if(!n)return;
+    e.preventDefault();pauseUntil=Date.now()+15000;
+    var d=+n.getAttribute("data-d");go(idx+d,d);
+  });
+  if(!anim)return;
+  b.classList.add("sx-prep");
   function start(){
     if(started)return;started=true;
     b.classList.remove("sx-prep");b.classList.add("sx-on");hl(.75);
@@ -1999,17 +2098,10 @@ function sxInit(b,nl){
   new IntersectionObserver(function(es){
     es.forEach(function(e){vis=e.isIntersecting;if(vis&&!started)setTimeout(start,250);sync()});
   },{threshold:.35}).observe(b);
-  if(fl.length>1)setInterval(function(){
-    if(!vis||!live||document.hidden||busy)return;
-    busy=true;sw.classList.add("out");
-    setTimeout(function(){
-      cur=(cur+1)%fl.length;
-      qi.textContent=fl[cur].phrase;why.textContent=fl[cur].why||"";if(fx)fx.textContent=fl[cur].suggestion||"";
-      chips.forEach(function(c,k){c.classList.toggle("on",k===cur)});
-      sw.classList.remove("out");sw.classList.add("in");hl(.18);
-      setTimeout(function(){sw.classList.remove("in");busy=false},450);
-    },270);
-  },6500);
+  setInterval(function(){
+    if(!vis||!live||document.hidden||busy||Date.now()<pauseUntil)return;
+    go(idx+1,1);
+  },6000);
 }
 /* สัมผัสตอบสนองบนมือถือ (เฉพาะเครื่องที่รองรับ) */
 document.addEventListener("click",function(e){

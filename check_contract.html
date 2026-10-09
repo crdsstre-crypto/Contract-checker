@@ -680,6 +680,27 @@ dialog[open]::backdrop{animation:bk .25s ease}
 #role:focus{outline:0;border-color:var(--gold)}
 .kt{display:grid;grid-template-columns:1fr;gap:6px;margin:0 0 12px}.kt div{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:14px}.kt b{font-weight:600;flex:none;max-width:45%}.kt span{text-align:right;min-width:0;overflow-wrap:anywhere}.kt .nf span{color:var(--mute)}
 .lb.nolb{color:var(--mute);font-size:12.5px}
+/* ===== เครื่องมือหลังตรวจ (จำลอง/ปฏิทิน/เช็กลิสต์) ===== */
+#xtools details{border:1px solid var(--line);border-radius:14px;background:var(--card);margin:0 0 10px;overflow:hidden}
+#xtools summary{cursor:pointer;padding:14px 14px;font-weight:600;min-height:48px;box-sizing:border-box;list-style:none;display:flex;align-items:center;gap:8px}
+#xtools summary::-webkit-details-marker{display:none}
+#xtools summary::after{content:"＋";margin-left:auto;color:var(--mute)}
+#xtools details[open] summary::after{content:"－"}
+#xtools .tb{padding:0 14px 14px}
+#xtools .tb p{margin:0 0 10px;font-size:13.5px;color:var(--mute)}
+#xtools .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}
+@media(max-width:380px){#xtools .g2{grid-template-columns:1fr}}
+#xtools label{display:block;font-size:13px;color:var(--mute)}
+#xtools input,#xtools select{width:100%;box-sizing:border-box;margin-top:4px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;min-height:44px}
+#xtools input:focus,#xtools select:focus{outline:0;border-color:var(--gold)}
+#xtools .res{padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14.5px;line-height:1.6;margin:0 0 6px}
+#xtools .res b{font-weight:700}
+#xtools .res.warn{border:1px solid var(--warn,#c0392b)}
+#xtools button.xb{font:inherit;font-weight:600;min-height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;width:100%}
+#xtools .gr{display:grid;grid-template-columns:1.4fr 1fr .9fr;gap:8px;margin:0 0 8px}
+@media(max-width:420px){#xtools .gr{grid-template-columns:1fr 1fr}#xtools .gr>:first-child{grid-column:1/-1}}
+.steps li.ck{list-style:none;margin-left:-18px}.steps li.ck label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:6px 0}.steps li.ck input{width:20px;height:20px;margin-top:2px;flex:none}.steps li.ck.done span{text-decoration:line-through;color:var(--mute)}
+.ckp{font-size:13px;color:var(--mute);margin:-4px 0 8px}
 .kbd{font-size:12px;color:var(--mute);margin:4px 0 8px}
 @media(hover:none){.kbd{display:none}}
 </style>
@@ -1006,6 +1027,18 @@ let o="",c=0;
 R.forEach(([s,e,i])=>{o+=esc(t.slice(c,s))+`<mark data-i="${i}" tabindex="0" role="button" title="ดูวิธีแก้ข้อนี้">${esc(t.slice(s,e))}<sup>${i+1}</sup></mark>`;c=e});
 return o+esc(t.slice(c));
 }
+function confH(r,t){
+const a=(Array.isArray(r.conflicts)?r.conflicts:[]).filter(c=>c&&c.a&&c.b&&t.includes(String(c.a).trim())&&t.includes(String(c.b).trim())&&String(c.a).trim()!==String(c.b).trim()).slice(0,4);
+if(!a.length)return "";
+return '<h2>⚖️ ข้อที่ขัดแย้งกันเองในสัญญา</h2><p class="hint">ตรวจเทียบข้อความสองส่วนในสัญญาของคุณเอง แสดงเฉพาะคู่ที่หาข้อความต้นฉบับเจอจริงทั้งสองฝั่ง</p>'+a.map(c=>`<div class="flag" style="--c:var(--warn)"><span class="tag">ควรถามให้ชัดก่อนเซ็น</span><p class="why"><b>ข้อความ ก:</b> <q>${esc(c.a)}</q></p><p class="why"><b>ข้อความ ข:</b> <q>${esc(c.b)}</q></p><p class="pl">🗣️ ${esc(c.issue||"สองข้อนี้ไม่สอดคล้องกัน")}</p></div>`).join("");
+}
+function docWarn(t){
+const w=[],u=(t.match(/\[อ่านไม่ออก\]/g)||[]).length,g=(t.match(/\uFFFD/g)||[]).length;
+if(/\[ไม่พบข้อความเอกสารในภาพ\]/.test(t))w.push("ระบบไม่พบข้อความเอกสารในภาพ ลองถ่ายใหม่ให้เห็นตัวหนังสือชัดขึ้น");
+if(u)w.push("มี "+u+" จุดที่อ่านจากรูปไม่ออก (ตัวหนังสือ [อ่านไม่ออก]) ลองถ่ายใหม่ หรือพิมพ์ข้อความตรงนั้นเติมเอง");
+if(g>3)w.push("มีตัวอักษรเพี้ยนหลายจุด อาจแปลงจากรูปหรือไฟล์ผิดพลาด");
+if(t.length<150)w.push("ข้อความสั้นมาก อาจขาดบางหน้าหรือบางข้อ");
+return w}
 function render(r,t){
 ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Math.min(10,Number(r.safety_score)||0));
 const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
@@ -1016,6 +1049,7 @@ h+=`<h2>สัญญาของคุณ (ไฮไลต์จุดน่า�
 h+=`<h2>จุดที่ต้องระวังและวิธีแก้</h2>`;
 if(!f.length)h+=`<p>ไม่พบข้อที่น่ากังวลเป็นพิเศษ</p>`;
 f.forEach((x,i)=>{const l=LV[x.level]||LV.medium;h+=`<div class="flag" id="f${i}" style="--c:${l[0]}"><span class="num">${i+1}</span><span class="tag">${l[1]}</span><q>${esc(x.phrase)}</q>${vbadge(x,t)}<p class="why">${esc(x.why)}</p><p class="pl">🗣️ ${esc(x.plain||x.why)}</p>${lbasis(x)}<p class="fix"><b>เสนอแก้เป็น:</b> ${esc(x.suggestion)}</p>${x.how_to_handle?`<p class="how"><b>วิธีรับมือ:</b> ${esc(x.how_to_handle)}</p>`:""}${nego(x)}${fbBtn(i)}</div>`});
+h+=confH(r,t);
 if((r.missing||[]).length)h+=`<h2>สิ่งที่สัญญายังไม่ได้ระบุ</h2><ul>${r.missing.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
 if((r.before_sign||[]).length)h+=`<h2>ก่อนเซ็นควรทำ</h2><ul class="steps">${r.before_sign.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`;
 window.LT=t;h+=extraH(r);$("out").innerHTML='<div class="seg" id="seg" role="tablist"><button type="button" class="on" data-seg="ana" role="tab" aria-selected="true">ภาพรวม</button><button type="button" data-seg="rpt" role="tab" aria-selected="false">รายงาน</button></div><div id="ana">'+h+'</div><div id="rpt" hidden>'+reportH(r,t)+'</div>';bindX(r,t);bindRpt(r,t);bindTTS(r);$("out").scrollIntoView({behavior:"smooth"});
@@ -1034,6 +1068,7 @@ const t0=$("txt").value.trim();$("err").textContent="";const MK2=$("mk").checked
 if(t.length<40){$("err").textContent="วางข้อความสัญญาให้ยาวขึ้นอีกนิด (อย่างน้อย 1–2 ข้อ) แล้วกดตรวจอีกครั้ง";return}
 const PR=preOf(t);
 if(PR){const bt=$("go");bt.disabled=true;bt.textContent="กำลังเปิดตัวอย่าง…";setM("busy","กำลังอ่านทีละข้อ…");await new Promise(r=>setTimeout(r,900));render(PR,t);setM("hop","นี่คือผลตัวอย่าง ไม่เสียเครดิต");bt.disabled=false;bt.textContent=GO();return}
+if(!PR){const dw=docWarn(t);if(dw.length&&window.QW!==t){window.QW=t;$("err").textContent="⚠️ ตรวจคุณภาพข้อความก่อนส่ง: "+dw.join(" • ")+" ถ้าต้องการตรวจต่อเลย กดปุ่มตรวจอีกครั้ง (ยังไม่หักเครดิต)";return}}
 if(cred<CFG.cost&&!(passUntil>Date.now())){openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อตรวจต่อ");return}
 const btn=$("go");btn.disabled=true;btn.textContent="กำลังตรวจ…";setM("busy","กำลังอ่านทีละข้อ…");
 try{
@@ -1117,7 +1152,7 @@ const SCAN={"สัญญาจ้างฟรีแลนซ์":["เงื่
 const STRICT=`กฎเหล็กที่ต้องทำตามเสมอ: (1) วิเคราะห์เฉพาะจากข้อความในสัญญาที่ให้ ห้ามสันนิษฐานหรือเติมข้อเท็จจริงที่ไม่มีในสัญญา (2) ห้ามแต่งหรือเดากฎหมาย มาตรา เพดานหรืออัตรา ให้อ้างได้เฉพาะจากกรอบกฎหมายที่ให้ไว้ด้านล่าง ถ้าไม่แน่ใจหรือไม่อยู่ในกรอบ ให้เขียนว่า "ไม่สามารถระบุได้อย่างแน่ชัด" และห้ามคาดเดา (3) ทุกประเด็นต้องอ้างข้อความต้นฉบับจากสัญญาตัวอักษรต่อตัวอักษร (4) ตัวเลขที่คำนวณต้องมาจากตัวเลขในสัญญาเท่านั้น (5) คุณเป็นผู้ช่วยวิเคราะห์ความเสี่ยงเบื้องต้น ไม่ใช่ทนายความ ห้ามฟันธงว่าข้อใดใช้บังคับไม่ได้หรือชนะคดี ให้ใช้คำว่า "อาจ" และแนะนำปรึกษาทนายความเมื่อเรื่องสำคัญ (6) ห้ามใช้คำฟันธง เช่น "ผิดกฎหมายแน่นอน" เพราะ AI ยังไม่ได้ตรวจข้อเท็จจริงครบถ้วน ให้ใช้ "อาจ" หรือ "ควรตรวจสอบ" แทน`;
 const LAWREF={"สัญญาจ้างฟรีแลนซ์":["ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม พ.ศ. 2540: ข้อสัญญาที่เอาเปรียบเกินสมควรในสัญญาสำเร็จรูป ศาลอาจให้บังคับเพียงเท่าที่เป็นธรรม (ไม่ครอบคลุมทุกสัญญา)","ไม่มีเพดานตายตัวของค่าปรับในสัญญาจ้างทำของ ให้พิจารณาความสมเหตุสมผลโดยไม่อ้างตัวเลขเพดาน"],"สัญญากู้ยืมเงิน":["ป.พ.พ. มาตรา 653: กู้ยืมเกิน 2,000 บาทต้องมีหลักฐานเป็นหนังสือลงลายมือชื่อผู้ยืม","ป.พ.พ. มาตรา 654: ดอกเบี้ยเกินร้อยละ 15 ต่อปีตกเป็นโมฆะ","ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","โดยทั่วไปเจ้าหนี้ไม่มีสิทธิ์ยึดทรัพย์เอง การบังคับชำระหนี้ต้องผ่านศาลและการบังคับคดี"],"สัญญาเช่า":["ป.พ.พ. มาตรา 538: เช่าอสังหาริมทรัพย์เกิน 3 ปีต้องทำเป็นหนังสือและจดทะเบียน มิฉะนั้นฟ้องบังคับได้เพียง 3 ปี","ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม ใช้กับสัญญาบางประเภทเท่านั้น"],"อื่น ๆ":["ป.พ.พ. มาตรา 383: ศาลลดเบี้ยปรับที่สูงเกินส่วนได้","พ.ร.บ.ว่าด้วยข้อสัญญาที่ไม่เป็นธรรม ใช้กับสัญญาบางประเภทเท่านั้น"]};
 const REF=ty=>(LAWREF[ty]||LAWREF["อื่น ๆ"]).map(x=>"- "+x).join("\n");
-const PROMPT=(type,t)=>`${STRICT}\n\nกรอบกฎหมายอ้างอิงที่อนุญาตให้ใช้ (ห้ามอ้างนอกเหนือจากนี้):\n${REF(type)}\n\nคุณเป็นผู้ช่วยตรวจสัญญาที่มีความรู้กฎหมายแพ่งและพาณิชย์ของไทย ตรวจ "${type}" ต่อไปนี้ในมุมของฝ่ายที่มีอำนาจต่อรองน้อยกว่า (ผู้รับจ้าง/ผู้กู้/ผู้เช่า) หาข้อที่ไม่เป็นธรรมหรือเสี่ยง เช่น ค่าปรับสูงเกินจริง (ศาลลดเบี้ยปรับได้ตาม ป.พ.พ. มาตรา 383), ดอกเบี้ยเกินอัตราตามกฎหมาย (เกินร้อยละ 15 ต่อปี ตกเป็นโมฆะ), เงื่อนไขจ่ายเงินคลุมเครือ, แก้งานไม่จำกัด, โอนลิขสิทธิ์เกินขอบเขต, ยกเลิกฝ่ายเดียว ตอบเป็นภาษาไทยที่เข้าใจง่าย ห้ามอ้างมาตรากฎหมายที่ไม่แน่ใจ ตอบเป็น JSON เท่านั้นในรูปแบบ {"safety_score":0-10 (10=ปลอดภัยมาก),"summary":"สรุปไม่เกิน 2 ประโยค","plain_summary":"สรุปแบบภาษาชาวบ้านไม่เกิน 3 ประโยคสำหรับคนไม่รู้กฎหมาย","good_points":["ข้อที่ชัดเจนหรือสมเหตุสมผลของสัญญา พร้อมอ้างข้อความจากสัญญา ไม่เกิน 3 ข้อ ถ้าไม่มีให้ใส่ []"],"lawyer_questions":["คำถามเฉพาะสัญญานี้ที่ควรถามทนายความ 3-5 ข้อ"],"red_flags":[{"level":"high|medium|low","phrase":"คำหรือวลีน่ากลัวที่คัดลอกจากสัญญาตัวอักษรต่อตัวอักษร สั้นที่สุดเท่าที่ได้ 2-6 คำ เลือกเฉพาะคำที่อันตรายจริง (เช่น วันละ 5,000 บาท หรือ ไม่จำกัดจำนวนครั้ง) ไม่ใช่ทั้งประโยค ห้ามแก้ไขหรือเรียบเรียงใหม่","quote":"ข้อความเต็มของข้อนั้นในสัญญาคัดลอกตัวอักษรต่อตัวอักษร ไม่เกิน 120 ตัวอักษร","legal_basis":"อ้างได้เฉพาะจากกรอบกฎหมายที่ให้ไว้ ถ้าไม่มีให้ใส่ null","why":"เสี่ยงอย่างไร ผลร้ายที่อาจเกิดจริง ๆ","suggestion":"ประโยคที่ควรแก้เป็น","plain":"อธิบายข้อนี้แบบภาษาชาวบ้านสั้น ๆ 1 ประโยค","how_to_handle":"วิธีรับมือ เช่น ประโยคสั้น ๆ ที่พูดเจรจากับอีกฝ่าย หรือทางเลือกถ้าอีกฝ่ายไม่ยอมแก้","client_says":"สิ่งที่อีกฝ่ายน่าจะพูดเมื่อคุณขอแก้ข้อนี้ 1 ประโยค","you_say":"ประโยคตอบกลับที่สุภาพแต่หนักแน่น 1-2 ประโยค"}],"missing":["ข้อที่ควรมีแต่ไม่มี"],"before_sign":["สิ่งที่ควรทำก่อนเซ็น 3-5 ข้อ เรียงตามความสำคัญ"],"tldr":["งานคืออะไร","ได้เงินเท่าไหร่และจ่ายเมื่อไร","กำหนดส่งงานหรือระยะเวลาสัญญา"],"market_note":"เทียบค่าตอบแทนในสัญญากับเรทตลาดโดยสรุป 1-2 ประโยค ห้ามแต่งตัวเลขราคาตลาดที่ไม่แน่ใจ ถ้าไม่มีข้อมูลที่เชื่อถือได้ให้ใส่ null","fair_draft":"ร่างสัญญาฉบับแก้ให้เป็นธรรมกับทั้งสองฝ่าย เขียนเป็นข้อ ๆ ครบทุกข้อของสัญญาเดิมพร้อมเพิ่มข้อที่ขาด"} เรียง red_flags จากเสี่ยงมากไปน้อย ไม่เกิน 8 ข้อ ทุกช่องให้กระชับ\n\nสัญญา:\n${t}`;
+const PROMPT=(type,t)=>`${STRICT}\n\nกรอบกฎหมายอ้างอิงที่อนุญาตให้ใช้ (ห้ามอ้างนอกเหนือจากนี้):\n${REF(type)}\n\nคุณเป็นผู้ช่วยตรวจสัญญาที่มีความรู้กฎหมายแพ่งและพาณิชย์ของไทย ตรวจ "${type}" ต่อไปนี้ในมุมของฝ่ายที่มีอำนาจต่อรองน้อยกว่า (ผู้รับจ้าง/ผู้กู้/ผู้เช่า) หาข้อที่ไม่เป็นธรรมหรือเสี่ยง เช่น ค่าปรับสูงเกินจริง (ศาลลดเบี้ยปรับได้ตาม ป.พ.พ. มาตรา 383), ดอกเบี้ยเกินอัตราตามกฎหมาย (เกินร้อยละ 15 ต่อปี ตกเป็นโมฆะ), เงื่อนไขจ่ายเงินคลุมเครือ, แก้งานไม่จำกัด, โอนลิขสิทธิ์เกินขอบเขต, ยกเลิกฝ่ายเดียว ตอบเป็นภาษาไทยที่เข้าใจง่าย ห้ามอ้างมาตรากฎหมายที่ไม่แน่ใจ ตอบเป็น JSON เท่านั้นในรูปแบบ {"safety_score":0-10 (10=ปลอดภัยมาก),"summary":"สรุปไม่เกิน 2 ประโยค","plain_summary":"สรุปแบบภาษาชาวบ้านไม่เกิน 3 ประโยคสำหรับคนไม่รู้กฎหมาย","good_points":["ข้อที่ชัดเจนหรือสมเหตุสมผลของสัญญา พร้อมอ้างข้อความจากสัญญา ไม่เกิน 3 ข้อ ถ้าไม่มีให้ใส่ []"],"lawyer_questions":["คำถามเฉพาะสัญญานี้ที่ควรถามทนายความ 3-5 ข้อ"],"red_flags":[{"level":"high|medium|low","phrase":"คำหรือวลีน่ากลัวที่คัดลอกจากสัญญาตัวอักษรต่อตัวอักษร สั้นที่สุดเท่าที่ได้ 2-6 คำ เลือกเฉพาะคำที่อันตรายจริง (เช่น วันละ 5,000 บาท หรือ ไม่จำกัดจำนวนครั้ง) ไม่ใช่ทั้งประโยค ห้ามแก้ไขหรือเรียบเรียงใหม่","quote":"ข้อความเต็มของข้อนั้นในสัญญาคัดลอกตัวอักษรต่อตัวอักษร ไม่เกิน 120 ตัวอักษร","legal_basis":"อ้างได้เฉพาะจากกรอบกฎหมายที่ให้ไว้ ถ้าไม่มีให้ใส่ null","why":"เสี่ยงอย่างไร ผลร้ายที่อาจเกิดจริง ๆ","suggestion":"ประโยคที่ควรแก้เป็น","plain":"อธิบายข้อนี้แบบภาษาชาวบ้านสั้น ๆ 1 ประโยค","how_to_handle":"วิธีรับมือ เช่น ประโยคสั้น ๆ ที่พูดเจรจากับอีกฝ่าย หรือทางเลือกถ้าอีกฝ่ายไม่ยอมแก้","client_says":"สิ่งที่อีกฝ่ายน่าจะพูดเมื่อคุณขอแก้ข้อนี้ 1 ประโยค","you_say":"ประโยคตอบกลับที่สุภาพแต่หนักแน่น 1-2 ประโยค"}],"conflicts":[{"a":"ข้อความข้อแรกที่เกี่ยวข้อง คัดลอกตัวอักษรต่อตัวอักษร ไม่เกิน 100 ตัวอักษร","b":"ข้อความอีกข้อที่ขัดแย้งหรือไม่สอดคล้องกับข้อแรก คัดลอกตัวอักษรต่อตัวอักษร ไม่เกิน 100 ตัวอักษร","issue":"ขัดแย้งกันอย่างไร และอาจเกิดปัญหาอะไร"}],"missing":["ข้อที่ควรมีแต่ไม่มี"],"before_sign":["สิ่งที่ควรทำก่อนเซ็น 3-5 ข้อ เรียงตามความสำคัญ"],"tldr":["งานคืออะไร","ได้เงินเท่าไหร่และจ่ายเมื่อไร","กำหนดส่งงานหรือระยะเวลาสัญญา"],"market_note":"เทียบค่าตอบแทนในสัญญากับเรทตลาดโดยสรุป 1-2 ประโยค ห้ามแต่งตัวเลขราคาตลาดที่ไม่แน่ใจ ถ้าไม่มีข้อมูลที่เชื่อถือได้ให้ใส่ null","fair_draft":"ร่างสัญญาฉบับแก้ให้เป็นธรรมกับทั้งสองฝ่าย เขียนเป็นข้อ ๆ ครบทุกข้อของสัญญาเดิมพร้อมเพิ่มข้อที่ขาด"} ข้อ conflicts ให้ใส่เฉพาะกรณีที่ข้อความสองส่วนในสัญญาขัดกันเองจริง ๆ (เช่น ระยะเวลาหรือจำนวนเงินไม่ตรงกัน เงื่อนไขจ่ายเงินขัดกับเงื่อนไขยกเลิก) และต้องคัดลอกข้อความทั้งสองส่วนจากสัญญาจริง ถ้าไม่พบให้ใส่ [] เรียง red_flags จากเสี่ยงมากไปน้อย ไม่เกิน 8 ข้อ ทุกช่องให้กระชับ\n\nสัญญา:\n${t}`;
 let pg=null;
 function progStart(){
 const b=$("prog");b.hidden=false;
@@ -1387,6 +1422,55 @@ if(hl&&hl.parentNode){
   var ap=function(){var v=q.value.trim().toLowerCase(),n=0;[].forEach.call(hl.querySelectorAll(".df"),function(r){var hit=!v||r.textContent.toLowerCase().indexOf(v)>-1;r.style.display=hit?"":"none";if(hit)n++});var m=$("hqn");if(v&&!n){if(!m){m=document.createElement("p");m.id="hqn";m.className="hint";m.textContent="ไม่พบรายการที่ตรงกับคำค้น";hl.appendChild(m)}}else if(m)m.remove()};
   q.addEventListener("input",ap);new MutationObserver(function(){if(q.value)ap()}).observe(hl,{childList:true});
 }
+})();
+</script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function n(i){var v=parseFloat(String($(i).value).replace(/,/g,""));return isFinite(v)?v:0}
+function f(x){return x.toLocaleString("th-TH",{maximumFractionDigits:2})}
+function pad(x){return x<10?"0"+x:""+x}
+var HTML='<h2>🧰 เครื่องมือหลังตรวจ</h2><p class="hint">คำนวณและตั้งเตือนในเครื่องคุณเอง ไม่ส่งข้อมูลไปไหน ผลเป็นการประมาณเบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>'
++'<details><summary>🧮 จำลองค่าปรับล่าช้า</summary><div class="tb"><p>ลองใส่ตัวเลขจากสัญญา แล้วดูว่าถ้าส่งงานช้าจะโดนปรับรวมเท่าไร และถ้าต่อรองลดอัตราได้จะต่างกันแค่ไหน</p>'
++'<div class="g2"><label>ค่าปรับต่อวัน (บาท)<input id="sp1" inputmode="decimal" placeholder="เช่น 5000"></label><label>ช้ากี่วัน<input id="sp2" inputmode="numeric" placeholder="เช่น 10"></label>'
++'<label>มูลค่าสัญญา (บาท)<input id="sp3" inputmode="decimal" placeholder="เช่น 30000"></label><label>ถ้าต่อรองเหลือ (บาท/วัน)<input id="sp4" inputmode="decimal" placeholder="ไม่บังคับ"></label></div><div class="res" id="spr" aria-live="polite">กรอกตัวเลขเพื่อดูผล</div></div></details>'
++'<details><summary>💰 จำลองดอกเบี้ย</summary><div class="tb"><p>คิดแบบดอกเบี้ยคงที่ (ไม่ทบต้น) เพื่อดูภาระคร่าว ๆ</p>'
++'<div class="g2"><label>เงินต้น (บาท)<input id="ip1" inputmode="decimal" placeholder="เช่น 100000"></label><label>ดอกเบี้ย (%)<input id="ip2" inputmode="decimal" placeholder="เช่น 2"></label>'
++'<label>หน่วยของดอกเบี้ย<select id="ip3"><option value="m">ต่อเดือน</option><option value="y">ต่อปี</option></select></label><label>ระยะเวลา (เดือน)<input id="ip4" inputmode="numeric" placeholder="เช่น 12"></label></div><div class="res" id="ipr" aria-live="polite">กรอกตัวเลขเพื่อดูผล</div></div></details>'
++'<details><summary>🔔 ตั้งเตือนวันสำคัญ (ไฟล์ปฏิทิน)</summary><div class="tb"><p>ใส่วันที่จากสัญญาเอง (AI ไม่เดาวันที่ให้ เพื่อกันผิดพลาด) แล้วดาวน์โหลดไฟล์ไปเปิดในแอปปฏิทินของเครื่อง</p>'
++'<div id="gd"></div><button type="button" class="xb" id="gdl">⬇️ ดาวน์โหลดไฟล์ปฏิทิน (.ics)</button><p id="gdm" style="margin:8px 0 0"></p></div></details>';
+var GL=["ครบกำหนดชำระเงิน","ครบกำหนดแจ้งยกเลิก / ต่ออายุ","สิ้นสุดสัญญา"];
+function build(){
+  var o=$("out"),a=o&&$("ana");if(!a||$("xtools"))return;
+  var d=document.createElement("div");d.id="xtools";d.innerHTML=HTML;a.appendChild(d);
+  var g=$("gd");g.innerHTML=GL.map(function(l,i){return'<div class="gr"><label>เรื่อง<input class="gl" value="'+l+'"></label><label>วันที่<input class="gt" type="date"></label><label>เตือนก่อน<select class="gb"><option value="1">1 วัน</option><option value="3">3 วัน</option><option value="7" selected>7 วัน</option><option value="14">14 วัน</option><option value="30">30 วัน</option></select></label></div>'}).join("");
+  function sp(){var r=n("sp1"),dd=n("sp2"),v=n("sp3"),r2=n("sp4"),e=$("spr");if(!r||!dd){e.className="res";e.textContent="กรอกค่าปรับต่อวันและจำนวนวันเพื่อดูผล";return}
+    var t=r*dd,h="ค่าปรับรวม <b>"+f(t)+" บาท</b>";
+    if(v>0){var pc=t/v*100;h+=" คิดเป็น <b>"+f(pc)+"%</b> ของมูลค่าสัญญา";if(r*100/v>=1)h+="<br>⚠️ อัตราต่อวันคิดเป็นประมาณ "+f(r*100/v)+"% ของมูลค่าสัญญา สูงมากเมื่อเทียบกับงาน ควรขอลดหรือกำหนดเพดานรวม";if(pc>=20)h+="<br>ค่าปรับรวมสูงเมื่อเทียบกับมูลค่าสัญญา ควรขอใส่เพดานค่าปรับรวม (เช่น กำหนดเป็นเปอร์เซ็นต์ของมูลค่าสัญญา)"}
+    if(r2>0&&r2<r){var t2=r2*dd;h+="<br>ถ้าต่อรองเหลือ "+f(r2)+" บาท/วัน จะเหลือ <b>"+f(t2)+" บาท</b> ประหยัดได้ <b>"+f(t-t2)+" บาท</b>"}
+    h+='<br><span style="color:var(--mute);font-size:12.5px">ศาลอาจลดเบี้ยปรับที่สูงเกินส่วนได้ (ป.พ.พ. มาตรา 383) แต่ไม่รับประกันผล ไม่ควรพึ่งพาข้อนี้แทนการแก้สัญญา</span>';e.className="res"+(v>0&&t/v>=.2?" warn":"");e.innerHTML=h}
+  function ip(){var P=n("ip1"),R=n("ip2"),M=n("ip4"),u=$("ip3").value,e=$("ipr");if(!P||!R||!M){e.className="res";e.textContent="กรอกเงินต้น ดอกเบี้ย และระยะเวลาเพื่อดูผล";return}
+    var yr=u==="y"?R:R*12,tot=P*(yr/100)*(M/12),h="ดอกเบี้ยรวมประมาณ <b>"+f(tot)+" บาท</b> รวมต้องจ่ายคืน <b>"+f(P+tot)+" บาท</b><br>เทียบเป็นอัตราต่อปีประมาณ <b>"+f(yr)+"%</b>";
+    var bad=yr>15;if(bad)h+="<br>⚠️ สูงกว่าร้อยละ 15 ต่อปี ซึ่งเป็นเพดานที่กรอบกฎหมายของระบบใช้อ้างอิง ส่วนที่เกินอาจตกเป็นโมฆะ ควรให้ทนายตรวจก่อนเซ็น";
+    e.className="res"+(bad?" warn":"");e.innerHTML=h}
+  ["sp1","sp2","sp3","sp4"].forEach(function(i){$(i).addEventListener("input",sp)});["ip1","ip2","ip3","ip4"].forEach(function(i){$(i).addEventListener("input",ip);$(i).addEventListener("change",ip)});
+  $("gdl").onclick=function(){
+    var rows=[].slice.call(g.querySelectorAll(".gr")).map(function(r){return{l:r.querySelector(".gl").value.trim()||"วันสำคัญตามสัญญา",d:r.querySelector(".gt").value,b:+r.querySelector(".gb").value}}).filter(function(x){return x.d}),m=$("gdm");
+    if(!rows.length){m.textContent="เลือกวันที่อย่างน้อย 1 รายการก่อนครับ";return}
+    var now=new Date(),st=now.getUTCFullYear()+pad(now.getUTCMonth()+1)+pad(now.getUTCDate())+"T"+pad(now.getUTCHours())+pad(now.getUTCMinutes())+pad(now.getUTCSeconds())+"Z";
+    var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//check-contract//TH","CALSCALE:GREGORIAN"];
+    rows.forEach(function(x,i){var dt=x.d.replace(/-/g,""),nx=new Date(x.d+"T00:00:00Z");nx.setUTCDate(nx.getUTCDate()+1);var ne=nx.getUTCFullYear()+pad(nx.getUTCMonth()+1)+pad(nx.getUTCDate());var t=x.l.replace(/[\\;,]/g," ").replace(/\r?\n/g," ");
+      L.push("BEGIN:VEVENT","UID:cc"+Date.now()+i+"@check-contract","DTSTAMP:"+st,"DTSTART;VALUE=DATE:"+dt,"DTEND;VALUE=DATE:"+ne,"SUMMARY:"+t+" (สัญญา)","DESCRIPTION:เตือนจากเช็กสัญญา ตรวจวันที่กับสัญญาฉบับจริงอีกครั้ง","BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+t,"TRIGGER:-P"+x.b+"D","END:VALARM","END:VEVENT")});
+    L.push("END:VCALENDAR");
+    var bl=new Blob([L.join("\r\n")],{type:"text/calendar;charset=utf-8"}),u=URL.createObjectURL(bl),a2=document.createElement("a");a2.href=u;a2.download="contract-reminders.ics";document.body.appendChild(a2);a2.click();setTimeout(function(){a2.remove();URL.revokeObjectURL(u)},1500);
+    m.textContent="สร้างไฟล์แล้ว "+rows.length+" รายการ เปิดไฟล์เพื่อเพิ่มลงปฏิทิน (วันที่ถูกเก็บในเครื่องคุณเท่านั้น)"};
+  /* เช็กลิสต์ก่อนเซ็นให้ติ๊กได้ */
+  var ul=a.querySelector("ul.steps");
+  if(ul&&!ul.dataset.ck){ul.dataset.ck=1;var its=[].slice.call(ul.children),tot=its.length,pr=document.createElement("p");pr.className="ckp";pr.setAttribute("aria-live","polite");ul.parentNode.insertBefore(pr,ul);
+    var upd=function(){var c=ul.querySelectorAll("input:checked").length;pr.textContent="ทำแล้ว "+c+" จาก "+tot+" ข้อ"+(c===tot&&tot?" ✅ ครบแล้ว":"")};
+    its.forEach(function(li){var t=li.textContent;li.className="ck";li.innerHTML='<label><input type="checkbox"><span></span></label>';li.querySelector("span").textContent=t;li.querySelector("input").addEventListener("change",function(e){li.classList.toggle("done",e.target.checked);upd()})});upd()}
+}
+var o=$("out");if(o)new MutationObserver(build).observe(o,{childList:true});
 })();
 </script>
 </body>

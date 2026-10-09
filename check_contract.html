@@ -359,6 +359,29 @@ body::before{animation:aura 26s ease-in-out infinite alternate}
 @keyframes aura{to{transform:translate3d(4%,3%,0) scale(1.08)}}
 .hero-in:nth-of-type(1){animation-delay:0s}.tagline{animation-delay:.05s!important}.lead{animation-delay:.15s!important}.cta{animation-delay:.25s!important}.trust{animation-delay:.35s!important}
 }
+
+/* ===== REPORT: ACCORDION / SKELETON / MOBILE ===== */
+.flag{margin:14px 0}
+.flag q{overflow-wrap:anywhere}
+.ftog{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin:10px 0 0;padding:0 2px;font:inherit;font-size:14px;font-weight:600;color:var(--gold);background:none;border:0;cursor:pointer;text-align:left}
+.ftog::after{content:"";width:8px;height:8px;margin-left:auto;margin-right:4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .3s}
+.flag.open .ftog::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.fbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.flag.open .fbody{grid-template-rows:1fr}
+.fin{overflow:hidden;min-height:0}
+.lowhint{margin:10px 0 0;padding:10px 12px;font-size:13px;line-height:1.6;color:var(--mute);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px}
+.skel{display:none;margin:12px 0}
+#prog:not([hidden])+.skel{display:block}
+.skel i{display:block;height:84px;margin:10px 0;border-radius:16px;border:1px solid var(--line);background:linear-gradient(90deg,var(--card) 25%,color-mix(in srgb,var(--gold) 10%,var(--card)) 50%,var(--card) 75%);background-size:200% 100%}
+.skel i:first-child{height:132px}
+table{max-width:100%}
+@media(max-width:480px){main{padding-left:16px;padding-right:16px}.flag{padding:14px}h2{margin-top:26px}}
+@media(prefers-reduced-motion:no-preference){
+.skel i{animation:shim 1.4s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.flag{animation-duration:.35s!important}
+}
+@media(prefers-reduced-motion:reduce){.fbody,.ftog::after{transition:none}}
 </style>
 </head>
 <body>
@@ -416,7 +439,7 @@ body::before{animation:aura 26s ease-in-out infinite alternate}
 <div class="err" id="err" role="alert"></div>
 </section>
 
-<div id="prog" class="prog" hidden></div>
+<div id="prog" class="prog" hidden></div><div class="skel" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="out" aria-live="polite"></div>
 <div class="more"><button class="link" id="howbtn" type="button" style="display:inline-block;margin:0 0 12px">❓ วิธีใช้งาน (3 ขั้นตอน)</button> <button class="link" id="histb" type="button" style="display:inline-block;margin:0 0 12px 12px">🕘 ประวัติการตรวจ</button> <button class="link" id="refb" type="button" style="display:none;margin:0 0 12px 12px">🎁 ชวนเพื่อนรับเครดิตฟรี</button><button type="button" class="link" style="display:inline-block" id="genb">🧾 ไม่มีสัญญา? สร้างสัญญาฉบับแฟร์ให้ (จ้างงาน/กู้ยืม/เช่า · ฟรี)</button></div>
 <p class="note"><b>ข้อสงวนสิทธิ์:</b> ภาพที่ถ่ายหรืออัปโหลดจะถูกส่งให้ Claude เพื่ออ่านข้อความเท่านั้น ผลวิเคราะห์เป็นข้อมูลประกอบการตัดสินใจเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจก่อนเซ็น และไม่ควรวางเลขบัตรประชาชนหรือเลขบัญชีในช่องข้อความ<br><button type="button" class="link" id="tos_f">ข้อกำหนดการใช้งานและข้อจำกัดความรับผิด (เวอร์ชัน 1.0)</button></p>
@@ -653,7 +676,7 @@ ttsStop();window.RID=window.NEXTRID||"";window.NEXTRID="";const s=Math.max(0,Mat
 const c=s>=7?"var(--ok)":s>=4?"var(--warn)":"var(--stamp)";
 const f=r.red_flags||[];
 const K=Math.round((10-s)*10),KC=K>=70?'var(--stamp)':K>=40?'var(--warn)':'var(--ok)',KL=K>=70?'เสี่ยงสูง':K>=40?'ควรระวัง':'เสี่ยงต่ำ',nH=f.filter(x=>x.level==='high').length,nM=f.filter(x=>x.level==='medium').length,nL=f.length-nH-nM;
-let h=`<div class="head"><div class="meter" style="--k:${K};--c:${KC}" role="img" aria-label="ความเสี่ยงโดยรวม ${K} เปอร์เซ็นต์ ${KL}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" cx="60" cy="60" r="52"/></svg><div class="mv"><b class="mn"></b><span>${KL}</span></div></div><div class="hb"><p class="sum">${esc(r.summary)}</p><div class="cnt"><span class="c1">เสี่ยงสูง ${nH}</span><span class="c2">ควรระวัง ${nM}</span><span class="c3">เสี่ยงต่ำ ${nL}</span><span>ปลอดภัย ${s}/10</span></div></div></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn">เสียง AI จำกัดจำนวนครั้งต่อวัน ถ้าระบบเสียงหลักเต็มหรือขัดข้อง จะสลับไปใช้เสียงสำรองของ Google หรือเสียงในเครื่องให้เอง เสียงอาจต่างจากเดิม ไม่ใช่เว็บมีปัญหา</span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
+let h=`<div class="head"><div class="meter" style="--k:${K};--c:${KC}" role="img" aria-label="ความเสี่ยงโดยรวม ${K} เปอร์เซ็นต์ ${KL}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" cx="60" cy="60" r="52"/></svg><div class="mv"><b class="mn"></b><span>${KL}</span></div></div><div class="hb"><p class="sum">${esc(r.summary)}</p><div class="cnt"><span class="c1">เสี่ยงสูง ${nH}</span><span class="c2">ควรระวัง ${nM}</span><span class="c3">เสี่ยงต่ำ ${nL}</span><span>ควรตรวจสอบ ${f.length} ข้อ</span><span>ปลอดภัย ${s}/10</span></div>${K<40?'<p class="lowhint">ผลเสี่ยงต่ำไม่ได้แปลว่าปลอดภัยแน่นอน AI อาจตรวจไม่พบบางข้อ ควรอ่านสัญญาเองอีกครั้งก่อนเซ็น</p>':''}</div></div>`;h+='<button type="button" class="link" id="tts">🔊 ฟังสรุปเสียง AI</button><span class="hint" id="ttsn">เสียง AI จำกัดจำนวนครั้งต่อวัน ถ้าระบบเสียงหลักเต็มหรือขัดข้อง จะสลับไปใช้เสียงสำรองของ Google หรือเสียงในเครื่องให้เอง เสียงอาจต่างจากเดิม ไม่ใช่เว็บมีปัญหา</span>'+tldrH(r);h+=riskH(r,t);if(r.plain_summary)h+='<div class="tldr pl"><b>🗣️ ภาษาชาวบ้าน</b><br>'+esc(r.plain_summary)+'</div>';
 h+=`<h2>สัญญาของคุณ (ไฮไลต์จุดน่ากลัว)</h2><div class="doc">${hl(t,f)}</div><p class="hint">ไฮไลต์เฉพาะจุดที่เสี่ยงที่สุด แตะเพื่อดูวิธีแก้ข้อนั้น</p>`;
 h+=`<h2>จุดที่ต้องระวังและวิธีแก้</h2>`;
 if(!f.length)h+=`<p>ไม่พบข้อที่น่ากังวลเป็นพิเศษ</p>`;
@@ -942,6 +965,27 @@ window.addEventListener("scroll",function(){var b=nv&&nv.querySelector('[data-a=
 var go=g("hgo");go&&go.addEventListener("click",function(){var d=g("dz");if(!d)return;d.scrollIntoView({behavior:"smooth",block:"center"});d.classList.add("pulse");setTimeout(function(){d.classList.remove("pulse")},1400)});
 var hw=g("hhow");hw&&hw.addEventListener("click",function(){var b=g("howbtn");b&&b.click()});
 document.addEventListener("pointermove",function(e){if(e.pointerType!=="mouse")return;var t=e.target.closest&&e.target.closest(".panel,.flag,.head");if(!t)return;var r=t.getBoundingClientRect();t.style.setProperty("--mx",(e.clientX-r.left)+"px");t.style.setProperty("--my",(e.clientY-r.top)+"px")},{passive:true});
+}catch(_){}})();
+</script>
+<script>
+(function(){try{var out=document.getElementById("out");if(!out)return;
+function setOpen(f,o){f.classList.toggle("open",o);var t=f.querySelector(".ftog"),i=f.querySelector(".fin");
+if(t){t.setAttribute("aria-expanded",o?"true":"false");t.textContent=o?"ซ่อนรายละเอียด":"ดูรายละเอียดและวิธีแก้"}
+if(i){if(o)i.removeAttribute("inert");else i.setAttribute("inert","")}}
+function enh(){var fl=out.querySelectorAll(".flag:not([data-acc])");
+Array.prototype.forEach.call(fl,function(f,idx){f.setAttribute("data-acc","1");
+var q=f.querySelector("q");if(!q)return;
+var n=q.nextElementSibling;if(n&&n.tagName!=="P")n=n.nextElementSibling;if(!n)return;
+var anchor=n.previousElementSibling,body=document.createElement("div"),inner=document.createElement("div"),
+tg=document.createElement("button");body.className="fbody";inner.className="fin";body.appendChild(inner);
+tg.type="button";tg.className="ftog";
+while(n){var nx=n.nextElementSibling;inner.appendChild(n);n=nx}
+anchor.insertAdjacentElement("afterend",tg);tg.insertAdjacentElement("afterend",body);
+tg.addEventListener("click",function(){setOpen(f,!f.classList.contains("open"))});
+setOpen(f,idx===0)})}
+new MutationObserver(enh).observe(out,{childList:true});enh();
+out.addEventListener("click",function(e){var m=e.target.closest&&e.target.closest("mark");if(!m)return;
+var f=document.getElementById("f"+m.dataset.i);if(f&&!f.classList.contains("open"))setOpen(f,true)});
 }catch(_){}})();
 </script>
 </body>

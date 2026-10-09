@@ -74,12 +74,12 @@ mark sup{font-size:10px;font-weight:600;color:var(--mute);margin-left:1px}
 .mascot{animation:bob 2.6s ease-in-out infinite}
 .mascot .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.2s infinite}
 .mascot .lens{transform-origin:92px 68px;animation:sway 3s ease-in-out infinite}
-.mascot.busy{animation-duration:.7s}.mascot.busy .lens{animation:scan .8s ease-in-out infinite}
+.mascot.busy{animation-duration:.7s}.mascot.busy .lens{animation:scan-lens .8s ease-in-out infinite}
 .mascot.hop{animation:hop .6s ease-out 2}
 @keyframes bob{50%{transform:translateY(-5px)}}
 @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
 @keyframes sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
-@keyframes scan{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
+@keyframes scan-lens{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
 @keyframes hop{40%{transform:translateY(-16px) rotate(-5deg)}}
 }
 @media(prefers-reduced-motion:no-preference){.stamp{animation:st .5s ease-out}@keyframes st{from{transform:rotate(-8deg) scale(1.6);opacity:0}}}
@@ -502,8 +502,8 @@ dialog[open]::backdrop{animation:bk .25s ease}
 @media(prefers-reduced-motion:no-preference){
 .packs.enter button{animation:pkin .3s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
 @keyframes pkin{from{opacity:0;transform:translateY(8px) scale(.97)}}
-.pk.best .pk-tag::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shim 3.6s ease-in-out infinite}
-@keyframes shim{0%,55%{transform:translateX(-120%)}90%,100%{transform:translateX(120%)}}
+.pk.best .pk-tag::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shim-tag 3.6s ease-in-out infinite}
+@keyframes shim-tag{0%,55%{transform:translateX(-120%)}90%,100%{transform:translateX(120%)}}
 .go.busy::before{animation:spin2 .8s linear infinite}
 .go.ok{animation:okp .45s ease-out}@keyframes okp{40%{transform:scale(1.03)}}
 }
@@ -902,10 +902,6 @@ background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 10%,var(--card))
 .dash>:nth-child(2){animation-delay:.05s}.dash>:nth-child(3){animation-delay:.1s}.dash>:nth-child(4){animation-delay:.15s}
 .dash>:nth-child(5){animation-delay:.2s}.dash>:nth-child(6){animation-delay:.25s}.dash>:nth-child(7){animation-delay:.3s}.dash>:nth-child(8){animation-delay:.35s}
 @keyframes cg-rise{from{opacity:0;transform:translateY(14px)}}
-.dash>.dcard.main{animation:cg-rise .55s cubic-bezier(.2,.8,.2,1) .1s backwards,cg-breathe 5.5s ease-in-out 1s infinite}
-@keyframes cg-breathe{50%{box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 70%,transparent),0 22px 46px -12px color-mix(in srgb,var(--gold) 100%,transparent),0 0 78px -10px color-mix(in srgb,var(--gold) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.45)}}
-.dtop .logo{animation:cg-glow 5.5s ease-in-out infinite}
-@keyframes cg-glow{50%{box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 70%,transparent),0 12px 34px -6px var(--gold),inset 0 1px 0 rgba(255,255,255,.4)}}
 .sm-ring .p{animation:cg-ring 1.5s cubic-bezier(.2,.8,.2,1) .35s backwards}
 @keyframes cg-ring{from{stroke-dashoffset:289}}
 .tgrp[open] .tin{animation:cg-tin .35s cubic-bezier(.2,.8,.2,1)}
@@ -934,6 +930,127 @@ main{max-width:900px}
 .sm-tag{align-self:flex-start}
 @media(max-width:480px){.rolebox label{flex:0 0 100%}#role{flex:1 1 100%;min-width:100%}}
 
+/* ======================================================================
+   MOTION PACK — 5 จุด (transform + opacity เป็นหลัก, ไม่วนซ้ำทุกการ์ด, เคารพ reduced-motion)
+   ====================================================================== */
+/* 02 การ์ดตอบสนองเมื่อแตะ: ยุบลงนิดเดียวแล้วคืนตัวแบบสปริง ~200ms */
+.dcard,.sample,#types button,.tgrp>summary{transition:transform .26s cubic-bezier(.34,1.56,.64,1),border-color .2s,box-shadow .25s,background .2s}
+.dcard:active,.sample:active,#types button:active{transform:scale(.965);transition-duration:.1s}
+#types button[aria-pressed="true"]{animation:cg-pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cg-pop{from{transform:scale(.94)}60%{transform:scale(1.025)}}
+/* 03 หมวดเครื่องมือ: ลูกศรหมุนทันที */
+.tgrp.closing>summary::after,details.trustcard.closing>summary::after{transform:rotate(45deg)}
+/* 04 ตอน AI ทำงาน: แสดงเฉพาะขั้นตอนจริง ไม่โชว์เปอร์เซ็นต์ปลอม */
+#prog .pr-n,#prog .pr-est{display:none}
+#prog .pr-bar i{width:var(--stepw,8%)!important;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+#prog .pr-steps li{padding:5px 0 5px 28px;font-size:14.5px}
+.pr-steps li.done::before{animation:cg-pop .35s cubic-bezier(.34,1.56,.64,1)}
+/* 05 ผลตรวจค่อย ๆ ปรากฏ */
+.cg-rv{opacity:0;transform:translateY(14px);transition:opacity .38s ease,transform .38s cubic-bezier(.2,.8,.2,1)}
+.cg-rv.in{opacity:1;transform:none}
+.cg-hl mark{background-repeat:no-repeat;background-position:0 0;background-size:0 100%}
+.cg-hl.on mark{background-size:100% 100%;transition:background-size .7s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+@media(prefers-reduced-motion:no-preference){
+/* 01 หน้าแรก: แสงทองวิ่งผ่านปุ่มหลักเป็นครั้งคราว (วิ่ง ~1 วิ ทุก 8 วิ) */
+.dcard.main{position:relative;overflow:hidden}
+.dcard.main::after{content:"";position:absolute;top:0;bottom:0;left:0;width:34%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);transform:translateX(-160%) skewX(-18deg);animation:cg-sweep 8s ease-in-out 2s infinite}
+@keyframes cg-sweep{0%,78%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(420%) skewX(-18deg)}}
+.cnt span{animation:cg-pop .4s cubic-bezier(.34,1.56,.64,1) backwards}
+.cnt span:nth-child(1){animation-delay:.5s}.cnt span:nth-child(2){animation-delay:.62s}.cnt span:nth-child(3){animation-delay:.74s}
+}
+@media(prefers-reduced-motion:reduce){.cg-rv{opacity:1;transform:none;transition:none}}
+
+
+/* ======================================================================
+   SOFT PASS — ลดแสงจ้า + การ์ดตัวอย่างผลตรวจดีไซน์ใหม่ (เรียบ ไม่มีกรอบหนา)
+   ====================================================================== */
+/* ลดแสงโดยรวม */
+:root{--gold-glow:rgba(220,194,138,.07);--aura:rgba(220,194,138,.05)}
+:root[data-theme="dark"]{--ink:#E9E4D6;--mute:#9CA8BF;--gold-glow:rgba(220,194,138,.07);--aura:rgba(220,194,138,.05);--hl:rgba(255,255,255,.03)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E9E4D6;--mute:#9CA8BF;--gold-glow:rgba(220,194,138,.07);--aura:rgba(220,194,138,.05);--hl:rgba(255,255,255,.03)}}
+.dcard.main{background:var(--btn,linear-gradient(135deg,var(--gold2),var(--gold)));box-shadow:0 8px 20px -14px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.14)}
+.dcard.main::after{display:none}
+.go{box-shadow:0 6px 14px -10px rgba(0,0,0,.55)}
+.go:not(:disabled)::after{display:none}
+.go:hover:not(:disabled){filter:none;box-shadow:0 8px 16px -10px rgba(0,0,0,.55)}
+.dz::after{display:none}
+.dz:hover,.dz.over{box-shadow:0 0 0 3px var(--gold-glow)}
+.mwrap::before{animation:none;opacity:.5}
+.pk.best .pk-tag::after{display:none}
+.dcard:not(.main):hover{box-shadow:var(--sh)}
+/* การ์ดตัวอย่างผลตรวจ: ไม่มีกรอบ ไม่มีเงา พื้นไล่เฉดบาง ๆ */
+.sample{border:0;box-shadow:none;border-radius:22px;padding:20px 18px 16px;
+background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 9%,var(--card)),var(--card) 70%)}
+.sample:hover{border:0;box-shadow:none}
+.sm-tag{border:0;padding:0;margin:0 0 16px;background:none;font-size:12.5px;font-weight:500;letter-spacing:.02em;color:var(--mute)}
+.sm-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.sm-body{gap:20px}
+.sm-ring{width:92px;height:92px}
+.sm-ring circle{stroke-width:6}
+.sm-ring .t{stroke:color-mix(in srgb,var(--ink) 9%,transparent)}
+.sm-ring .p{stroke:var(--stamp);filter:none}
+.sm-n b{font-size:28px;font-weight:700;letter-spacing:-.01em}
+.sm-n small{margin-top:5px;font-size:11.5px;font-weight:500;color:var(--mute)}
+.sm-list{gap:13px}
+.sm-i{font-size:14.5px;line-height:1.6;color:var(--ink);gap:10px}
+.sm-i::before{width:6px;height:6px;box-shadow:none;opacity:.9}
+.sm-cta{border-top:0;margin-top:16px;padding-top:0;font-size:15px;font-weight:600;justify-content:flex-start;gap:8px}
+.sm-cta svg{width:18px;height:18px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.sample:active .sm-cta svg{transform:translateX(4px)}
+@media(hover:hover){.sample:hover .sm-cta svg{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){.sm-cta svg{transition:none}.sample:active .sm-cta svg,.sample:hover .sm-cta svg{transform:none}}
+
+/* ======================================================================
+   REDESIGN — หน้าแรกแบบใหม่: หัวข้อชัด ปุ่มเด่นปุ่มเดียว การ์ดเบา เมนูล่างบาง
+   ====================================================================== */
+.dash{display:block!important;margin:0 0 24px}
+.dash>*{grid-column:auto!important;grid-row:auto!important}
+.dtop{border-bottom:0;padding:2px 0 6px;margin-bottom:4px}
+.dtop .brand::before{display:none}
+.dtop .logo{width:34px;height:34px;border-radius:0;background:none;box-shadow:none;color:var(--gold)}
+:root[data-theme="light"] .dtop .logo{color:var(--gold-ink,var(--gold))}
+.dtop .logo svg{width:32px;height:32px;stroke-width:1.5}
+.dtop b{font-size:18px;line-height:1.2}
+.dtop small{font-size:12px}
+#theme{display:grid!important;width:36px;height:36px;border:0;background:transparent;box-shadow:none;color:var(--mute)}
+.hero{position:relative;padding:20px 0 4px}
+.hero>*{position:relative;z-index:1}
+.dash h1{font-size:clamp(32px,9vw,40px);line-height:1.2;margin:0 0 10px;letter-spacing:-.015em}
+.dash h1 em{font-style:normal;color:var(--gold-ink,var(--gold))}
+.dsub{font-size:14.5px;line-height:1.6;margin:0 0 22px;max-width:17em}
+.hero .hero-doc{position:absolute;z-index:0;right:2px;top:10px;width:96px;height:auto;color:var(--gold);opacity:.26;pointer-events:none}
+.dcard.main{min-height:0;padding:15px 16px;gap:12px;align-items:center;border-radius:14px}
+.dcard.main .di{width:30px;height:30px;border-radius:9px;border:0;box-shadow:none;background:rgba(0,0,0,.09)}
+.dcard.main .di svg{width:19px;height:19px}
+.dcard.main b{font-size:16.5px}
+.dcard.main small{display:none}
+.dcard.main .go-arrow{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.dcard.main:active .go-arrow{transform:translateX(4px)}
+.dlabel{display:flex;align-items:center;gap:10px;margin:26px 0 10px;font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--mute)}
+.dlabel::after{content:"";flex:1;height:1px;background:var(--line)}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.dgrid .dcard{position:relative;flex-direction:column;align-items:flex-start;gap:10px;min-height:98px;padding:14px;border-radius:14px;box-shadow:none;background:color-mix(in srgb,var(--card) 70%,transparent)}
+.dgrid .dcard .di{width:24px;height:24px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--gold)}
+:root[data-theme="light"] .dgrid .dcard .di{color:var(--gold-ink,var(--gold))}
+.dgrid .dcard .di svg{width:22px;height:22px;stroke-width:1.6}
+.dgrid .dcard b{font-size:14.5px;line-height:1.35}
+.dgrid .dcard small{font-size:12px;line-height:1.45;margin-top:2px}
+.dgrid .dcard::after{content:"";position:absolute;right:14px;top:17px;width:7px;height:7px;border-right:1.6px solid var(--mute);border-bottom:1.6px solid var(--mute);transform:rotate(-45deg);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.dgrid .dcard:active::after{transform:translateX(3px) rotate(-45deg)}
+.dgrid .dcard[aria-expanded="true"]::after{transform:rotate(45deg)}
+.dmore{margin:14px 0 0}
+.dash .scope{margin:18px 0 0}
+@media(max-width:340px){.dgrid{grid-template-columns:1fr}}
+/* เมนูล่าง: บาง แบน ไม่มีปุ่มนูน */
+#bnav{left:0;right:0;bottom:0;max-width:none;border-radius:0;align-items:center;padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px));border-width:1px 0 0;box-shadow:none;background:color-mix(in srgb,var(--bg) 92%,transparent)}
+:root[data-theme="light"] #bnav,:root:not([data-theme="dark"]) #bnav{border-radius:0;box-shadow:none}
+#bnav button{min-height:46px;padding:5px 2px;gap:2px;font-size:10.5px;border-radius:10px}
+#bnav button svg{width:21px;height:21px}
+#bnav .fab,:root[data-theme="light"] #bnav .fab,:root:not([data-theme="dark"]) #bnav .fab{flex:1;width:auto;margin-top:0;padding:5px 2px;background:none;box-shadow:none;border-radius:10px;color:var(--mute);font-weight:400}
+#bnav .fab.on,:root[data-theme="light"] #bnav .fab.on,:root:not([data-theme="dark"]) #bnav .fab.on{color:var(--gold)}
+:root[data-theme="light"] #bnav .fab.on{color:#6F5112}
+#bnav button.on{position:relative}
+#bnav button.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:2px;border-radius:2px;background:currentColor}
 </style>
 </head>
 <body>
@@ -954,15 +1071,16 @@ main{max-width:900px}
 <div class="top" aria-hidden="true"><div class="mwrap"><div class="bubble" id="bub">วางสัญญามาได้เลย</div>
 <svg class="mascot" id="mascot" viewBox="0 0 125 118" aria-hidden="true"><rect class="s paper" x="26" y="8" width="60" height="82" rx="9"/></svg></div></div>
 <section class="dash" aria-labelledby="dH">
-<h1 id="dH">วันนี้อยากให้ช่วยอะไร?</h1>
-<p class="dsub">เลือกสิ่งที่ต้องการ ระบบจะพาไปยังเครื่องมือที่เหมาะสม</p>
-<button type="button" class="dcard main" id="hgo"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5"/><circle cx="16.5" cy="16.5" r="3"/><path d="M21 21l-2-2"/></svg></span><span><b>ตรวจสัญญา</b><small>ค้นหาจุดเสี่ยงและทำความเข้าใจข้อสัญญา</small></span><span class="go-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></button>
+<div class="hero"><h1 id="dH">เข้าใจสัญญา<br><em>ก่อนตัดสินใจ</em></h1><p class="dsub">ตรวจจุดเสี่ยง อ่านง่าย พร้อมแนวทางรับมือ</p><svg class="hero-doc" viewBox="0 0 120 130" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M30 18h46l20 20v62a6 6 0 01-6 6H30a6 6 0 01-6-6V24a6 6 0 016-6z" transform="rotate(8 60 65)"/><path d="M76 18v20h20" transform="rotate(8 60 65)"/><path d="M38 52h42M38 64h42M38 76h28" transform="rotate(8 60 65)"/><path d="M12 118c24-6 54-30 96-96" stroke-width="2"/></svg></div>
+<button type="button" class="dcard main" id="hgo"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5"/><circle cx="16.5" cy="16.5" r="3"/><path d="M21 21l-2-2"/></svg></span><span><b>เริ่มตรวจสัญญา</b><small>ค้นหาจุดเสี่ยงและทำความเข้าใจข้อสัญญา</small></span><span class="go-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></button>
+<p class="dlabel">เครื่องมือหลัก</p>
 <div class="dgrid">
 <button type="button" class="dcard" data-px="demo"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span><b>ดูตัวอย่างผลตรวจ</b><small>ลองฟรี ไม่เสียเครดิต</small></span></button>
 <button type="button" class="dcard" data-px="genb"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15h6"/></svg></span><span><b>สร้างสัญญาฉบับแฟร์</b><small>จ้างงาน / กู้ยืม / เช่า · ฟรี</small></span></button>
+<button type="button" class="dcard" data-px="histb"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>ประวัติการตรวจ</b><small>ดูสรุปผลที่เคยตรวจไว้</small></span></button>
+<button type="button" class="dcard" id="pxmore" aria-expanded="false" aria-controls="dmore"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/></svg></span><span><b>เครื่องมืออื่น ๆ</b><small>วิธีใช้ · ข้อมูลของฉัน</small></span></button>
 </div>
-<button type="button" class="dcard row" data-px="histb"><span class="di"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>ประวัติการตรวจ</b><small>ดูสรุปผลที่เคยตรวจไว้ในเครื่องนี้</small></span><span class="go-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
-<div class="dmore"><p>เครื่องมือเพิ่มเติม</p><div class="dchips"><button type="button" id="hhow">วิธีใช้งาน</button><button type="button" data-px="mdb">ข้อมูลของฉัน</button><button type="button" data-px="refb" id="pxref" hidden>ชวนเพื่อนรับเครดิต</button></div>
+<div class="dmore" id="dmore" hidden><p>เครื่องมือเพิ่มเติม</p><div class="dchips"><button type="button" id="hhow">วิธีใช้งาน</button><button type="button" data-px="mdb">ข้อมูลของฉัน</button><button type="button" data-px="refb" id="pxref" hidden>ชวนเพื่อนรับเครดิต</button></div>
 <p class="dnote">หลังตรวจเสร็จ จะมีเครื่องมือเปรียบเทียบสัญญา ซ้อมเจรจา คำนวณค่าปรับ/ดอกเบี้ย และตั้งเตือนวันสำคัญอยู่ในหน้ารายงาน</p></div>
 <p class="scope">เครื่องมือ AI ช่วยอธิบายสัญญาเบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>
 </section>
@@ -1797,9 +1915,9 @@ try{
       +'<span class="sm-body"><span class="sm-ring" style="--k:'+k+'"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="t" cx="50" cy="50" r="46"/><circle class="p" cx="50" cy="50" r="46"/></svg>'
       +'<span class="sm-n"><b>'+k+'%</b><small>'+esc(lv)+'</small></span></span>'
       +'<span class="sm-list">'+fl.map(function(x){return '<span class="sm-i" style="--c:'+(x.level==="high"?"var(--stamp)":"var(--gold)")+'"><span>'+esc(x.phrase)+'</span></span>'}).join("")+'</span></span>'
-      +'<span class="sm-cta"><span>ดูผลตรวจเต็มของสัญญาตัวอย่าง</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>';
+      +'<span class="sm-cta"><span>ดูผลตรวจตัวอย่าง</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>';
     b.addEventListener("click",function(){var d=document.getElementById("demo");if(d)d.click()});
-    dm.parentNode.insertBefore(b,dm);
+    var hg=document.getElementById("hgo");if(hg&&hg.parentNode)hg.parentNode.insertBefore(b,hg.nextSibling);else dm.parentNode.insertBefore(b,dm);
   }
 }catch(e){}
 /* สัมผัสตอบสนองบนมือถือ (เฉพาะเครื่องที่รองรับ) */
@@ -1808,6 +1926,73 @@ document.addEventListener("click",function(e){
 },true);
 })();
 
+/* ===== Motion pack ===== */
+(function(){
+var RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+var $id=function(i){return document.getElementById(i)};
+
+/* 03 เปิด-ปิดหมวดเครื่องมืออย่างลื่นไหล (รักษาตำแหน่ง ไม่ทำให้หน้ากระโดด) */
+if(!RM)document.addEventListener("click",function(e){
+  var s=e.target.closest&&e.target.closest("details.tgrp>summary,details.trustcard>summary");
+  if(!s)return;
+  var d=s.parentNode,c=d.querySelector(":scope>.tin,:scope>.tcin");
+  if(!c||!c.animate)return;
+  e.preventDefault();
+  if(d._an){d._an.cancel();d._an=null}
+  c.style.overflow="hidden";
+  var done=function(){c.style.overflow="";d.classList.remove("closing");d._an=null};
+  if(!d.open){
+    d.open=true;var h=c.offsetHeight;
+    d._an=c.animate([{height:"0px",opacity:0},{height:h+"px",opacity:1}],{duration:280,easing:"cubic-bezier(.2,.8,.2,1)"});
+    d._an.onfinish=done;d._an.oncancel=done;
+  }else{
+    var h2=c.offsetHeight;d.classList.add("closing");
+    d._an=c.animate([{height:h2+"px",opacity:1},{height:"0px",opacity:0}],{duration:220,easing:"ease-in"});
+    d._an.onfinish=function(){d.open=false;done()};d._an.oncancel=done;
+  }
+});
+
+/* 04 แถบความคืบหน้า = จำนวนขั้นตอนที่ระบบทำเสร็จจริง */
+var pr=$id("prog");
+if(pr&&window.MutationObserver){
+  new MutationObserver(function(){
+    var lis=pr.querySelectorAll(".pr-steps li");if(!lis.length)return;
+    var n=0,cur=0;lis.forEach(function(li){if(li.classList.contains("done"))n++;else if(li.classList.contains("cur"))cur=.5});
+    pr.style.setProperty("--stepw",Math.max(8,Math.round((n+cur)/lis.length*100))+"%");
+  }).observe(pr,{subtree:true,attributes:true,attributeFilter:["class"],childList:true});
+}
+
+/* 05 ผลตรวจ: เนื้อหาเห็นทันที แล้วแต่ละส่วนเลื่อนขึ้นเบา ๆ ตามลำดับ + ไฮไลต์ค่อย ๆ ลากผ่านข้อความเสี่ยง */
+function reveal(){
+  if(RM||!window.IntersectionObserver)return;
+  var out=$id("out");if(!out)return;
+  var io=new IntersectionObserver(function(es){es.forEach(function(x){
+    if(!x.isIntersecting)return;io.unobserve(x.target);x.target.classList.add("in");
+    if(x.target.classList.contains("cg-hl"))x.target.classList.add("on");
+  })},{threshold:.06,rootMargin:"0px 0px -4% 0px"});
+  var els=[].slice.call(out.children).filter(function(e){return !e.matches(".head,.flag,.scope,.warnb")});
+  els.forEach(function(e,i){e.classList.add("cg-rv");e.style.transitionDelay=Math.min(i,4)*50+"ms";io.observe(e)});
+  var doc=out.querySelector(".doc");
+  if(doc){doc.classList.add("cg-hl");doc.querySelectorAll("mark").forEach(function(m,i){m.style.setProperty("--d",(.25+i*.18)+"s")});io.observe(doc)}
+  setTimeout(function(){els.forEach(function(e){e.classList.add("in")});if(doc)doc.classList.add("on")},3500);
+}
+if(typeof render==="function"){
+  var _render=render;
+  render=function(r,t){_render(r,t);try{reveal()}catch(e){}};
+}
+})();
+
+
+/* เครื่องมืออื่น ๆ: กดเพื่อเปิด/ปิดรายการ */
+(function(){
+var bt=document.getElementById("pxmore"),box=document.getElementById("dmore");
+if(!bt||!box)return;
+bt.addEventListener("click",function(){
+  var open=box.hidden;box.hidden=!open;bt.setAttribute("aria-expanded",open?"true":"false");
+  if(open&&box.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches)box.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"});
+  if(open)setTimeout(function(){try{box.scrollIntoView({block:"nearest",behavior:"smooth"})}catch(e){}},60);
+});
+})();
 </script>
 </body>
 </html>

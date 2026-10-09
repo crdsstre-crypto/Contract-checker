@@ -1180,7 +1180,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 <p class="scope">เครื่องมือ AI ช่วยอธิบายสัญญาเบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>
 </section>
 
-<div class="crbar" id="cr"><span class="coin" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="cg" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset=".55" style="stop-color:var(--c2)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><linearGradient id="cr2" x1="32" y1="36" x2="8" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><clipPath id="cc"><circle cx="20" cy="20" r="18"/></clipPath></defs><circle cx="20" cy="20" r="18.5" fill="url(#cr2)"/><circle cx="20" cy="20" r="16.4" fill="url(#cg)"/><circle cx="20" cy="20" r="12.6" fill="none" stroke="var(--c3)" stroke-opacity=".45" stroke-width="1"/><circle cx="20" cy="20" r="13.4" fill="none" stroke="var(--c1)" stroke-opacity=".7" stroke-width=".8"/><path class="hl" d="M13.4 21.4l4.6 4.6 8.8-10.2" transform="translate(.7 .9)"/><path class="eng" d="M13.4 21.4l4.6 4.6 8.8-10.2"/><g clip-path="url(#cc)"><rect class="sh" x="-6" y="-4" width="9" height="48" fill="#fff" opacity=".38" transform="rotate(24 20 20)"/></g></svg></span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button></div>
+<div class="crbar" id="cr"><span class="coin" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="cg" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset=".55" style="stop-color:var(--c2)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><linearGradient id="cr2" x1="32" y1="36" x2="8" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--c1)"/><stop offset="1" style="stop-color:var(--c3)"/></linearGradient><clipPath id="cc"><circle cx="20" cy="20" r="18"/></clipPath></defs><circle cx="20" cy="20" r="18.5" fill="url(#cr2)"/><circle cx="20" cy="20" r="16.4" fill="url(#cg)"/><circle cx="20" cy="20" r="12.6" fill="none" stroke="var(--c3)" stroke-opacity=".45" stroke-width="1"/><circle cx="20" cy="20" r="13.4" fill="none" stroke="var(--c1)" stroke-opacity=".7" stroke-width=".8"/><path class="hl" d="M13.4 21.4l4.6 4.6 8.8-10.2" transform="translate(.7 .9)"/><path class="eng" d="M13.4 21.4l4.6 4.6 8.8-10.2"/><g clip-path="url(#cc)"><rect class="sh" x="-6" y="-4" width="9" height="48" fill="#fff" opacity=".38" transform="rotate(24 20 20)"/></g></svg></span><div><div class="num2" id="crn">0</div></div><div class="cap2" id="cap2"><b>เครดิตคงเหลือ</b><br>ตรวจสัญญา 1 ครั้ง = <b id="crc">1</b> เครดิต</div><button id="cradd" type="button">+ เติมเครดิต</button><button id="acct" type="button">👤 บัญชี</button></div>
 <section class="panel">
 <p class="sec">① เลือกประเภทสัญญา</p><div class="types" role="group" aria-label="ประเภทสัญญา" id="types"></div>
 <p class="sec">② อัปโหลดสัญญา</p>
@@ -1675,7 +1675,7 @@ seller:{name:"ชื่อผู้ขาย/ร้านของคุณ",add
 packs:[50,100,200,300,500,1000].map(b=>({b,c:credOf(b)})).concat([{b:790,c:0,days:30}]), // รายการสุดท้ายคือแพ็กเกจรายเดือน (ต้องตรงกับ PASS_BAHT/PASS_DAYS ในเซิร์ฟเวอร์)
 passDaily:2};
 let cred=0,uid="",pk=1,mt=0,ref="",passUntil=0;
-try{uid=localStorage.getItem("uid")||"";if(!uid){uid=Math.random().toString(36).slice(2,10);localStorage.setItem("uid",uid)}}catch(e){uid="guest"}
+try{uid=localStorage.getItem("uid")||"";if(!uid){uid=Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>(b%36).toString(36)).join("");localStorage.setItem("uid",uid)}}catch(e){uid="guest"}
 const lget=()=>{try{const v=localStorage.getItem("cr");if(v===null){localStorage.setItem("cr",CFG.free);return CFG.free}return+v||0}catch(e){return 0}};
 const lset=v=>{try{localStorage.setItem("cr",v)}catch(e){}};
 const J=(u,o)=>fetch(CFG.api+u,o).then(r=>r.json());
@@ -2489,5 +2489,48 @@ animation:cgc-spin 16s linear infinite}
 @keyframes cgf-chev{0%,100%{transform:rotate(45deg) translate(0,0)}50%{transform:rotate(45deg) translate(2px,2px)}}
 }
 </style>
+<style>
+#acm{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center}#acm.on{display:flex}
+#acb{background:var(--card);color:var(--ink);width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.55}
+#acb .ach{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px}#acb .acs{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+#acb input{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+#acb button{font:inherit;padding:9px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}#acb button.pri{background:var(--stamp);border-color:var(--stamp);color:#fff}
+#acb .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}#acb .err{color:var(--stamp);min-height:1.3em;font-size:14px}#acb .note{color:var(--mute);font-size:13px;margin:4px 0 12px}
+#acb .hi{border-top:1px solid var(--line);padding:10px 0}#acb .hi small{color:var(--mute)}#acb h3{font-size:15px;margin:14px 0 4px}
+</style>
+<div id="acm" role="dialog" aria-modal="true" aria-label="บัญชีของฉัน"><div id="acb"></div></div>
+<script>
+(function(){
+var M=document.getElementById("acm"),B=document.getElementById("acb"),btn=document.getElementById("acct");if(!btn)return;
+var ER={bad_login:"อีเมลหรือรหัสผ่านไม่ถูกต้อง",bad_input:"อีเมลไม่ถูกต้อง หรือรหัสผ่านสั้นกว่า 8 ตัวอักษร",email_taken:"อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน",has_account:"เครื่องนี้มีบัญชีอยู่แล้ว",rate_limited:"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่"};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function fmt(t){return t?new Date(t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}):"-"}
+function post(u,o){return JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({uid:uid},o||{}))})}
+function close(){M.classList.remove("on")}M.onclick=function(e){if(e.target===M)close()};
+function load(){B.textContent="กำลังโหลด…";post("/profile").then(function(p){p.error?(B.textContent="โหลดไม่ได้ ลองใหม่อีกครั้ง"):render(p)}).catch(function(){B.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"})}
+var of=window.fetch;window.fetch=function(){var a=arguments;return of.apply(this,a).then(function(r){if(r.status===403&&/\/(slip|order)/.test(String(a[0]))){r.clone().json().then(function(d){if(d&&d.error==="verify_email"){alert("ต้องสมัครบัญชีและยืนยันอีเมลก่อนเติมเครดิต");btn.click()}}).catch(function(){})}return r})};
+btn.onclick=function(){if(!CFG.api){alert("ต้องเปิดผ่านเซิร์ฟเวอร์ของคุณก่อน จึงจะใช้บัญชีได้");return}M.classList.add("on");load()};
+function form(p){var f=el("div"),em=el("input"),pw=el("input"),er=el("div","err");em.type="email";em.placeholder="อีเมล";em.autocomplete="email";pw.type="password";pw.placeholder="รหัสผ่าน (อย่างน้อย 8 ตัว)";pw.autocomplete="current-password";
+ var r=el("div","row"),a=el("button","pri","สมัครบัญชี (เก็บเครดิตนี้ไว้)"),b=el("button",null,"เข้าสู่ระบบ");
+ function run(u,after){er.textContent="";var o={email:em.value.trim(),password:pw.value};(u==="/auth/login"?JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)}):post(u,o)).then(function(d){if(d.error){er.textContent=ER[d.error]||"ทำรายการไม่สำเร็จ";return}after(d)}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}
+ a.onclick=function(){run("/auth/register",load)};
+ b.onclick=function(){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีที่เข้าสู่ระบบ (ถ้าต้องการเก็บไว้ ให้กดสมัครแทน) ดำเนินการต่อไหม?"))return;
+  run("/auth/login",function(d){try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()})};
+ r.appendChild(a);r.appendChild(b);f.appendChild(em);f.appendChild(pw);f.appendChild(r);f.appendChild(er);
+ f.appendChild(el("div","note","สมัครแล้วจะเข้าสู่ระบบจากเครื่องอื่นเพื่อใช้เครดิตและดูประวัติเดิมได้ ระบบยังไม่มีการรีเซ็ตรหัสผ่านอัตโนมัติ หากลืมรหัสผ่านต้องติดต่อผู้ดูแล"));return f}
+function render(p){B.textContent="";var h=el("div","ach"),x=el("button",null,"ปิด");h.appendChild(el("b",null,"บัญชีของฉัน"));x.onclick=close;h.appendChild(x);B.appendChild(h);
+ var s=el("div","acs");s.appendChild(el("div",null,p.email?"อีเมล: "+p.email:"ยังไม่ได้สมัครบัญชี (ใช้งานแบบไม่ระบุชื่อ)"));s.appendChild(el("div",null,"เริ่มใช้งาน: "+fmt(p.created)));if(p.email)s.appendChild(el("div",null,p.verified?"✓ ยืนยันอีเมลแล้ว":"อีเมลยังไม่ได้ยืนยัน"+(p.needVerify?" (ต้องยืนยันก่อนเติมเครดิต)":"")));
+ s.appendChild(el("div",null,p.passUntil>Date.now()?"แพ็กเกจรายเดือนถึง "+fmt(p.passUntil)+" · เครดิตสำรอง "+p.credits:"เครดิตคงเหลือ: "+p.credits));B.appendChild(s);
+ if(!p.email)B.appendChild(form(p));else{if(p.needVerify&&!p.verified){var rs=el("button","pri","ส่งอีเมลยืนยันอีกครั้ง");rs.onclick=function(){rs.disabled=true;post("/auth/resend").then(function(d){rs.textContent=d.ok?"ส่งแล้ว ตรวจกล่องจดหมาย (รวมสแปม)":"ส่งไม่สำเร็จ ลองใหม่ภายหลัง"})};B.appendChild(rs);B.appendChild(document.createTextNode(" "))}var o=el("button",null,"ออกจากระบบ");o.onclick=function(){try{localStorage.removeItem("uid")}catch(e){}location.reload()};B.appendChild(o)}
+ B.appendChild(el("h3",null,"ประวัติการตรวจสัญญา"));B.appendChild(el("div","note","เก็บเฉพาะสรุปผล ไม่เก็บเนื้อหาสัญญา และลบได้ทุกเมื่อ"));
+ if(!p.hist.length)B.appendChild(el("div","note","ยังไม่มีประวัติ"));
+ p.hist.forEach(function(v){var d=el("div","hi"),t=el("div");t.appendChild(el("b",null,v.type+" · "+v.score+"/10"));t.appendChild(el("small",null,"  "+fmt(v.ts)+(v.flags?" · จุดเสี่ยง "+v.flags+(v.high?" (สูง "+v.high+")":""):"")));d.appendChild(t);d.appendChild(el("div",null,v.summary));
+  var z=el("button",null,"ลบรายการนี้");z.onclick=function(){post("/history/delete",{hid:v.id}).then(load)};d.appendChild(z);B.appendChild(d)});
+ B.appendChild(el("h3",null,"ประวัติเครดิต"));var LB={free:"เครดิตฟรี",topup:"เติมเครดิต",topup_pass:"ซื้อแพ็กเกจรายเดือน",use:"ใช้ตรวจสัญญา",pass_use:"ใช้โควตาแพ็กเกจ",refund:"คืนเครดิต",refund_pass:"คืนโควตา",adjust:"ผู้ดูแลปรับ",referral:"โบนัสแนะนำเพื่อน"};
+ if(!(p.ledger||[]).length)B.appendChild(el("div","note","ยังไม่มีรายการ"));(p.ledger||[]).forEach(function(v){var d=el("div","hi");d.appendChild(el("b",null,(LB[v.kind]||v.kind)+(v.n?" "+(v.n>0?"+":"")+v.n:"")));d.appendChild(el("small",null,"  คงเหลือ "+v.bal+" · "+fmt(v.ts)));B.appendChild(d)});
+ if(p.hist.length){var all=el("button",null,"ลบประวัติทั้งหมด");all.onclick=function(){if(confirm("ลบประวัติทั้งหมดใช่ไหม"))post("/history/delete",{}).then(load)};B.appendChild(all)}}
+})();
+</script>
+
 </body>
 </html>

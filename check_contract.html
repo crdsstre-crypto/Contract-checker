@@ -1732,7 +1732,7 @@ const SHUE=[262,200,340,46,152,18,215,300,120,28,175,80,235,8,168,58,285,128,330
 const sico=n=>'<svg class="si" viewBox="0 0 24 24" aria-hidden="true">'+SI[n]+'</svg>',scatIco=k=>/ก่อสร้าง|รีโนเวต/.test(k)?"home":/เช่าซื้อ/.test(k)?"bank":/จ้าง/.test(k)?"pen":/กู้|ยืม|หุ้นส่วน|ลงทุน/.test(k)?"bank":/เช่า/.test(k)?"home":"dots";
 function drawSmp(){
 $("scat").innerHTML=Object.keys(SAMPLES).sort((a,b)=>((a==="อื่น ๆ")-(b==="อื่น ๆ"))||((b===NK)-(a===NK))).map((k,i)=>`<button type="button" data-c="${esc(k)}" aria-pressed="${k===scat}" style="--d:${(i*.05).toFixed(2)}s">${sico(scatIco(k))}<span class="cn"><b>${esc(k)}</b>${tagH(CTAG[k])}</span></button>`).join("");
-$("slist").innerHTML='<div class="sdv">ตัวอย่างสัญญา</div>'+SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}" style="--d:${(.06+i*.05).toFixed(2)}s">${(g=>g>=0&&SIL[g]?'<svg class="si stk" style="--h:'+SHUE[g]+'" viewBox="0 0 24 24" aria-hidden="true">'+SIL[g]+'</svg>':sico("doc"))(Object.values(SAMPLES).flat().indexOf(x))}<span>${esc(x[0])}${tagH(STAG[x[0]])}${x[2]?`<small class="nd">${esc(x[2].when)}</small>`:""}</span>${sico("chev")}</button>${x[2]?`<div class="nsrc">ที่มา: <a href="${esc(x[2].url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(x[2].site||"ข่าว")}</a> · ${esc(x[2].head)}</div>`:""}`).join("")}
+$("slist").innerHTML='<div class="sdv">ตัวอย่างสัญญา</div>'+(scat===NK&&!SAMPLES[NK].length?'<p class="hint">กำลังรวบรวมข่าวล่าสุด ตัวอย่างจะขึ้นที่นี่อัตโนมัติภายในไม่กี่นาที (ระบบอัปเดตเอง ไม่ต้องกดอะไร)</p>':"")+SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}" style="--d:${(.06+i*.05).toFixed(2)}s">${(g=>g>=0&&SIL[g]?'<svg class="si stk" style="--h:'+SHUE[g]+'" viewBox="0 0 24 24" aria-hidden="true">'+SIL[g]+'</svg>':sico("doc"))(Object.values(SAMPLES).flat().indexOf(x))}<span>${esc(x[0])}${tagH(STAG[x[0]])}${x[2]?`<small class="nd">${esc(x[2].when)}</small>`:""}</span>${sico("chev")}</button>${x[2]?`<div class="nsrc">ที่มา: <a href="${esc(x[2].url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(x[2].site||"ข่าว")}</a> · ${esc(x[2].head)}</div>`:""}`).join("")}
 $("demo").onclick=()=>{drawSmp();const d=$("smp");d.classList.add("fresh");setTimeout(()=>d.classList.remove("fresh"),900);d.showModal()};
 $("sx").onclick=()=>$("smp").close();
 $("smp").addEventListener("click",e=>{if(e.target===$("smp")){$("smp").close();return}
@@ -1972,11 +1972,13 @@ if([502,503,504].includes(r.status)&&n<2){await new Promise(s=>setTimeout(s,5000
 const d=await r.json().catch(()=>({}));if(!d.ok&&!d.error)d.error="http_"+r.status;return d}
 
 /* ===== ตัวอย่างจากข่าว: โหลดจากเซิร์ฟเวอร์ที่อัปเดตเอง ===== */
-(async()=>{try{if(!CFG.api&&!/^https?:/.test(location.protocol))return;const r=await fetch((CFG.api||"")+"/news-samples");if(!r.ok)return;const d=await r.json();if(!d.on||!Array.isArray(d.items)||!d.items.length)return;
+let newsTry=0;
+async function loadNews(){try{if(!/^https?:/.test(location.protocol)&&!CFG.api)return;const r=await fetch((CFG.api||"")+"/news-samples");if(!r.ok)return;const d=await r.json();if(!d.on)return;
 const f=t=>new Date(t).toLocaleString("th-TH",{timeZone:"Asia/Bangkok",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+" น.";
-NEWS=d.items.filter(x=>x&&x.text&&x.pre&&x.src&&/^https?:\/\//.test(x.src.url));if(!NEWS.length)return;
+NEWS=(Array.isArray(d.items)?d.items:[]).filter(x=>x&&x.text&&x.pre&&x.src&&/^https?:\/\//.test(x.src.url));
 SAMPLES[NK]=NEWS.map(x=>[x.title,x.text,{when:"เพิ่มเมื่อ "+f(x.ts)+" · ข่าวเผยแพร่ "+new Date(x.src.date).toLocaleDateString("th-TH",{timeZone:"Asia/Bangkok",day:"numeric",month:"short",year:"2-digit"}),url:x.src.url,site:x.src.site,head:String(x.src.title).slice(0,90)}]);
-const tt=$("txt");if($("smp").open)drawSmp()}catch(e){}})();
+if($("smp").open)drawSmp();if(!NEWS.length&&newsTry++<6)setTimeout(loadNews,40000)}catch(e){}}
+loadNews();
 const GO=()=>preOf(($("txt")||{}).value||"")?"ดูผลตัวอย่าง · ฟรี ไม่เสียเครดิต":(passUntil>Date.now()?"ตรวจสัญญา · ไม่เสียเครดิต (แพ็กเกจรายเดือน)":"ตรวจสัญญา · ใช้ "+CFG.cost+" เครดิต");
 function showCr(){if($("go")&&!$("go").disabled)$("go").textContent=GO();const pa=passUntil>Date.now();$("crn").textContent=pa?CFG.passDaily+"/วัน":cred;$("cap2").innerHTML=pa?"<b>แพ็กเกจรายเดือน</b><br>ใช้ได้ถึง "+new Date(passUntil).toLocaleDateString("th-TH")+" · เครดิตสำรอง "+cred:"<b>เครดิตคงเหลือ</b><br>ตรวจได้อีก <b id=\"crc\">"+Math.floor(cred/CFG.cost)+"</b> ครั้ง";$("cr").classList.toggle("low",!pa&&cred<CFG.cost);$("pbal").innerHTML="คงเหลือ <b id=\"pbn\">"+(+cred||0)+"</b> เครดิต · ตรวจสัญญา 1 ครั้งใช้ "+CFG.cost+" เครดิต"}
 async function loadCr(){cred=lget();if(CFG.api){try{{const d=await J("/balance?uid="+uid);if(d&&d.error==="uid"&&uid.length<16){try{localStorage.setItem("uid",Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>(b%36).toString(36)).join(""))}catch(e){}location.reload();return}if(Number.isFinite(d.credits))cred=d.credits;passUntil=d.passUntil||0}}catch(e){}}showCr()}

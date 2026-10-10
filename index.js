@@ -213,7 +213,8 @@ let newsBusy=false;
 const unent=s=>String(s||"").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/\s+/g," ").trim();
 function parseRSS(x){const o=[],re=/<item>([\s\S]*?)<\/item>/g;let m;while((m=re.exec(x))){const g=t=>{const r=new RegExp("<"+t+"[^>]*>([\\s\\S]*?)</"+t+">").exec(m[1]);return r?unent(r[1]):""};
   const link=g("link"),ts=Date.parse(g("pubDate"));if(!/^https?:\/\//.test(link)||!g("title"))continue;o.push({title:g("title").slice(0,200),link,site:g("source").slice(0,60),ts:isNaN(ts)?Date.now():ts})}return o}
-async function newsHeadlines(){const all=[];for(const u of NEWS_FEEDS){try{const r=await fetch(u,{signal:AbortSignal.timeout(15000),headers:{"user-agent":"Mozilla/5.0 (compatible; CheckContractBot/1.0)"}});if(r.ok)all.push(...parseRSS(await r.text()))}catch(e){console.log("[news] feed:",String(e.message||e).slice(0,80))}}
+let feedErr=[];
+async function newsHeadlines(){feedErr=[];const all=[];for(const u of NEWS_FEEDS){try{const r=await fetch(u,{signal:AbortSignal.timeout(15000),headers:{"user-agent":"Mozilla/5.0 (compatible; CheckContractBot/1.0)"}});if(r.ok)all.push(...parseRSS(await r.text()));else feedErr.push("http "+r.status)}catch(e){feedErr.push(String(e.message||e).slice(0,60));console.log("[news] feed:",String(e.message||e).slice(0,80))}}
   const seen=new Set(),min=Date.now()-14*864e5;return all.filter(h=>{const k=hash(h.title.replace(/\s*-\s*[^-]*$/,""));if(seen.has(k)||h.ts<min)return false;seen.add(k);return true}).sort((a,b)=>b.ts-a.ts)}
 const NEWSP=(list,n)=>`${STRICT}
 
@@ -247,12 +248,12 @@ async function newsRun(force){if(!NEWS_ON||!KEY||newsBusy)return{skipped:true};n
     st.try=now;fs.writeFileSync(NEWS_S,JSON.stringify(st));
     const today=items.filter(x=>dayTH(x.ts)===dayTH(now)).length,room=force?NEWS_PER_RUN:Math.min(NEWS_PER_RUN,NEWS_DAILY-today);if(room<=0)return{skipped:"daily_cap"};
     const soon=()=>{st.try=Date.now()-NEWS_EVERY+18e5;fs.writeFileSync(NEWS_S,JSON.stringify(st))}; // ถ้าพลาด ลองใหม่ใน 30 นาที ไม่ต้องรอ 6 ชม.
-    const have=new Set(items.map(x=>x.id)),hs=(await newsHeadlines()).filter(h=>!have.has(hash(h.link))).slice(0,20);if(!hs.length){soon();return{added:0,note:"no_news"}}
-    const txt=await ai(NEWSP(hs,room),7000,{}),a=txt.indexOf("["),b=txt.lastIndexOf("]");let arr=[];try{arr=JSON.parse(txt.slice(a,b+1))}catch(e){console.log("[news] json parse fail");soon();return{added:0,note:"parse"}}
+    const dbg={};const have=new Set(items.map(x=>x.id)),hs=(await newsHeadlines()).filter(h=>!have.has(hash(h.link))).slice(0,20);dbg.feeds=NEWS_FEEDS.length;dbg.feed_errors=feedErr.slice(0,5);dbg.headlines=hs.length;if(!hs.length){soon();return{added:0,note:"no_news",debug:dbg}}
+    const txt=await ai(NEWSP(hs,room),7000,{});dbg.ai_len=txt.length;dbg.ai_head=txt.slice(0,160);const a=txt.indexOf("["),b=txt.lastIndexOf("]");let arr=[];try{arr=JSON.parse(txt.slice(a,b+1))}catch(e){console.log("[news] json parse fail");soon();return{added:0,note:"parse",debug:dbg}}
     const fresh=[];for(const o of Array.isArray(arr)?arr.slice(0,room):[]){const v=vetNews(o,hs[+o.i]);if(v&&!have.has(v.id)&&!fresh.some(f=>f.id===v.id))fresh.push(v)}
     if(fresh.length){const all=[...items,...fresh].slice(-NEWS_MAX);fs.writeFileSync(NEWS_F,JSON.stringify(all));st.last=Date.now();fs.writeFileSync(NEWS_S,JSON.stringify(st))}
-    if(!fresh.length)soon();console.log("[news] เพิ่ม "+fresh.length+" ตัวอย่าง");return{added:fresh.length}
-  }catch(e){console.log("[news] error:",String(e&&e.message||e).slice(0,160));try{const st=readJ(NEWS_S,{});st.try=Date.now()-NEWS_EVERY+18e5;fs.writeFileSync(NEWS_S,JSON.stringify(st))}catch(_){}return{error:true}}finally{newsBusy=false}}
+    if(!fresh.length)soon();dbg.rejected=(Array.isArray(arr)?arr.length:0)-fresh.length;console.log("[news] เพิ่ม "+fresh.length+" ตัวอย่าง");return{added:fresh.length,debug:dbg}
+  }catch(e){console.log("[news] error:",String(e&&e.message||e).slice(0,160));try{const st=readJ(NEWS_S,{});st.try=Date.now()-NEWS_EVERY+18e5;fs.writeFileSync(NEWS_S,JSON.stringify(st))}catch(_){}return{error:true,msg:String(e&&e.message||e).slice(0,200)}}finally{newsBusy=false}}
 const newsMaybe=()=>{if(NEWS_ON&&KEY&&!newsBusy&&Date.now()-(readJ(NEWS_S,{}).try||0)>=NEWS_EVERY)newsRun(false)};
 setInterval(newsMaybe,36e5).unref();setTimeout(newsMaybe,15000).unref();
 

@@ -45,6 +45,7 @@ const tosOk=x=>!TOS_REQ||(x.tos&&x.tos.v===TOSV);
 const grant=(x,id,baht,pk,ref,how,tx)=>{if(pk.days)x.passUntil=Math.max(Date.now(),x.passUntil||0)+pk.days*864e5;else x.credits+=pk.credits;save();ap(PAY,{ts:Date.now(),uid:id,baht,credits:pk.credits,days:pk.days||0,ref,how,tx:tx||""});led(id,pk.days?"topup_pass":"topup",pk.credits,x.credits,ref)};
 
 /* ---------- บัญชีผู้ใช้ (อีเมล + รหัสผ่าน, scrypt ไม่ต้องติดตั้งแพ็กเกจ) ---------- */
+const GCID=E.GOOGLE_CLIENT_ID||""; // OAuth Client ID จาก Google Cloud Console (ชนิด Web application) เปิดปุ่ม "ลงชื่อเข้าใช้ด้วย Google"
 const MAILK=E.RESEND_KEY||"",MAILFROM=E.MAIL_FROM||"",BASE=(E.BASE_URL||"").replace(/\/$/,""),NEEDV=E.REQUIRE_VERIFY?E.REQUIRE_VERIFY==="1":!!MAILK; // ตั้ง RESEND_KEY+MAIL_FROM+BASE_URL เพื่อเปิดยืนยันอีเมล (เปิดแล้วต้องยืนยันก่อนเติมเงิน)
 async function sendVerify(x,id){const t=crypto.randomBytes(24).toString("hex"),m=db.__vt=db.__vt||{};for(const k in m)if(m[k].id===id||m[k].exp<Date.now())delete m[k];m[hash(t)]={id,exp:Date.now()+864e5};save();
   const r=await fetch("https://api.resend.com/emails",{method:"POST",signal:AbortSignal.timeout(20000),headers:{authorization:"Bearer "+MAILK,"content-type":"application/json"},body:JSON.stringify({from:MAILFROM,to:[x.email],subject:"ยืนยันอีเมล เช็กสัญญา",text:"กดลิงก์เพื่อยืนยันอีเมล (ใช้ได้ 24 ชั่วโมง):\n"+BASE+"/auth/verify?t="+t+"\n\nถ้าคุณไม่ได้สมัคร ไม่ต้องทำอะไร"})});if(!r.ok)throw new Error("mail "+r.status)}
@@ -207,6 +208,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(limited("ip"+ip,120))return send(res,429,{error:"rate_limited"});
 
   /* ----- GET ----- */
+  if(req.method==="GET"&&P==="/auth/config")return send(res,200,{ok:true,google:GCID||null});
   if(req.method==="GET"&&P==="/auth/verify"){const m=db.__vt||{},k=hash(String(u.searchParams.get("t")||"")),e=m[k],y=e&&e.exp>Date.now()&&db[e.id];
     if(y){y.verified=Date.now();delete m[k];save()}
     res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});return res.end('<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;max-width:420px;margin:15vh auto;padding:16px;text-align:center"><h2>'+(y?"ยืนยันอีเมลสำเร็จ ✓":"ลิงก์ไม่ถูกต้องหรือหมดอายุ")+'</h2><p><a href="/">กลับไปหน้าตรวจสัญญา</a></p>')}
@@ -275,6 +277,16 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     if(!y||!y.pw){await scr(pw,"0".repeat(32));return send(res,401,{error:"bad_login"})}
     const h=await scr(pw,y.pw.s);if(!crypto.timingSafeEqual(h,Buffer.from(y.pw.h,"hex")))return send(res,401,{error:"bad_login"});
     return send(res,200,{ok:true,uid:k,email:em})}
+  if(P==="/auth/google"){if(!GCID)return send(res,501,{error:"google_off"});if(limited("gg"+ip,15,9e5))return send(res,429,{error:"rate_limited"});
+    const tok=String(b.credential||"").slice(0,4096);if(tok.length<100)return send(res,400,{error:"bad_input"});
+    let d=null;try{const r=await fetch("https://oauth2.googleapis.com/tokeninfo?id_token="+encodeURIComponent(tok),{signal:AbortSignal.timeout(10000)});if(r.ok)d=await r.json()}catch(e){}
+    const em=d?String(d.email||"").toLowerCase():"";
+    if(!d||d.aud!==GCID||!/^(https:\/\/)?accounts\.google\.com$/.test(d.iss||"")||String(d.email_verified)!=="true"||+d.exp*1000<Date.now()||!emOK(em))return send(res,401,{error:"bad_google"});
+    const m=db.__email=db.__email||{},k=m[eh(em)],y=k&&db[k];
+    if(y){if(y.pw&&!y.verified)delete y.pw; // กันคนสมัครอีเมลคนอื่นไว้ล่วงหน้าแล้วถือรหัสผ่าน
+      y.verified=y.verified||Date.now();y.gsub=d.sub;save();return send(res,200,{ok:true,uid:k,email:em})}
+    const x0=getUser(id,ip);if(!x0)return send(res,400,{error:"uid"});if(x0.email)return send(res,409,{error:"has_account"});
+    x0.email=em;x0.verified=Date.now();x0.gsub=d.sub;m[eh(em)]=id;save();return send(res,200,{ok:true,uid:id,email:em,created:true})}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");

@@ -2,6 +2,7 @@
 // รัน:  ANTHROPIC_API_KEY=sk-ant-... ADMIN_KEY=รหัสลับของคุณ node index.js
 // ไฟล์ที่ต้องอยู่โฟลเดอร์เดียวกัน: check_contract.html, admin.html
 // ตัวเลือก (env): PORT, MODEL, FREE(เครดิตฟรี=1), COST(=1), FORCE_HTTPS=1, TRUST_PROXY=1, DATA_DIR,
+//   AZURE_SPEECH_KEY + AZURE_SPEECH_REGION(=southeastasia) AZURE_VOICE(=th-TH-PremwadeeNeural) เสียง Azure ใช้ก่อนเสมอถ้าตั้งไว้ (ถ้าไม่อยากใช้ ElevenLabs ให้ลบ ELEVENLABS_* ออก)
 //   GOOGLE_TTS_KEY(เปิดเสียงอ่านสรุปแบบเสียงคนจริง) ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID (เสียง ElevenLabs ใช้ก่อน Google) ELEVENLABS_MODEL(=eleven_v3) หน้าเลือกเสียง ElevenLabs: /admin/el-voices?key=รหัสแอดมิน หน้าลองฟังเสียง Google ทุกเสียง: /admin/voices?key=รหัสแอดมิน | TTS_RATE(=1 ความเร็วเสียง 0.8-1.2) TTS_GENDER(=f เสียงหญิง "ค่ะ" / m เสียงชาย "ครับ" ต้องตรงกับเสียงที่เลือก) GOOGLE_TTS_VOICE(=th-TH-Chirp3-HD-Achernar) TTS_DAILY(=10 ครั้ง/คน/วัน),
 //   PASS_BAHT(=199) PASS_DAYS(=30) PASS_DAILY(=30 ครั้ง/วัน) แพ็กเกจรายเดือน,
 //   SLIPOK_BRANCH, SLIPOK_KEY, SLIP_RECV, TOS_VERSION(=1.2), RETAIN_DAYS(=180 วัน ลบรายงานข้อผิดพลาด/คำสั่งซื้อ/คำขอทนายอัตโนมัติ ต้องตรงกับ PRIV.retainDays ในหน้าเว็บ), REF_BONUS(=1), REF_MAX(=10), NEW_PER_IP(=5), ALLOWED_ORIGIN (หลายโดเมนคั่นด้วย , เช่น https://me.github.io,https://mydomain.com)
@@ -15,7 +16,8 @@ const TOSV=E.TOS_VERSION||"1.2",TOS_REQ=E.TOS_REQUIRED!=="0"; const REQ_ACC=E.RE
 const PASS_BAHT=+E.PASS_BAHT||790,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||2; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
 const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";
-console.log("เสียงอ่าน:",EL_KEY&&EL_VOICE?"ElevenLabs ("+EL_MODEL+")":EL_KEY?"⚠️ ตั้ง ELEVENLABS_API_KEY แล้ว แต่ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID":"ยังไม่ได้ตั้ง ElevenLabs",TTS_KEY?"| สำรอง: Google":"| ไม่มี Google สำรอง");
+console.log("เสียงอ่าน: Azure",AZ_KEY?"("+AZ_VOICE+", "+AZ_REGION+")":"ยังไม่ได้ตั้ง","|",EL_KEY&&EL_VOICE?"ElevenLabs ("+EL_MODEL+")":EL_KEY?"⚠️ ตั้ง ELEVENLABS_API_KEY แล้ว แต่ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID":"ยังไม่ได้ตั้ง ElevenLabs",TTS_KEY?"| สำรอง: Google":"| ไม่มี Google สำรอง");
+const AZ_KEY=(E.AZURE_SPEECH_KEY||"").trim(),AZ_REGION=(E.AZURE_SPEECH_REGION||"southeastasia").trim(),AZ_VOICE=E.AZURE_VOICE||"th-TH-PremwadeeNeural",AZ_URL=E.AZURE_SPEECH_URL||("https://"+AZ_REGION+".tts.speech.microsoft.com/cognitiveservices/v1"); // Azure AI Speech (มีโควตาฟรีรายเดือน ใช้เชิงพาณิชย์ได้) เสียงไทย: th-TH-PremwadeeNeural(หญิง) th-TH-AcharaNeural(หญิง) th-TH-NiwatNeural(ชาย)
 const SLIP_BRANCH=E.SLIPOK_BRANCH||"",SLIP_KEY=E.SLIPOK_KEY||"",SLIP_RECV=E.SLIP_RECV||"";
 let PACKS={};try{if(E.PACKS)PACKS=JSON.parse(E.PACKS)}catch(e){} // (ไม่บังคับ) ตั้ง env PACKS เพื่อกำหนดราคาเอง ถ้าไม่ตั้ง จะคิดตามเรตด้านล่างที่ตรงกับ credOf ในหน้าเว็บ
 const MINB=+E.MIN_TOPUP||50,MAXB=+E.MAX_TOPUP||5000,RATE=b=>b>=500?14:b>=200?15:16; // บาทต่อ 1 เครดิต ต้องตรงกับ credOf ในหน้าเว็บ // ต้องตรงกับ CFG.packs ในหน้าเว็บ (บาท:เครดิต)
@@ -171,7 +173,7 @@ function buildScript(r){const cut=(v,n)=>String(v||"").replace(/\s+/g," ").trim(
 /*@@TTS-END*/
 /* ---------- บทพูดสไตล์คนเล่าให้ฟัง (ให้ Claude เรียบเรียงจากผลตรวจ ถ้าพลาดจะใช้บทสำเร็จรูปแทน) ---------- */
 const GV=[["Achernar","f"],["Achird","m"],["Algenib","m"],["Algieba","m"],["Alnilam","m"],["Aoede","f"],["Autonoe","f"],["Callirrhoe","f"],["Charon","m"],["Despina","f"],["Enceladus","m"],["Erinome","f"],["Fenrir","m"],["Gacrux","f"],["Iapetus","m"],["Kore","f"],["Laomedeia","f"],["Leda","f"],["Orus","m"],["Pulcherrima","f"],["Puck","m"],["Rasalgethi","m"],["Sadachbia","m"],["Sadaltager","m"],["Schedar","m"],["Sulafat","f"],["Umbriel","m"],["Vindemiatrix","f"],["Zephyr","f"],["Zubenelgenubi","m"]]; // เสียง Google Chirp3-HD และเพศ ตามเอกสาร Google
-const MALE=E.TTS_GENDER?E.TTS_GENDER==="m":(!(EL_KEY&&EL_VOICE)&&(GV.find(g=>g[0]===TTS_VOICE.split("-").pop())||[])[1]==="m"); // เลือกเสียงชาย/หญิง อัตโนมัติจากชื่อเสียง (ใช้ ElevenLabs = ต้องตั้ง TTS_GENDER เอง)
+const MALE=E.TTS_GENDER?E.TTS_GENDER==="m":AZ_KEY?/Niwat/i.test(AZ_VOICE):(!(EL_KEY&&EL_VOICE)&&(GV.find(g=>g[0]===TTS_VOICE.split("-").pop())||[])[1]==="m"); // เลือกเสียงชาย/หญิง อัตโนมัติจากชื่อเสียง (ใช้ ElevenLabs = ต้องตั้ง TTS_GENDER เอง)
 const TTS_ENDING=MALE?"ครับ นะครับ":"ค่ะ นะคะ คะ";
 const TTS_RATE=+E.TTS_RATE||1;
 const SPOKEN=r=>`คุณคือคนที่กำลังคุยกับเพื่อนตัวต่อตัว เล่าผลตรวจสัญญาให้เพื่อนฟังแบบเป็นกันเอง ไม่ใช่การอ่านรายงาน เขียนเป็นบทพูดภาษาไทยจากผลตรวจด้านล่าง
@@ -204,10 +206,22 @@ async function eltts(text,vid=EL_VOICE){ // ElevenLabs: ภาษาไทยต
       break}
     if(/^(401|402|403|429) /.test(last))break}
   throw new Error("elevenlabs "+last)}
+const xe=t=>String(t).replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&apos;"}[c]));
+async function aztts(text,voice=AZ_VOICE){ // Azure AI Speech REST → MP3 (base64)
+  const rate=Math.round((TTS_RATE-1)*100),ssml='<speak version="1.0" xml:lang="th-TH" xmlns="http://www.w3.org/2001/10/synthesis"><voice name="'+xe(voice)+'"><prosody rate="'+(rate>=0?"+":"")+rate+'%">'+xe(text)+'</prosody></voice></speak>';
+  const wait=ms=>new Promise(z=>setTimeout(z,ms));let last="";
+  for(let at=0;at<3;at++){let r;
+    try{r=await fetch(AZ_URL,{method:"POST",signal:AbortSignal.timeout(45000),headers:{"Ocp-Apim-Subscription-Key":AZ_KEY,"Content-Type":"application/ssml+xml","X-Microsoft-OutputFormat":"audio-24khz-96kbitrate-mono-mp3","User-Agent":"check-contract"},body:ssml})}
+    catch(e){last="net "+String(e&&e.message).slice(0,80);if(at<2){await wait(1200);continue}break}
+    if(r.ok){const b=Buffer.from(await r.arrayBuffer());if(b.length>1000)return b.toString("base64");last="empty audio";break}
+    last=r.status+" "+String(await r.text().catch(()=>"")).replace(/\s+/g," ").slice(0,100);
+    if((r.status>=500||r.status===429)&&at<2){await wait(1500*(at+1));continue}break}
+  throw new Error("azure "+last)}
 async function speak(text){let err="";
-  if(EL_KEY&&EL_VOICE){try{return{audio:await eltts(text),via:"elevenlabs"}}catch(e){err=e.message;console.log("ElevenLabs ใช้ไม่ได้:",err)}}
-  else if(EL_KEY)err="ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID";else if(EL_VOICE)err="ยังไม่ได้ตั้ง ELEVENLABS_API_KEY";
-  if(TTS_KEY)return{audio:await gtts(text),via:"google",err};
+  if(AZ_KEY){try{return{audio:await aztts(text),via:"azure"}}catch(e){err=e.message;console.log("Azure ใช้ไม่ได้:",err)}}
+  if(EL_KEY&&EL_VOICE){try{return{audio:await eltts(text),via:"elevenlabs",err}}catch(e){err=err||e.message;console.log("ElevenLabs ใช้ไม่ได้:",err)}}
+  else if(!AZ_KEY&&EL_KEY)err="ยังไม่ได้ตั้ง ELEVENLABS_VOICE_ID";else if(!AZ_KEY&&EL_VOICE)err="ยังไม่ได้ตั้ง ELEVENLABS_API_KEY";
+  if(TTS_KEY)return{audio:await gtts(text),via:"google",err};if(err&&AZ_KEY)throw new Error(err);
   throw new Error(err||"tts")}
 let SAMPLE_PRE=null; // ผลตัวอย่างอ่านจากหน้าเว็บ (const PRE=[...]) ไม่ต้องก๊อปซ้ำ
 function samples(){if(SAMPLE_PRE)return SAMPLE_PRE;SAMPLE_PRE=[];try{const s=fs.readFileSync(PAGE,"utf8"),k=s.indexOf("const PRE=");if(k>=0){const i=s.indexOf("[",k);let d=0,q=false,es=false,j=i;
@@ -215,7 +229,7 @@ function samples(){if(SAMPLE_PRE)return SAMPLE_PRE;SAMPLE_PRE=[];try{const s=fs.
   SAMPLE_PRE=JSON.parse(s.slice(i,j+1))}}catch(e){console.log("อ่านสัญญาตัวอย่างไม่สำเร็จ:",e.message)}return SAMPLE_PRE}
 const sampleMem=new Map(),sampleJobs=new Map();
 function sampleAudio(i){const r=samples()[i];if(!r)return Promise.resolve(null);
-  const key=hash(JSON.stringify(r)+"|"+(EL_KEY&&EL_VOICE?EL_VOICE+EL_MODEL:TTS_VOICE)+"|"+TTS_ENDING+"|"+TTS_RATE),f=fp("sample_tts_"+key+".json");
+  const key=hash(JSON.stringify(r)+"|"+(AZ_KEY?AZ_VOICE:EL_KEY&&EL_VOICE?EL_VOICE+EL_MODEL:TTS_VOICE)+"|"+TTS_ENDING+"|"+TTS_RATE),f=fp("sample_tts_"+key+".json");
   if(sampleMem.has(key))return Promise.resolve(sampleMem.get(key));
   try{const o=JSON.parse(fs.readFileSync(f,"utf8"));sampleMem.set(key,o);return Promise.resolve(o)}catch(e){}
   if(!sampleJobs.has(key))sampleJobs.set(key,(async()=>{try{const o=await speak(await spoken(r));
@@ -407,7 +421,8 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     if(P==="/admin/feedback")return send(res,200,{items:rd(FB).slice(-100).reverse()});
     if(P==="/admin/lawyer")return send(res,200,{items:rd(LAW).slice(-100).reverse()});
     if(P==="/admin/ai-test"){const o={provider:useGem()?"gemini":"claude",gemini_model:GMODEL,api_key:!!KEY,model:MODEL,key_len:KEY.length,key_start:KEY.slice(0,7),key_had_extra_chars:RAWKEY!==KEY,api_host:(()=>{try{return new URL(API_URL).host}catch(_){return"?"}})()};try{o.reply=String(await ai("ตอบสั้น ๆ ว่า ok",20)).slice(0,60);o.result="ok"}catch(e){o.result="ล้มเหลว: "+(e&&e.message)}return send(res,200,o)}
-    if(P==="/admin/tts-test"){const o={elevenlabs:{api_key:!!EL_KEY,voice_id:!!EL_VOICE,model:EL_MODEL},google:{api_key:!!TTS_KEY}};
+    if(P==="/admin/tts-test"){const o={azure:{api_key:!!AZ_KEY,voice:AZ_VOICE,region:AZ_REGION},elevenlabs:{api_key:!!EL_KEY,voice_id:!!EL_VOICE,model:EL_MODEL},google:{api_key:!!TTS_KEY}};
+      if(AZ_KEY){try{await aztts("สวัสดีครับ ทดสอบเสียงครับ");o.azure.result="ok"}catch(e){o.azure.result="ล้มเหลว: "+e.message}}else o.azure.result="ตั้งค่าไม่ครบ";
       if(EL_KEY&&EL_VOICE){try{await eltts("สวัสดีครับ ทดสอบเสียงครับ");o.elevenlabs.result="ok"}catch(e){o.elevenlabs.result="ล้มเหลว: "+e.message}}else o.elevenlabs.result="ตั้งค่าไม่ครบ";
       return send(res,200,o)}
     if(P==="/admin/el-voices"){res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});return res.end(EL_PAGE)}
@@ -522,10 +537,10 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     catch(e){s.turns++;return send(res,502,{error:"ai_failed"})}}
 
   if(P==="/tts"&&Number.isInteger(b.sample)){ // สัญญาตัวอย่าง: สร้างเสียงครั้งเดียวแล้วเก็บไว้ใช้ร่วมกันทุกคน ไม่หักโควตา
-    if(!TTS_KEY&&!(EL_KEY&&EL_VOICE))return send(res,501,{error:"not_configured"});if(limited("tts"+ip,10))return send(res,429,{error:"rate_limited"});
+    if(!AZ_KEY&&!TTS_KEY&&!(EL_KEY&&EL_VOICE))return send(res,501,{error:"not_configured"});if(limited("tts"+ip,10))return send(res,429,{error:"rate_limited"});
     try{const o=await sampleAudio(b.sample);if(!o)return send(res,404,{error:"no_sample"});return send(res,200,{audio:o.audio,via:o.via,elerr:o.err||""})}
     catch(err){return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}}
-  if(P==="/tts"){if(!tosOk(x))return send(res,403,{error:"tos"});if(!TTS_KEY&&!(EL_KEY&&EL_VOICE))return send(res,501,{error:"not_configured"});if(limited("tts"+ip,10))return send(res,429,{error:"rate_limited"});
+  if(P==="/tts"){if(!tosOk(x))return send(res,403,{error:"tos"});if(!AZ_KEY&&!TTS_KEY&&!(EL_KEY&&EL_VOICE))return send(res,501,{error:"not_configured"});if(limited("tts"+ip,10))return send(res,429,{error:"rate_limited"});
     const e=results.get(String(b.rid||""));if(!e||e.uid!==id||e.exp<Date.now())return send(res,404,{error:"expired"});
     if(!e.audio){const d=today();if(!x.tt||x.tt.d!==d)x.tt={d,n:0};if(x.tt.n>=TTS_DAILY)return send(res,429,{error:"tts_cap"});x.tt.n++;save();
       try{{const o=await speak(await spoken(e.r));if(o.via==="google"&&o.err){x.tt.n--;save();return send(res,200,{audio:o.audio,via:o.via,elerr:o.err,used:x.tt.n,cap:TTS_DAILY})} /* ElevenLabs ล้มเหลวแล้วใช้ Google แทน: ไม่เก็บเสียงสำรองไว้ และไม่หักโควตาผู้ใช้ กดฟังใหม่จะลอง ElevenLabs อีกครั้ง */ e.audio=o.audio;e.via=o.via;e.elerr=o.err||""}}catch(err){x.tt.n--;save();return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}

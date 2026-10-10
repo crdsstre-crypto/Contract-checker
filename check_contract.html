@@ -1164,6 +1164,52 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 @keyframes smshoot{0%{opacity:0;transform:rotate(18deg) translateX(-140px)}3%{opacity:1}12%{opacity:0;transform:rotate(18deg) translateX(520px)}100%{opacity:0;transform:rotate(18deg) translateX(520px)}}
 @media (prefers-reduced-motion:reduce){#smp .pw::after,#smp .types button[aria-pressed="true"],#smp .types button[aria-pressed="true"] .si,#smp .sl:hover::after{animation:none;transition:none}}
 </style>
+<style>
+/* ===== หน้าต่าง "สร้างสัญญาฉบับแฟร์": ธีมอวกาศ แอนิเมชันเบาๆ ไอคอนไม่ซ้ำ ===== */
+#gen{position:relative;border-color:color-mix(in srgb,var(--gold) 38%,var(--line));box-shadow:0 24px 60px -24px color-mix(in srgb,var(--gold) 50%,transparent)}
+#gen[open]{animation:smin .4s cubic-bezier(.2,.8,.2,1)}
+#gen::backdrop{background:rgba(2,6,18,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#gen::before{content:"";position:absolute;left:0;right:0;top:0;height:150px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 12% 22%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 82% 16%,#fff,transparent),radial-gradient(1.6px 1.6px at 92% 58%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 30% 70%,#fff,transparent),radial-gradient(1.2px 1.2px at 66% 40%,var(--gold),transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#gen>*{position:relative}
+#gen .gh{text-align:center;padding:4px 0 6px}
+#gen .gh h2{margin:6px 0 2px;font-size:22px}
+#gen .gh p{margin:0 0 6px;font-size:13px;color:var(--mute)}
+#gen .gorb{position:relative;display:inline-grid;place-items:center;width:52px;height:52px;color:var(--gold)}
+#gen .gorb svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--gold) 55%,transparent))}
+#gen .gorb::before{content:"";position:absolute;inset:3px -10px;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-radius:50%;transform:rotate(-18deg) scaleY(.42);animation:gorb 9s linear infinite}
+#gen .gorb::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:gsat 9s linear infinite}
+#gen .gl{display:flex;align-items:center;gap:8px;animation:slin .4s var(--d,0s) backwards}
+#gen .gi{width:18px;height:18px;flex:none;padding:3px;box-sizing:content-box;border-radius:8px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;background:color-mix(in srgb,var(--gold) 12%,transparent)}
+#gen input,#gen select{transition:border-color .2s,box-shadow .25s}
+#gen input:focus,#gen select:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 20%,transparent),0 0 18px -4px var(--gold)}
+#gen .go{position:relative;overflow:hidden;transition:transform .15s,box-shadow .25s}
+#gen .go::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);animation:acsh 4.5s ease-in-out infinite}
+#gen .go:active{transform:scale(.97)}
+#gen .acts2 button,#gen .acts2 a{transition:transform .15s,border-color .2s}
+#gen .acts2 button:active,#gen .acts2 a:active{transform:scale(.96)}
+#gen .draft:not([hidden]){animation:slin .45s backwards}
+:root[data-theme="dark"] #gen{background:radial-gradient(120% 60% at 85% -8%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 50% at -10% 35%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 300px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #gen{background:radial-gradient(120% 60% at 85% -8%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 50% at -10% 35%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 300px)}}
+@keyframes gorb{to{transform:rotate(342deg) scaleY(.42)}}
+@keyframes gsat{0%{transform:rotate(0) translateX(36px) scaleY(.42)}100%{transform:rotate(360deg) translateX(36px) scaleY(.42)}}
+@media (prefers-reduced-motion:reduce){#gen[open],#gen::before,#gen .gorb::before,#gen .gorb::after,#gen .gl,#gen .go::after,#gen .draft{animation:none}}
+</style>
+<style>
+/* ปุ่มปิดของหน้าต่างสร้างสัญญา: ให้เห็นชัด ทั้งมุมขวาบน (ลอยตามตอนเลื่อน) และปุ่มล่าง */
+#gen .gxw{position:sticky;top:0;z-index:5;height:0;text-align:right;overflow:visible}
+#gen .gx{position:relative;top:-4px;right:-4px;width:40px;height:40px;padding:0;display:inline-grid;place-items:center;border-radius:50%;cursor:pointer;color:var(--gold);background:color-mix(in srgb,#0c1530 82%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1.5px solid color-mix(in srgb,var(--gold) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 12%,transparent),0 6px 18px -6px rgba(0,0,0,.6);transition:transform .25s,background .2s,box-shadow .25s}
+#gen .gx svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+#gen .gx:hover,#gen .gx:focus-visible{transform:rotate(90deg);background:color-mix(in srgb,var(--gold) 22%,#0c1530);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent),0 0 18px -2px var(--gold)}
+#gen .gx:active{transform:rotate(90deg) scale(.92)}
+#gen #g_x{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px 14px;box-sizing:border-box;border-radius:14px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;color:var(--ink);background:color-mix(in srgb,var(--gold) 8%,transparent);border:1.5px solid color-mix(in srgb,var(--gold) 55%,var(--line));transition:transform .15s,background .2s,box-shadow .25s}
+#gen #g_x svg{width:16px;height:16px;fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;transition:transform .3s}
+#gen #g_x::before{content:none!important}
+#gen #g_x:hover{background:color-mix(in srgb,var(--gold) 16%,transparent);box-shadow:0 0 18px -6px var(--gold)}
+#gen #g_x:hover svg{transform:rotate(90deg)}
+#gen #g_x:active{transform:scale(.97)}
+#gen .row{flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){#gen .gx,#gen #g_x svg{transition:none}}
+</style>
 </head>
 <body>
 <div class="bg" aria-hidden="true">
@@ -1271,9 +1317,9 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 <dialog id="law" class="dlg"><h2 style="margin-top:0">👩‍⚖️ ขอให้ทนายความตรวจซ้ำ</h2><p>ส่งคำขอให้ทีมงานติดต่อกลับเพื่อประสานทนายความตรวจสัญญาแบบละเอียด บริการนี้ไม่ใช่การตรวจด้วย AI</p><div class="disc"><b>ก่อนส่งคำขอ โปรดทราบ</b><ul><li><b>ข้อมูลที่ส่ง:</b> ชื่อ ช่องทางติดต่อ และรายละเอียดที่คุณกรอก รวมถึงเฉพาะรายการที่คุณติ๊กแนบด้านล่างเท่านั้น</li><li><b>ผู้รับข้อมูล:</b> ทีมงานเว็บไซต์ และทนายความหรือสำนักงานกฎหมายที่ทีมงานประสานให้ตรวจสัญญานี้</li><li><b>ค่าใช้จ่าย:</b> การส่งคำขอไม่มีค่าใช้จ่ายและไม่ผูกมัด ค่าบริการของทนายความจะแจ้งและตกลงกับคุณก่อนเริ่มงาน</li><li><b>ค่าตอบแทนการประสานงาน:</b> <span id="law_d"></span></li><li><b>ระยะเวลาเก็บ:</b> คำขอถูกลบอัตโนมัติเมื่อครบ 180 วัน หรือลบก่อนได้ที่เมนู “ข้อมูลของฉัน”</li></ul></div><label>ชื่อ</label><input id="law_n"><label>ช่องทางติดต่อ (LINE / เบอร์ / อีเมล)</label><input id="law_c"><label>รายละเอียดเพิ่มเติม</label><textarea id="law_t" rows="2"></textarea><label style="font-weight:400"><input type="checkbox" id="law_s"> แนบสรุปผลการตรวจ (คะแนนและจุดเสี่ยง)</label><label style="font-weight:400"><input type="checkbox" id="law_x"> แนบข้อความสัญญา (ปิดบังข้อมูลส่วนตัวแล้วถ้าเปิดตัวเลือกไว้)</label><label style="font-weight:400"><input type="checkbox" id="law_cb"> ฉันได้อ่านรายละเอียดด้านบน และยินยอมให้ส่งข้อมูลที่เลือกไว้ให้ทีมงานและทนายความที่ทีมงานประสาน เพื่อติดต่อกลับเรื่องนี้เท่านั้น</label><p class="err" id="law_msg"></p><div class="row"><button type="button" class="go" id="law_go">ส่งคำขอ</button><button type="button" class="link" id="law_x2">ปิด</button></div></dialog>
 <dialog id="md" class="dlg mdw"><h2 style="margin-top:0">🔐 ข้อมูลของฉัน</h2><p class="hint">ขอดูสำเนาหรือลบข้อมูลของคุณได้เองที่นี่</p><div class="row"><button type="button" class="go" id="md_ex">⬇️ ดาวน์โหลดข้อมูลของฉัน</button></div><div class="danger"><b>ลบข้อมูลของฉัน</b><p class="hint">ลบบัญชีเครดิต บันทึกการยอมรับข้อกำหนด รายงานข้อผิดพลาด คำสั่งซื้อ และคำขอทนายของคุณบนเซิร์ฟเวอร์ รวมถึงข้อมูลในเครื่องนี้ รายการชำระเงินที่ต้องเก็บตามกฎหมายจะถูกตัดการเชื่อมโยงกับคุณ ไม่สามารถกู้คืนได้</p><label><input type="checkbox" id="md_cb"> ฉันเข้าใจว่าเครดิตและแพ็กเกจที่เหลือจะหายและกู้คืนไม่ได้</label><button type="button" class="go" id="md_del" disabled>ลบข้อมูลทั้งหมด</button></div><div class="row"><button type="button" class="link" id="md_loc">ล้างเฉพาะข้อมูลในเครื่องนี้</button><button type="button" class="link" id="md_x">ปิด</button></div><p class="hint" id="md_msg"></p></dialog>
 <dialog id="rcp" class="dlg"><h2 style="margin-top:0">🧾 ใบเสร็จรับเงิน</h2><label>ชื่อผู้ซื้อ (ถ้าต้องการให้ออกในนาม)</label><input id="rcp_b"><div id="rcp_l"></div><p class="hint">เป็นใบเสร็จรับเงิน ไม่ใช่ใบกำกับภาษี</p><button type="button" class="go" id="rcp_x">ปิด</button></dialog>
-<dialog id="gen" class="dlg"><h2 style="margin-top:0">🧾 สร้างสัญญาฉบับแฟร์</h2>
-<label>ประเภทสัญญา</label><select id="g_t"><option value="f">จ้างทำของ / ฟรีแลนซ์</option><option value="l">กู้ยืมเงิน</option><option value="r">เช่าห้องพัก / อสังหาริมทรัพย์</option></select><div id="g_fs"></div>
-<div class="row"><button type="button" class="go" id="g_go">สร้างสัญญา</button><button type="button" class="link" id="g_x">ปิด</button></div>
+<dialog id="gen" class="dlg"><div class="gxw"><button type="button" class="gx" id="g_x2" aria-label="ปิดหน้าต่าง" onclick="document.getElementById('gen').close()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="gh"><span class="gorb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v5M9.5 16h5M9 12.5h6"/></svg></span><h2>สร้างสัญญาฉบับแฟร์</h2><p>ร่างสัญญาอย่างมืออาชีพ ปลอดภัย และเป็นธรรม</p></div>
+<label class="gl"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>ประเภทสัญญา</label><select id="g_t"><option value="f">จ้างทำของ / ฟรีแลนซ์</option><option value="l">กู้ยืมเงิน</option><option value="r">เช่าห้องพัก / อสังหาริมทรัพย์</option></select><div id="g_fs"></div>
+<div class="row"><button type="button" class="go" id="g_go">✨ สร้างสัญญา</button><button type="button" class="link" id="g_x"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>ปิดหน้าต่าง</button></div>
 <pre class="draft" id="g_out" hidden></pre><div class="acts2" id="g_ac" hidden><button type="button" id="g_cp">📋 คัดลอก</button><a id="g_dl" download="สัญญาจ้างทำของ.doc">⬇️ ดาวน์โหลด Word</a></div>
 <p class="hint">แม่แบบทั่วไป ไม่ใช่คำปรึกษาทางกฎหมาย สัญญามูลค่าสูงควรให้ทนายความตรวจ</p></dialog>
 <script>
@@ -1358,7 +1404,32 @@ $("genb").onclick=()=>$("gen").showModal();$("g_x").onclick=()=>$("gen").close()
 $("g_go").onclick=()=>{const t0=$("g_t").value,v={};GF[t0].forEach(a=>v[a[0]]=$("g_"+a[0]).value.trim());const x=({f:genText,l:genLoan,r:genRent})[t0](v);$("g_out").textContent=x;$("g_out").hidden=false;$("g_ac").hidden=false;$("g_dl").href="data:application/msword;charset=utf-8,"+encodeURIComponent('<html><head><meta charset="utf-8"></head><body style="font-family:TH Sarabun New,sans-serif;font-size:16pt">'+x.split("\n").map(l=>"<p>"+esc(l)+"</p>").join("")+"</body></html>");$("g_cp").onclick=async()=>{try{await navigator.clipboard.writeText(x);$("g_cp").textContent="✅ คัดลอกแล้ว"}catch(e){}}};
 
 const GF={f:[["c","ชื่อผู้ว่าจ้าง",""],["f","ชื่อผู้รับจ้าง (คุณ)",""],["j","ชื่องาน",""],["s","รายละเอียดงานที่ส่งมอบ",""],["p","ค่าจ้างรวม (บาท)","","n"],["d","มัดจำ (%)",30,"n"],["n","กำหนดส่ง (วัน)",7,"n"],["r","แก้ไขฟรี (รอบ)",2,"n"],["y","จ่ายส่วนที่เหลือภายใน (วัน)",7,"n"]],l:[["a","ชื่อผู้ให้กู้",""],["b","ชื่อผู้กู้",""],["p","จำนวนเงินกู้ (บาท)","","n"],["i","ดอกเบี้ย (% ต่อปี)",15,"n"],["m","ผ่อนกี่เดือน",12,"n"],["g","ชื่อผู้ค้ำประกัน (ถ้ามี)",""]],r:[["a","ชื่อผู้ให้เช่า",""],["b","ชื่อผู้เช่า",""],["h","ทรัพย์ที่เช่า (ที่อยู่/ห้อง)",""],["p","ค่าเช่าต่อเดือน (บาท)","","n"],["d","เงินประกัน (เดือน)",2,"n"],["m","ระยะเวลาเช่า (เดือน)",12,"n"],["y","จ่ายค่าเช่าภายในวันที่ของเดือน",5,"n"]]};
-function gDraw(){$("g_fs").innerHTML=GF[$("g_t").value].map(x=>'<label>'+x[1]+'</label><input id="g_'+x[0]+'" '+(x[3]?'type="number" inputmode="numeric" ':'')+'value="'+x[2]+'">').join("")}
+/* ไอคอนประจำช่องกรอก: ไม่ซ้ำกันทุกช่อง (คีย์ = ประเภท+รหัสช่อง) */
+const GI={
+fc:'<path d="M4 21V5l8-2v18"/><path d="M12 9h8v12"/><path d="M7.5 8h1M7.5 12h1M7.5 16h1M15 13h1M15 17h1"/>',
+ff:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0115 0"/>',
+fj:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>',
+fs:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/>',
+fp:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3 3 7 3s7-1.3 7-3v-6"/>',
+fd:'<path d="M18 5L6 19"/><circle cx="7.5" cy="7.5" r="2.2"/><circle cx="16.5" cy="16.5" r="2.2"/>',
+fn:'<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+fr:'<path d="M20 11a8 8 0 00-14-4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0014 4l2-2"/><path d="M20 20v-5h-5"/>',
+fy:'<path d="M7 3h10M7 21h10"/><path d="M8 3c0 5 8 5 8 9s-8 4-8 9"/><path d="M16 3c0 5-8 5-8 9s8 4 8 9"/>',
+la:'<path d="M3 9l9-5 9 5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
+lb:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M18 8v6M15 11h6"/>',
+lp:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9.5v.01M18 14.5v.01"/>',
+li:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+lm:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 3h6"/>',
+lg:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ra:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+rb:'<path d="M16 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11l2 2 4-4"/>',
+rh:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',
+rp:'<path d="M3 7a2 2 0 012-2h13v4"/><path d="M3 7v11a2 2 0 002 2h15V9H5a2 2 0 01-2-2z"/><circle cx="16.5" cy="14.5" r="1"/>',
+rd:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+rm:'<path d="M5 3h14M5 21h14"/><path d="M6 3v3.5L12 12l6-5.5V3M6 21v-3.5L12 12l6 5.5V21"/>',
+ry:'<path d="M6 8a6 6 0 0112 0c0 6 2.5 7 2.5 8h-17C3.5 15 6 14 6 8z"/><path d="M10 20a2 2 0 004 0"/>'};
+const gIc=(t,k)=>GI[t+k]?'<svg class="gi" viewBox="0 0 24 24" aria-hidden="true">'+GI[t+k]+'</svg>':'';
+function gDraw(){const t=$("g_t").value;$("g_fs").innerHTML=GF[t].map((x,i)=>'<label class="gl" style="--d:'+(i*.04).toFixed(2)+'s">'+gIc(t,x[0])+x[1]+'</label><input id="g_'+x[0]+'" '+(x[3]?'type="number" inputmode="numeric" ':'')+'value="'+x[2]+'">').join("")}
 $("g_t").onchange=gDraw;gDraw();
 const NF=x=>Math.round(x).toLocaleString("th-TH"),FT="\n\n(แม่แบบเบื้องต้น ควรให้ทนายความตรวจก่อนใช้งานจริง)";
 function genLoan(v){const P=+v.p||0,ri=Math.min(+v.i||0,15),n=Math.max(1,+v.m||12),r=ri/1200,pay=r?P*r/(1-Math.pow(1+r,-n)):P/n,cap=(+v.i||0)>15,g=v.g;

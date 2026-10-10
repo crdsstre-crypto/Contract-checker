@@ -218,10 +218,10 @@ const NEWS_KW=/สัญญา|โกง|หลอก|ลงทุน|เงิ�
 let feedErr=[];
 async function newsHeadlines(){feedErr=[];const all=[],bad={};for(const u of NEWS_FEEDS){let hst="";try{hst=new URL(u).host}catch(e){}if(bad[hst]>=2)continue;try{const r=await fetch(u,{signal:AbortSignal.timeout(15000),headers:{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",accept:"application/rss+xml,application/xml,text/xml,*/*"}});if(r.ok)all.push(...parseRSS(await r.text()));else{feedErr.push(hst+" http "+r.status);bad[hst]=(bad[hst]||0)+1}}catch(e){bad[hst]=(bad[hst]||0)+1;feedErr.push(String(e.message||e).slice(0,60));console.log("[news] feed:",String(e.message||e).slice(0,80))}}
   const seen=new Set(),min=Date.now()-14*864e5;return all.filter(h=>NEWS_KW.test(h.title)).filter(h=>{const k=hash(h.title.replace(/\s*-\s*[^-]*$/,""));if(seen.has(k)||h.ts<min)return false;seen.add(k);return true}).sort((a,b)=>b.ts-a.ts)}
-const GKEY=E.GEMINI_API_KEY||"",GMODEL=E.GEMINI_MODEL||"gemini-2.5-flash";
+const GKEY=E.GEMINI_API_KEY||"",GMODEL=E.GEMINI_MODEL||"gemini-3.8-flash";
 async function newsAI(prompt,max){ // ข่าวใช้ Gemini (ฟรี) ถ้ามี GEMINI_API_KEY ไม่งั้นใช้ Claude
   if(!GKEY)return ai(prompt,max,{});
-  const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(GMODEL)+":generateContent",{method:"POST",signal:AbortSignal.timeout(120000),headers:{"x-goog-api-key":GKEY,"content-type":"application/json"},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:Math.max(max,8192),temperature:0.7,responseMimeType:"application/json",thinkingConfig:{thinkingBudget:0}}})});
+  const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(GMODEL)+":generateContent",{method:"POST",signal:AbortSignal.timeout(120000),headers:{"x-goog-api-key":GKEY,"content-type":"application/json"},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:Math.max(max,16384),temperature:0.7,responseMimeType:"application/json"}})});
   if(!r.ok){const t=await r.text().catch(()=>"");throw new Error("gemini "+r.status+" "+t.replace(/\s+/g," ").slice(0,200))}
   const d=await r.json();return((d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)||[]).map(p=>p.text||"").join("")}
 const NEWSP=(list,n)=>`${STRICT}

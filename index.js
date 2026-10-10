@@ -257,6 +257,21 @@ const send=(res,c,o)=>{const h={...SEC,"content-type":"application/json; charset
   res.writeHead(c,h);res.end(c===204?"":JSON.stringify(o))};
 const html=(res,f)=>{let d;try{d=fs.readFileSync(f)}catch(e){return send(res,404,{error:"no_page"})}res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-cache"});res.end(d)};
 const body=req=>new Promise((ok,no)=>{let b="",n=0;req.on("data",c=>{n+=c.length;if(n>150000){no(new Error("big"));req.destroy();return}b+=c});req.on("end",()=>{try{ok(JSON.parse(b||"{}"))}catch(e){no(e)}});req.on("error",no)});
+
+/* ---------- เข้าสู่ระบบด้วย Google ---------- */
+const cookieOf=(req,n)=>{const m=String(req.headers.cookie||"").split(/;\s*/).find(c=>c.startsWith(n+"="));try{return m?decodeURIComponent(m.slice(n.length+1)):""}catch(e){return""}};
+const formBody=req=>new Promise((ok,no)=>{let b="",n=0;req.on("data",c=>{n+=c.length;if(n>20000){no(new Error("big"));req.destroy();return}b+=c});req.on("end",()=>ok(new URLSearchParams(b)));req.on("error",no)});
+const GERR={bad_google:"ตรวจสอบบัญชี Google ไม่ผ่าน ลองใหม่อีกครั้ง",has_account:"บัญชีนี้ผูกอีเมลอื่นอยู่แล้ว",uid:"ไม่พบข้อมูลเครื่องนี้ ลองรีเฟรชหน้าเว็บแล้วลองใหม่",bad_input:"ข้อมูลไม่ถูกต้อง ลองใหม่อีกครั้ง"};
+async function googleLogin(tok,id,ip,nonce){ // ตรวจ ID token ของ Google แล้วผูก/เข้าบัญชี (ใช้ทั้งแบบ popup และแบบ redirect)
+  tok=String(tok||"").slice(0,4096);if(tok.length<100)return{c:400,o:{error:"bad_input"}};
+  let d=null;try{const r=await fetch((E.GOOGLE_TOKENINFO_URL||"https://oauth2.googleapis.com/tokeninfo")+"?id_token="+encodeURIComponent(tok),{signal:AbortSignal.timeout(10000)});if(r.ok)d=await r.json()}catch(e){}
+  const em=d?String(d.email||"").toLowerCase():"",pic=d&&/^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(String(d.picture||""))?String(d.picture).slice(0,300):""; // รูปโปรไฟล์ Google (เฉพาะโดเมนของ Google)
+  if(!d||d.aud!==GCID||!/^(https:\/\/)?accounts\.google\.com$/.test(d.iss||"")||String(d.email_verified)!=="true"||+d.exp*1000<Date.now()||!emOK(em)||(nonce!==undefined&&(!nonce||d.nonce!==nonce)))return{c:401,o:{error:"bad_google"}};
+  const m=db.__email=db.__email||{},k=m[eh(em)],y=k&&db[k];
+  if(y){if(y.pw&&!y.verified)delete y.pw; // กันคนสมัครอีเมลคนอื่นไว้ล่วงหน้าแล้วถือรหัสผ่าน
+    y.verified=y.verified||Date.now();y.gsub=d.sub;if(pic)y.pic=pic;save();return{c:200,o:{ok:true,uid:k,email:em}}}
+  const x0=getUser(id,ip);if(!x0)return{c:400,o:{error:"uid"}};if(x0.email)return{c:409,o:{error:"has_account"}};
+  x0.email=em;x0.verified=Date.now();x0.gsub=d.sub;if(pic)x0.pic=pic;m[eh(em)]=id;save();return{c:200,o:{ok:true,uid:id,email:em,created:true}}}
 const adminOK=(req,u)=>{const k=Buffer.from(String(req.headers["x-admin-key"]||u.searchParams.get("key")||"")),A=Buffer.from(ADMIN);return!!ADMIN&&k.length===A.length&&crypto.timingSafeEqual(k,A)};
 
 /* ---------- ตัวอย่างจากข่าว (อัปเดตเอง ไม่ต้องสั่ง) ----------
@@ -406,6 +421,20 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(req.method!=="POST")return send(res,404,{error:"not_found"});
 
   /* ----- POST ----- */
+  if(P==="/auth/google-cb"){ // Google ส่งผลล็อกอินมาที่นี่ (ux_mode=redirect) แล้วพากลับหน้าเว็บ ไม่ใช้ popup จึงไม่ค้างหน้าขาวในเบราว์เซอร์มือถือ
+    const esc=t=>String(t).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+    const page=(ok,msg,uid)=>{res.writeHead(200,{...SEC,"content-type":"text/html; charset=utf-8","cache-control":"no-store"});
+      res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>เข้าสู่ระบบ</title><body style="font-family:system-ui;background:#0f1a33;color:#eee;max-width:420px;margin:18vh auto;padding:16px;text-align:center">'+
+      (ok?'<h3>เข้าสู่ระบบสำเร็จ กำลังพากลับไปที่เว็บ…</h3><p><a style="color:#e0c98c" href="/">ถ้าไม่ไปเอง กดที่นี่</a></p><script>try{var o=localStorage.getItem("uid"),n='+JSON.stringify(uid)+';if(o&&o!==n)localStorage.setItem("uid_prev",o);localStorage.setItem("uid",n)}catch(e){}document.cookie="cg_nonce=;path=/auth;max-age=0;Secure;SameSite=None";location.replace("/")</script>'
+      :'<h3>เข้าสู่ระบบด้วย Google ไม่สำเร็จ</h3><p>'+esc(msg)+'</p><p><a style="color:#e0c98c" href="/">กลับไปหน้าเว็บ</a></p>'))};
+    if(!GCID)return page(false,"ยังไม่ได้เปิดใช้การเข้าสู่ระบบด้วย Google");
+    if(limited("gg"+ip,15,9e5))return page(false,"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่");
+    let f;try{f=await formBody(req)}catch(e){return page(false,GERR.bad_input)}
+    const csrfC=cookieOf(req,"g_csrf_token");if(csrfC&&csrfC!==(f.get("g_csrf_token")||""))return page(false,GERR.bad_google);
+    const nonce=cookieOf(req,"cg_nonce");if(!nonce)return page(false,"เบราว์เซอร์ไม่ได้ส่งคุกกี้กลับมา ให้เปิดคุกกี้แล้วลองใหม่ หรือเปิดเว็บด้วย Safari/Chrome โดยตรง");
+    let id0=cid(cookieOf(req,"cg_uid"));if(id0.length<16)id0=crypto.randomBytes(9).toString("hex");
+    const r=await googleLogin(f.get("credential"),id0,ip,nonce);
+    return r.c===200?page(true,"",r.o.uid):page(false,GERR[r.o.error]||"เข้าสู่ระบบด้วย Google ไม่สำเร็จ")}
   const b=await body(req),id=cid(b.uid);
   if(P==="/my-data/export"){if(limited("md"+ip,10))return send(res,429,{error:"rate_limited"});
     const u=id&&!id.startsWith("__")?db[id]:null,pick=f=>rd(f).filter(o=>o.uid===id);
@@ -426,15 +455,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const h=await scr(pw,y.pw.s);if(!crypto.timingSafeEqual(h,Buffer.from(y.pw.h,"hex")))return send(res,401,{error:"bad_login"});
     return send(res,200,{ok:true,uid:k,email:em})}
   if(P==="/auth/google"){if(!GCID)return send(res,501,{error:"google_off"});if(limited("gg"+ip,15,9e5))return send(res,429,{error:"rate_limited"});
-    const tok=String(b.credential||"").slice(0,4096);if(tok.length<100)return send(res,400,{error:"bad_input"});
-    let d=null;try{const r=await fetch("https://oauth2.googleapis.com/tokeninfo?id_token="+encodeURIComponent(tok),{signal:AbortSignal.timeout(10000)});if(r.ok)d=await r.json()}catch(e){}
-    const em=d?String(d.email||"").toLowerCase():"",pic=d&&/^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(String(d.picture||""))?String(d.picture).slice(0,300):""; // รูปโปรไฟล์ Google (เฉพาะโดเมนของ Google)
-    if(!d||d.aud!==GCID||!/^(https:\/\/)?accounts\.google\.com$/.test(d.iss||"")||String(d.email_verified)!=="true"||+d.exp*1000<Date.now()||!emOK(em))return send(res,401,{error:"bad_google"});
-    const m=db.__email=db.__email||{},k=m[eh(em)],y=k&&db[k];
-    if(y){if(y.pw&&!y.verified)delete y.pw; // กันคนสมัครอีเมลคนอื่นไว้ล่วงหน้าแล้วถือรหัสผ่าน
-      y.verified=y.verified||Date.now();y.gsub=d.sub;if(pic)y.pic=pic;save();return send(res,200,{ok:true,uid:k,email:em})}
-    const x0=getUser(id,ip);if(!x0)return send(res,400,{error:"uid"});if(x0.email)return send(res,409,{error:"has_account"});
-    x0.email=em;x0.verified=Date.now();x0.gsub=d.sub;if(pic)x0.pic=pic;m[eh(em)]=id;save();return send(res,200,{ok:true,uid:id,email:em,created:true})}
+    const r=await googleLogin(b.credential,id,ip);return send(res,r.c,r.o)}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");

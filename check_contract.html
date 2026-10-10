@@ -1162,6 +1162,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 </svg></div></div>
 <main>
 <header class="dtop"><div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-3 7a3.5 3.5 0 007 0z"/><path d="M19 7l-3 7a3.5 3.5 0 007 0z"/><path d="M8 21h8"/></svg></span><div><b>เช็กสัญญา</b><small>ผู้ช่วยตรวจสัญญาของคุณ</small></div></div>
+<button id="hacct" type="button" aria-label="บัญชีของฉัน"></button>
 <button id="theme" type="button" aria-label="สลับโหมดมืดหรือสว่าง"></button></header>
 <div class="top" aria-hidden="true"><div class="mwrap"><div class="bubble" id="bub">วางสัญญามาได้เลย</div>
 <svg class="mascot" id="mascot" viewBox="0 0 125 118" aria-hidden="true"><rect class="s paper" x="26" y="8" width="60" height="82" rx="9"/></svg></div></div>
@@ -2539,6 +2540,14 @@ animation:cgc-spin 16s linear infinite}
 #bnav button[data-a="acct"] svg circle{transform-box:fill-box;transform-origin:center;animation:achead 15s ease-in-out 13s infinite}
 @keyframes achead{0%,88%,100%{transform:none}92%{transform:translateY(-1.6px) scale(1.12)}96%{transform:none}}
 @media (prefers-reduced-motion:reduce){#acm.on,#acm.on #acb,#acb *,#acb::before,#bnav [data-a="acct"].new::after,#bnav button[data-a="acct"] svg circle{animation:none!important}}
+#hacct{flex:none;display:inline-flex;align-items:center;gap:7px;max-width:56vw;font:inherit;font-size:13px;line-height:1.2;color:var(--ink);background:color-mix(in srgb,var(--card) 80%,transparent);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:99px;padding:4px 12px 4px 4px;cursor:pointer;transition:transform .15s,box-shadow .2s;animation:hain .5s .15s backwards}
+#hacct:active{transform:scale(.96)}#hacct:hover{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent)}
+#hacct.out{padding:7px 13px;color:var(--gold-ink,var(--gold));font-weight:600}#hacct .ico{display:inline-flex}
+#hacct .av{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;font-size:13px;font-weight:700;color:var(--on-gold,#1b1405);background:linear-gradient(135deg,var(--gold2),var(--gold));box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 35%,transparent)}
+#hacct .av img{width:100%;height:100%;object-fit:cover;display:block}
+#hacct .hm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:118px}
+@keyframes hain{from{opacity:0;transform:translateX(8px)}}
+@media (prefers-reduced-motion:reduce){#hacct{animation:none}}
 </style>
 <div id="acm" role="dialog" aria-modal="true" aria-label="บัญชีของฉัน"><div id="acb"></div></div>
 <script>
@@ -2579,13 +2588,13 @@ function form(p){var f=el("div"),a=fld("mail","email","อีเมล","email")
  var n=el("div","nt");n.appendChild(ic("info",16));n.appendChild(el("span",null,"สมัครแล้วจะเข้าสู่ระบบจากเครื่องอื่นเพื่อใช้เครดิตและดูประวัติเดิมได้ ระบบยังไม่มีการรีเซ็ตรหัสผ่านอัตโนมัติ หากลืมรหัสผ่านต้องติดต่อผู้ดูแล"));f.appendChild(n);return f}
 function card(i,t,s,d){var c=el("div","cx"),h=el("div","cxh"),ci=el("span","ci"),m=el("div");c.style.animationDelay=d+"s";ci.appendChild(ic(i,19));m.appendChild(el("b",null,t));m.appendChild(el("small",null,s));h.appendChild(ci);h.appendChild(m);c.appendChild(h);return c}
 function empty(c,t){var e=el("div","em");e.appendChild(ic("doc",38));e.appendChild(el("span",null,t));c.appendChild(e)}
-function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","1"):localStorage.removeItem("hasacct")}catch(e){}if(tab)tab.classList.toggle("new",!p.email);
+function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","1"):localStorage.removeItem("hasacct")}catch(e){}if(tab)tab.classList.toggle("new",!p.email);hdr(p);
  var h=el("div","ach"),lg=el("span","lg"),tt=el("div","tt"),cl=el("button","cl");lg.appendChild(ic("scale",22));tt.appendChild(el("b",null,"บัญชีของฉัน"));tt.appendChild(el("small",null,p.email||"ใช้งานแบบไม่ระบุชื่อ"));cl.type="button";cl.setAttribute("aria-label","ปิด");cl.appendChild(ic("x",16));cl.onclick=close;h.appendChild(lg);h.appendChild(tt);h.appendChild(cl);B.appendChild(h);
  var pass=p.passUntil>Date.now(),s=el("div","acs"),cr=el("div","crd"),cv=el("div"),m=el("div","meta");cr.appendChild(ic("coins",24));cv.appendChild(el("small",null,pass?"แพ็กเกจรายเดือนถึง "+fmt(pass&&p.passUntil):"เครดิตคงเหลือ"));cv.appendChild(el("b",null,String(p.credits)+(pass?" (สำรอง)":"")));cr.appendChild(cv);s.appendChild(cr);
  m.appendChild(el("span",null,"เริ่มใช้งาน "+fmt(p.created)));if(p.email)m.appendChild(el("span","chip "+(p.verified?"ok":"wn"),p.verified?"✓ ยืนยันอีเมลแล้ว":"ยังไม่ยืนยันอีเมล"+(p.needVerify?" (ต้องยืนยันก่อนเติมเครดิต)":"")));s.appendChild(m);B.appendChild(s);
  var tg=el("button","thm");tg.type="button";tg.appendChild(ic("sun",17));tg.appendChild(el("span",null,"สลับธีมสว่าง / มืด"));tg.appendChild(ic("moon",17));tg.style.marginBottom="12px";tg.onclick=function(){var t=document.getElementById("theme");t&&t.click()};B.appendChild(tg);
  if(!p.email)B.appendChild(form(p));else{var row=el("div","row");if(p.needVerify&&!p.verified){var rs=el("button","b1","ส่งอีเมลยืนยันอีกครั้ง");rs.type="button";rs.onclick=function(){rs.disabled=true;post("/auth/resend").then(function(d){rs.textContent=d.ok?"ส่งแล้ว ตรวจกล่องจดหมาย (รวมสแปม)":"ส่งไม่สำเร็จ ลองใหม่ภายหลัง"})};row.appendChild(rs)}
-  var o=el("button","b2","ออกจากระบบ");o.type="button";o.onclick=function(){try{localStorage.removeItem("uid");localStorage.removeItem("hasacct")}catch(e){}location.reload()};row.appendChild(o);B.appendChild(row)}
+  var o=el("button","b2","ออกจากระบบ");o.type="button";o.onclick=function(){try{localStorage.removeItem("uid");localStorage.removeItem("hasacct");localStorage.removeItem("hdr")}catch(e){}location.reload()};row.appendChild(o);B.appendChild(row)}
  var hc=card("doc","ประวัติการตรวจสัญญา","เก็บเฉพาะสรุปผล ไม่เก็บเนื้อหาสัญญา และลบได้ทุกเมื่อ",.15);B.appendChild(hc);
  if(!p.hist.length)empty(hc,"ยังไม่มีประวัติ");
  p.hist.forEach(function(v,i){var d=el("div","hrw"),t=el("div");d.style.animationDelay=(.2+i*.04)+"s";t.appendChild(el("b",null,v.type+" · "+v.score+"/10"));t.appendChild(el("small",null,"  "+fmt(v.ts)+(v.flags?" · จุดเสี่ยง "+v.flags+(v.high?" (สูง "+v.high+")":""):"")));d.appendChild(t);d.appendChild(el("div",null,v.summary));
@@ -2594,6 +2603,14 @@ function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","
  var lc=card("coins","ประวัติเครดิต","ทุกการเติม ใช้ และคืน มีบันทึกย้อนตรวจได้",.25);B.appendChild(lc);
  if(!(p.ledger||[]).length)empty(lc,"ยังไม่มีรายการ");
  (p.ledger||[]).forEach(function(v,i){var d=el("div","lr"),c2=el("span","ci2"),md=el("div","md"),am=el("div","am"+(v.n>0?" p":""));d.style.animationDelay=(.3+i*.04)+"s";c2.appendChild(ic(KI[v.kind]||"coins",15));md.appendChild(el("div",null,LB[v.kind]||v.kind));md.appendChild(el("small",null,fmt(v.ts)+" · คงเหลือ "+v.bal));am.textContent=v.n?(v.n>0?"+":"")+v.n:"";d.appendChild(c2);d.appendChild(md);d.appendChild(am);lc.appendChild(d)})}
+var hb=document.getElementById("hacct");
+function hdr(p){if(!hb)return;var ok=p&&p.email;hb.textContent="";hb.className=ok?"in":"out";
+ if(!ok){hb.appendChild(ic("user",16));hb.appendChild(el("span",null,"เข้าสู่ระบบ"));try{localStorage.removeItem("hdr")}catch(e){}return}
+ var av=el("span","av"),ini=(p.email.charAt(0)||"?").toUpperCase();
+ if(p.pic){var im=document.createElement("img");im.alt="";im.referrerPolicy="no-referrer";im.onerror=function(){av.textContent=ini};im.src=p.pic;av.appendChild(im)}else av.textContent=ini;
+ hb.appendChild(av);hb.appendChild(el("span","hm",p.email));hb.title=p.email;try{localStorage.setItem("hdr",JSON.stringify({email:p.email,pic:p.pic||null}))}catch(e){}}
+if(hb){if(!CFG.api)hb.style.display="none";else{hb.onclick=openA;var c0=null;try{c0=JSON.parse(localStorage.getItem("hdr")||"null")}catch(e){}hdr(c0);
+ post("/profile").then(function(p){if(p&&!bad(p.error)){hdr(p);if(tab)tab.classList.toggle("new",!p.email)}}).catch(function(){})}}
 })();
 </script>
 

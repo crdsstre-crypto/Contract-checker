@@ -274,7 +274,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const k=(db.__email||{})[eh(em)],y=k&&db[k];
     if(!y||!y.pw){await scr(pw,"0".repeat(32));return send(res,401,{error:"bad_login"})}
     const h=await scr(pw,y.pw.s);if(!crypto.timingSafeEqual(h,Buffer.from(y.pw.h,"hex")))return send(res,401,{error:"bad_login"});
-    return send(res,200,{uid:k,email:em})}
+    return send(res,200,{ok:true,uid:k,email:em})}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");
@@ -283,7 +283,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const sl=crypto.randomBytes(16).toString("hex"),h=(await scr(pw,sl)).toString("hex");if(m[eh(em)]||x.pw)return send(res,409,{error:"email_taken"}); // เช็กซ้ำหลัง await กันสมัครพร้อมกัน
     x.email=em;x.pw={s:sl,h};m[eh(em)]=id;save();if(MAILK)sendVerify(x,id).catch(e=>console.log("ส่งอีเมลยืนยันไม่สำเร็จ:",e.message));return send(res,200,{ok:true,email:em,mail:!!MAILK})}
   if(P==="/auth/resend"){if(!MAILK||!x.email||x.verified)return send(res,400,{error:"bad"});if(limited("vr"+id,3,36e5))return send(res,429,{error:"rate_limited"});try{await sendVerify(x,id);return send(res,200,{ok:true})}catch(e){console.log("ส่งอีเมลไม่สำเร็จ:",e.message);return send(res,502,{error:"mail_failed"})}}
-  if(P==="/profile")return send(res,200,{verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
+  if(P==="/profile")return send(res,200,{ok:true,verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
   if(P==="/history/delete"){x.hist=b.hid?(x.hist||[]).filter(h=>h.id!==String(b.hid)):[];save();return send(res,200,{ok:true})}
 
   if(P==="/accept"){if(b.v!==TOSV)return send(res,400,{error:"version"});x.tos={v:TOSV,ts:Date.now()};save();return send(res,200,{ok:true})}

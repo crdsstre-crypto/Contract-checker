@@ -457,7 +457,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(P==="/auth/google"){if(!GCID)return send(res,501,{error:"google_off"});if(limited("gg"+ip,15,9e5))return send(res,429,{error:"rate_limited"});
     const r=await googleLogin(b.credential,id,ip);return send(res,r.c,r.o)}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
-  if(REQ_ACC&&!x.email&&ACC_GATED.has(P))return send(res,403,{error:"need_account"}); // ยังไม่ได้สมัครบัญชี: หน้าเว็บจะแสดงหน้าสมัครให้เอง
+  if(REQ_ACC&&!x.email&&ACC_GATED.has(P)&&!(P==="/tts"&&Number.isInteger(b.sample)))return send(res,403,{error:"need_account"}); // ยังไม่ได้สมัครบัญชี: หน้าเว็บจะแสดงหน้าสมัครให้เอง
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");
     if(!emOK(em)||pw.length<8||pw.length>100)return send(res,400,{error:"bad_input"});if(x.pw)return send(res,409,{error:"has_account"});

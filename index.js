@@ -280,13 +280,13 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(P==="/auth/google"){if(!GCID)return send(res,501,{error:"google_off"});if(limited("gg"+ip,15,9e5))return send(res,429,{error:"rate_limited"});
     const tok=String(b.credential||"").slice(0,4096);if(tok.length<100)return send(res,400,{error:"bad_input"});
     let d=null;try{const r=await fetch("https://oauth2.googleapis.com/tokeninfo?id_token="+encodeURIComponent(tok),{signal:AbortSignal.timeout(10000)});if(r.ok)d=await r.json()}catch(e){}
-    const em=d?String(d.email||"").toLowerCase():"";
+    const em=d?String(d.email||"").toLowerCase():"",pic=d&&/^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(String(d.picture||""))?String(d.picture).slice(0,300):""; // รูปโปรไฟล์ Google (เฉพาะโดเมนของ Google)
     if(!d||d.aud!==GCID||!/^(https:\/\/)?accounts\.google\.com$/.test(d.iss||"")||String(d.email_verified)!=="true"||+d.exp*1000<Date.now()||!emOK(em))return send(res,401,{error:"bad_google"});
     const m=db.__email=db.__email||{},k=m[eh(em)],y=k&&db[k];
     if(y){if(y.pw&&!y.verified)delete y.pw; // กันคนสมัครอีเมลคนอื่นไว้ล่วงหน้าแล้วถือรหัสผ่าน
-      y.verified=y.verified||Date.now();y.gsub=d.sub;save();return send(res,200,{ok:true,uid:k,email:em})}
+      y.verified=y.verified||Date.now();y.gsub=d.sub;if(pic)y.pic=pic;save();return send(res,200,{ok:true,uid:k,email:em})}
     const x0=getUser(id,ip);if(!x0)return send(res,400,{error:"uid"});if(x0.email)return send(res,409,{error:"has_account"});
-    x0.email=em;x0.verified=Date.now();x0.gsub=d.sub;m[eh(em)]=id;save();return send(res,200,{ok:true,uid:id,email:em,created:true})}
+    x0.email=em;x0.verified=Date.now();x0.gsub=d.sub;if(pic)x0.pic=pic;m[eh(em)]=id;save();return send(res,200,{ok:true,uid:id,email:em,created:true})}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");
@@ -295,7 +295,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const sl=crypto.randomBytes(16).toString("hex"),h=(await scr(pw,sl)).toString("hex");if(m[eh(em)]||x.pw)return send(res,409,{error:"email_taken"}); // เช็กซ้ำหลัง await กันสมัครพร้อมกัน
     x.email=em;x.pw={s:sl,h};m[eh(em)]=id;save();if(MAILK)sendVerify(x,id).catch(e=>console.log("ส่งอีเมลยืนยันไม่สำเร็จ:",e.message));return send(res,200,{ok:true,email:em,mail:!!MAILK})}
   if(P==="/auth/resend"){if(!MAILK||!x.email||x.verified)return send(res,400,{error:"bad"});if(limited("vr"+id,3,36e5))return send(res,429,{error:"rate_limited"});try{await sendVerify(x,id);return send(res,200,{ok:true})}catch(e){console.log("ส่งอีเมลไม่สำเร็จ:",e.message);return send(res,502,{error:"mail_failed"})}}
-  if(P==="/profile")return send(res,200,{ok:true,verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
+  if(P==="/profile")return send(res,200,{ok:true,pic:x.pic||null,verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
   if(P==="/history/delete"){x.hist=b.hid?(x.hist||[]).filter(h=>h.id!==String(b.hid)):[];save();return send(res,200,{ok:true})}
 
   if(P==="/accept"){if(b.v!==TOSV)return send(res,400,{error:"version"});x.tos={v:TOSV,ts:Date.now()};save();return send(res,200,{ok:true})}

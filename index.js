@@ -209,7 +209,7 @@ const NEWS_FEEDS=(E.NEWS_FEEDS?E.NEWS_FEEDS.split(",").map(s=>s.trim()).filter(B
 const NEWS_TYPES=["สัญญาจ้างฟรีแลนซ์","สัญญากู้ยืมเงิน","สัญญาเช่า","สัญญาจ้างก่อสร้าง / รีโนเวต","สัญญาจ้างงาน (พนักงาน)","สัญญาเช่าซื้อรถยนต์ / รถจักรยานยนต์","สัญญาซื้อขาย / ใบสั่งซื้อ","สัญญาหุ้นส่วน / ร่วมลงทุน","สัญญานายหน้า / ค่านายหน้า","สัญญารักษาความลับ (NDA)","อื่น ๆ"];
 const readJ=(f,d)=>{try{return JSON.parse(fs.readFileSync(f,"utf8"))}catch(e){return d}};
 const dayTH=t=>new Date(t+7*36e5).toISOString().slice(0,10);
-let newsBusy=false;
+let newsBusy=false,newsSince=0,newsLast=null;
 const unent=s=>String(s||"").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/\s+/g," ").trim();
 function parseRSS(x){const o=[],re=/<item>([\s\S]*?)<\/item>/g;let m;while((m=re.exec(x))){const g=t=>{const r=new RegExp("<"+t+"[^>]*>([\\s\\S]*?)</"+t+">").exec(m[1]);return r?unent(r[1]):""};
   const link=g("link"),ts=Date.parse(g("pubDate"));if(!/^https?:\/\//.test(link)||!g("title"))continue;o.push({title:g("title").slice(0,200),link,site:g("source").slice(0,60),ts:isNaN(ts)?Date.now():ts})}return o}
@@ -242,7 +242,8 @@ function vetNews(o,h){try{if(!o||typeof o!=="object"||!h)return null;
   const all=[text,title,summary,ps,...tl,...gp,...mi,...bs,...fl.flatMap(f=>[f.phrase,f.why,f.suggestion])].join(" ");if(bad(all))return null;
   const type=NEWS_TYPES.includes(o.type)?o.type:"อื่น ๆ";
   return{id:hash(h.link),ts:Date.now(),type,title,text,pre:{safety_score:sc,summary,red_flags:fl,missing:mi,before_sign:bs},tl,ps,gp,src:{title:h.title,url:h.link,site:h.site,date:h.ts}}}catch(e){return null}}
-async function newsRun(force){if(!NEWS_ON||!KEY||newsBusy)return{skipped:true};newsBusy=true;
+async function newsRun(force){const r=await newsRun0(force);if(!r.skipped||r.skipped!==true)newsLast={at:Date.now(),...r};return r}
+async function newsRun0(force){if(!NEWS_ON||!KEY)return{skipped:"off"};if(newsBusy&&Date.now()-newsSince<36e4)return{skipped:true,busy_for_sec:Math.round((Date.now()-newsSince)/1000)};newsBusy=true;newsSince=Date.now();
   try{const st=readJ(NEWS_S,{}),items=readJ(NEWS_F,[]),now=Date.now();
     if(!force&&now-(st.try||0)<NEWS_EVERY)return{skipped:"recent"};
     st.try=now;fs.writeFileSync(NEWS_S,JSON.stringify(st));
@@ -291,6 +292,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       if(!x||!n||Math.abs(n)>1000)return send(res,400,{error:"bad"});x.credits=Math.max(0,x.credits+n);save();
       ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});led(id,"adjust",n,x.credits,"admin");return send(res,200,{credits:x.credits})}
     if(P==="/admin/ledger"){const q=cid(u.searchParams.get("uid"));return send(res,200,{items:rd(LED).filter(o=>!q||o.uid===q).slice(-200).reverse()})}
+    if(P==="/admin/news-status")return send(res,200,{on:NEWS_ON,key:!!KEY,busy:newsBusy,busy_sec:newsBusy?Math.round((Date.now()-newsSince)/1000):0,last_result:newsLast,state:readJ(NEWS_S,{}),stored:readJ(NEWS_F,[]).length,feeds:NEWS_FEEDS.length});
     if(P==="/admin/news-run")return send(res,200,await newsRun(true));
     if(P==="/admin/news-list")return send(res,200,{items:readJ(NEWS_F,[]).map(x=>({id:x.id,ts:x.ts,title:x.title,type:x.type,src:x.src.title}))});
     if(P==="/admin/news-del"){const id=String(u.searchParams.get("id")||""),a=readJ(NEWS_F,[]),b=a.filter(x=>x.id!==id);fs.writeFileSync(NEWS_F,JSON.stringify(b));return send(res,200,{removed:a.length-b.length})}

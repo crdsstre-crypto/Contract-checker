@@ -941,8 +941,17 @@ main{max-width:900px}
 /* 03 หมวดเครื่องมือ: ลูกศรหมุนทันที */
 .tgrp.closing>summary::after,details.trustcard.closing>summary::after{transform:rotate(45deg)}
 /* 04 ตอน AI ทำงาน: แสดงเฉพาะขั้นตอนจริง ไม่โชว์เปอร์เซ็นต์ปลอม */
-#prog .pr-n,#prog .pr-est{display:none}
-#prog .pr-bar i{width:var(--stepw,8%)!important;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+#prog .pr-bar i{transition:none}
+#prog .pr-n{display:block}#prog .pr-est{display:block}
+/* แสงสแกนในการ์ดตรวจ: ใช้ transform อย่างเดียว (ลื่น ไม่กระตุก) และอ่อนลง */
+.prog::after{top:0;height:46%;border-bottom:0;box-shadow:none;opacity:0;transform:translate3d(0,-110%,0);background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--gold) 11%,transparent) 60%,color-mix(in srgb,var(--gold) 20%,transparent))}
+.prog:not([hidden])::after{opacity:1;will-change:transform;animation:cg-beam 3.2s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes cg-beam{0%{transform:translate3d(0,-110%,0)}100%{transform:translate3d(0,230%,0)}}
+/* โครงการ์ดรอผล: กะพริบเบา ๆ แทนการเลื่อนพื้นหลัง */
+.skel i{background:var(--card);background-size:auto;animation:cg-skel 1.8s ease-in-out infinite}
+.skel i:nth-child(2){animation-delay:.2s}.skel i:nth-child(3){animation-delay:.4s}
+@keyframes cg-skel{0%,100%{opacity:.55}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.prog:not([hidden])::after,.skel i{animation:none}}
 #prog .pr-steps li{padding:5px 0 5px 28px;font-size:14.5px}
 .pr-steps li.done::before{animation:cg-pop .35s cubic-bezier(.34,1.56,.64,1)}
 /* 05 ผลตรวจค่อย ๆ ปรากฏ */
@@ -1837,7 +1846,7 @@ const btn=$("go");btn.disabled=true;btn.textContent="กำลังตรวจ
 try{
 let res;
 if(CFG.api){
-progStart();pg.target=40;
+progStart();pg.mode="time";
 const rr=await fetch(CFG.api+"/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,type,text:t,role:(document.getElementById("role")||{}).value||""})});
 const d=await rr.json().catch(()=>({}));
 if(rr.status===402){progHide();openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อตรวจต่อ");return}
@@ -1920,12 +1929,13 @@ let pg=null;
 function progStart(){
 const b=$("prog");b.hidden=false;
 b.innerHTML=`<div class="pr-top"><b class="pr-n" aria-hidden="true">0%</b><div class="pr-bar" role="progressbar" aria-label="ความคืบหน้าการตรวจสัญญา" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div><p class="pr-now" role="status"></p><ol class="pr-steps">${STEPS.map(s=>`<li>${s}</li>`).join("")}</ol><p class="pr-est">เปอร์เซ็นต์เป็นค่าประมาณจากความคืบหน้าของการวิเคราะห์</p>`;
-pg={shown:0,target:2,step:0,n:0,t0:performance.now(),done:false,scan:SCAN[type]||SCAN.x,last:-1};
+pg={mode:"",E:Math.min(120000,Math.max(12000,+(function(){try{return localStorage.getItem("cg_dur")}catch(e){return 0}})()||40000)),shown:0,target:1,step:0,n:0,t0:performance.now(),done:false,scan:SCAN[type]||SCAN.x,last:-1};
 b.scrollIntoView({behavior:"smooth",block:"center"});
 const tick=()=>{if(!pg)return;
 const el=performance.now()-pg.t0;
-if(pg.step===0)pg.target=Math.max(pg.target,18*(1-Math.exp(-el/9000)));
-pg.shown+=(pg.target-pg.shown)*(pg.done?.25:.05);
+if(pg.mode==="time"){const E=pg.E,p=95*(1-Math.exp(-3*el/E))+(el>E?4*(1-Math.exp(-(el-E)/E)):0);pg.target=Math.max(pg.target,Math.min(99,p));if(!pg.done)pg.step=pg.target<18?0:pg.target<42?1:pg.target<70?2:pg.target<86?3:4}
+else if(pg.step===0)pg.target=Math.max(pg.target,18*(1-Math.exp(-el/9000)));
+pg.shown+=(pg.target-pg.shown)*(pg.done?.25:.08);
 if(pg.done&&pg.target-pg.shown<.5)pg.shown=pg.target;
 const v=Math.min(pg.done?100:99,Math.floor(pg.shown));
 b.querySelector(".pr-n").textContent=v+"%";
@@ -1947,7 +1957,7 @@ if(t.includes('"red_flags"')){s=2;g=35+Math.min(n,8)*5}
 if(t.includes('"missing"')){s=3;g=82}
 if(t.includes('"before_sign"')){s=4;g=91}
 if(s>=pg.step){pg.step=s;pg.target=Math.max(pg.target,g)}}
-async function progFinish(){if(!pg)return;pg.done=true;pg.target=100;await new Promise(r=>setTimeout(r,650))}
+async function progFinish(){if(!pg)return;if(pg.mode==="time"&&!pg.done){try{const d=performance.now()-pg.t0;localStorage.setItem("cg_dur",String(Math.round(.5*pg.E+.5*Math.min(120000,Math.max(12000,d)))))}catch(e){}}pg.done=true;pg.target=100;await new Promise(r=>setTimeout(r,650))}
 function progHide(){if(pg){cancelAnimationFrame(pg.raf);pg=null}$("prog").hidden=true}
 
 /* ===== ระบบเครดิต + เติมเงิน ===== */

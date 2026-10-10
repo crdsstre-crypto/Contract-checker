@@ -187,12 +187,22 @@ async function gtts(text){ // ลองเสียงที่ตั้งไ�
     last=r.status;if(r.status===401||r.status===403||r.status===429)break}
   throw new Error("tts "+last)}
 async function eltts(text,vid=EL_VOICE){ // ElevenLabs: ภาษาไทยต้องใช้โมเดล eleven_v3 (โมเดลอื่นไม่รองรับไทย)
-  let last;for(const lang of[true,false]){
-    const r=await fetch(EL_URL+"/"+encodeURIComponent(vid)+"?output_format=mp3_44100_128",{method:"POST",signal:AbortSignal.timeout(60000),
-      headers:{"xi-api-key":EL_KEY,"content-type":"application/json",accept:"audio/mpeg"},
-      body:JSON.stringify({text,model_id:EL_MODEL,...(lang?{language_code:"th"}:{}),voice_settings:{stability:0.5}})});
-    if(r.ok){const b=Buffer.from(await r.arrayBuffer());if(b.length>1000)return b.toString("base64")}
-    last=r.status+" "+String(await r.text().catch(()=>"")).replace(/\s+/g," ").slice(0,120);if([401,402,403,429].includes(r.status))break}
+  // ลองซ้ำเมื่อสะดุดชั่วคราว (เซิร์ฟเวอร์ ElevenLabs 5xx / คำขอพร้อมกันเกินโควตา / เน็ตหลุด) ก่อนจะยอมสลับไปใช้ Google
+  const wait=ms=>new Promise(z=>setTimeout(z,ms));
+  let last="";
+  for(const lang of[true,false]){
+    for(let at=0;at<3;at++){
+      let r;
+      try{r=await fetch(EL_URL+"/"+encodeURIComponent(vid)+"?output_format=mp3_44100_128",{method:"POST",signal:AbortSignal.timeout(60000),
+        headers:{"xi-api-key":EL_KEY,"content-type":"application/json",accept:"audio/mpeg"},
+        body:JSON.stringify({text,model_id:EL_MODEL,...(lang?{language_code:"th"}:{}),voice_settings:{stability:0.5}})})}
+      catch(e){last="net "+String(e&&e.message).slice(0,80);if(at<2){await wait(1200);continue}break}
+      if(r.ok){const b=Buffer.from(await r.arrayBuffer());if(b.length>1000)return b.toString("base64");last="empty audio";break}
+      const tx=String(await r.text().catch(()=>"")).replace(/\s+/g," ").slice(0,120);
+      last=r.status+" "+tx;
+      if((r.status>=500||(r.status===429&&/concurren|too_many/i.test(tx)))&&at<2){await wait(1500*(at+1));continue}
+      break}
+    if(/^(401|402|403|429) /.test(last))break}
   throw new Error("elevenlabs "+last)}
 async function speak(text){let err="";
   if(EL_KEY&&EL_VOICE){try{return{audio:await eltts(text),via:"elevenlabs"}}catch(e){err=e.message;console.log("ElevenLabs ใช้ไม่ได้:",err)}}
@@ -518,7 +528,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(P==="/tts"){if(!tosOk(x))return send(res,403,{error:"tos"});if(!TTS_KEY&&!(EL_KEY&&EL_VOICE))return send(res,501,{error:"not_configured"});if(limited("tts"+ip,10))return send(res,429,{error:"rate_limited"});
     const e=results.get(String(b.rid||""));if(!e||e.uid!==id||e.exp<Date.now())return send(res,404,{error:"expired"});
     if(!e.audio){const d=today();if(!x.tt||x.tt.d!==d)x.tt={d,n:0};if(x.tt.n>=TTS_DAILY)return send(res,429,{error:"tts_cap"});x.tt.n++;save();
-      try{{const o=await speak(await spoken(e.r));e.audio=o.audio;e.via=o.via;e.elerr=o.err||""}}catch(err){x.tt.n--;save();return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}
+      try{{const o=await speak(await spoken(e.r));if(o.via==="google"&&o.err){x.tt.n--;save();return send(res,200,{audio:o.audio,via:o.via,elerr:o.err,used:x.tt.n,cap:TTS_DAILY})} /* ElevenLabs ล้มเหลวแล้วใช้ Google แทน: ไม่เก็บเสียงสำรองไว้ และไม่หักโควตาผู้ใช้ กดฟังใหม่จะลอง ElevenLabs อีกครั้ง */ e.audio=o.audio;e.via=o.via;e.elerr=o.err||""}}catch(err){x.tt.n--;save();return send(res,502,{error:"tts_failed",detail:String(err.message).slice(0,160)})}
       let c=0;for(const v of results.values())if(v.audio)c++;if(c>40)for(const v of results.values())if(v.audio&&v!==e){delete v.audio;break}} // ไม่เก็บเสียงเกิน 40 รายการ กันหน่วยความจำเต็ม
     return send(res,200,{audio:e.audio,via:e.via||"",elerr:e.elerr||"",used:(x.tt&&x.tt.d===today())?x.tt.n:0,cap:TTS_DAILY})}
   if(P==="/slip"){if(!tosOk(x))return send(res,403,{error:"tos"});if(NEEDV&&!x.verified)return send(res,403,{error:"verify_email"});if(limited("slip"+ip,15))return send(res,429,{error:"rate_limited"});

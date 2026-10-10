@@ -27,7 +27,7 @@ const PAGE=path.join(__dirname,"check_contract.html"),ADMINPAGE=path.join(__dirn
    - ตอนเริ่มเซิร์ฟเวอร์: ไฟล์ไหนไม่มีบนดิสก์ จะดึงกลับมาจากฐานข้อมูลก่อนโหลดข้อมูล
    - ตอนมีการเขียนไฟล์: สำรองขึ้นฐานข้อมูลอัตโนมัติ (หน่วงเวลา 5 วินาที) */
 const UP_URL=(E.UPSTASH_REDIS_REST_URL||"").trim().replace(/\/+$/,""),UP_TOK=(E.UPSTASH_REDIS_REST_TOKEN||"").trim();
-const MIRROR=["data.json","slips_used.json","payments.jsonl","orders.jsonl","feedback.jsonl","lawyer_requests.jsonl","ledger.jsonl","news_samples.json","news_state.json"];
+const MIRROR=["data.json","slips_used.json","payments.jsonl","orders.jsonl","feedback.jsonl","lawyer_requests.jsonl","ledger.jsonl","news_samples.json","news_state.json","backup_state.json"];
 const mirrorSt={on:!!(UP_URL&&UP_TOK),pushed:0,at:0,err:"",restored:[]};
 const mDirty=new Set();let mTimer=null,mBusy=false;
 if(mirrorSt.on){
@@ -53,9 +53,34 @@ async function mirrorPush(){if(!mirrorSt.on||mBusy)return;mBusy=true;
   try{while(mDirty.size){const n=[...mDirty][0];let buf;try{buf=fs.readFileSync(fp(n))}catch(e){mDirty.delete(n);continue}
     const b=buf.toString("base64"),parts=[];for(let i=0;i<b.length;i+=500000)parts.push(b.slice(i,i+500000));if(!parts.length)parts.push("");
     const cmds=parts.map((p,i)=>["SET","cc:"+n+":"+i,p]);cmds.push(["SET","cc:"+n+":meta",String(parts.length)]);
-    await upx(cmds);mDirty.delete(n);mirrorSt.pushed++;mirrorSt.at=Date.now();mirrorSt.err=""}}
-  catch(e){mirrorSt.err=String(e.message||e).slice(0,160);console.log("[mirror] push fail:",mirrorSt.err);mSched(30000)}
+    await upx(cmds);mDirty.delete(n);mirrorSt.pushed++;mirrorSt.at=Date.now();mirrorSt.err="";mirrorSt.failSince=0}}
+  catch(e){mirrorSt.err=String(e.message||e).slice(0,160);console.log("[mirror] push fail:",mirrorSt.err);mSched(30000);
+    if(!mirrorSt.failSince)mirrorSt.failSince=Date.now();
+    if(Date.now()-mirrorSt.failSince>6e5&&Date.now()-(mirrorSt.alertAt||0)>216e5){mirrorSt.alertAt=Date.now();adminMail("⚠️ เช็กสัญญา: สำรองข้อมูลขึ้น Upstash ไม่สำเร็จ","ระบบสำรองข้อมูลขึ้นฐานข้อมูลภายนอก (Upstash) ล้มเหลวต่อเนื่องเกิน 10 นาที\n\nข้อความผิดพลาด: "+mirrorSt.err+"\n\nสิ่งที่ควรตรวจ: โทเคน/URL ของ Upstash ใน Render, โควตาของ Upstash เต็มหรือไม่\nระหว่างนี้ข้อมูลยังอยู่ในเซิร์ฟเวอร์ แต่ถ้าเซิร์ฟเวอร์ถูกล้างดิสก์ ข้อมูลล่าสุดอาจหาย แนะนำให้ดาวน์โหลดแบ็กอัปที่ /admin/backup ทันที").catch(()=>{})}}
   finally{mBusy=false}}
+
+/* ---------- แบ็กอัปให้เจ้าของเว็บ: ดาวน์โหลดเอง + ส่งอีเมลรายวัน + แจ้งเตือนเมื่อสำรองล้มเหลว ----------
+   ต้องตั้ง env: BACKUP_EMAIL (อีเมลที่รับ) + RESEND_KEY + MAIL_FROM (ชุดเดียวกับระบบยืนยันอีเมล)  ตัวเลือก: BACKUP_EVERY_HRS(=24) */
+const zlib=require("zlib");
+async function adminMail(subject,text,attach){
+  const to=(E.BACKUP_EMAIL||"").trim(),k=(E.RESEND_KEY||"").trim(),from=(E.MAIL_FROM||"").trim();
+  if(!to||!k||!from)throw new Error("mail_not_configured");
+  const body={from,to:[to],subject,text};if(attach)body.attachments=[attach];
+  const r=await fetch((E.RESEND_URL||"https://api.resend.com/emails"),{method:"POST",signal:AbortSignal.timeout(60000),headers:{authorization:"Bearer "+k,"content-type":"application/json"},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error("mail "+r.status+" "+(await r.text().catch(()=>"")).replace(/\s+/g," ").slice(0,120));
+}
+function buildBackup(){const files={};for(const n of MIRROR){if(n==="backup_state.json")continue;try{files[n]=fs.readFileSync(fp(n),"utf8")}catch(e){}}
+  return JSON.stringify({app:"check_contract",version:1,exported_at:Date.now(),files})}
+const BK_ST=fp("backup_state.json"),BK_EVERY=(+E.BACKUP_EVERY_HRS||24)*36e5;
+let bkBusy=false;
+async function backupMail(force){if(bkBusy)return{skipped:"busy"};if(!(E.BACKUP_EMAIL&&E.RESEND_KEY&&E.MAIL_FROM))return{skipped:"not_configured"};
+  let st={};try{st=JSON.parse(fs.readFileSync(BK_ST,"utf8"))}catch(e){}
+  if(!force&&Date.now()-(st.last||0)<BK_EVERY)return{skipped:"recent"};
+  bkBusy=true;try{const raw=buildBackup(),gz=zlib.gzipSync(Buffer.from(raw,"utf8")),day=new Date(Date.now()+7*36e5).toISOString().slice(0,10);
+    await adminMail("แบ็กอัปข้อมูลเช็กสัญญา "+day,"ไฟล์แนบคือข้อมูลทั้งหมดของเว็บ (เครดิตผู้ใช้ ประวัติชำระเงิน คำสั่งซื้อ ข่าว ฯลฯ) บีบอัดแบบ gzip\nขนาดก่อนบีบอัด "+Math.round(raw.length/1024)+" KB\nเก็บไฟล์นี้ไว้ในที่ปลอดภัย ห้ามส่งต่อให้ผู้อื่น เพราะมีข้อมูลผู้ใช้",{filename:"backup-"+day+".json.gz",content:gz.toString("base64")});
+    st.last=Date.now();fs.writeFileSync(BK_ST,JSON.stringify(st));return{sent:true,kb:Math.round(gz.length/1024)}}
+  catch(e){console.log("[backup] mail fail:",String(e.message||e).slice(0,120));return{error:String(e.message||e).slice(0,120)}}finally{bkBusy=false}}
+setInterval(()=>{backupMail(false)},36e5).unref();setTimeout(()=>{backupMail(false)},90000).unref();
 
 /* ---------- ที่เก็บข้อมูล ---------- */
 let db={};try{db=JSON.parse(fs.readFileSync(DB_FILE,"utf8"))}catch(e){}
@@ -335,6 +360,8 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       if(!x||!n||Math.abs(n)>1000)return send(res,400,{error:"bad"});x.credits=Math.max(0,x.credits+n);save();
       ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});led(id,"adjust",n,x.credits,"admin");return send(res,200,{credits:x.credits})}
     if(P==="/admin/ledger"){const q=cid(u.searchParams.get("uid"));return send(res,200,{items:rd(LED).filter(o=>!q||o.uid===q).slice(-200).reverse()})}
+    if(P==="/admin/backup"){const day=new Date(Date.now()+7*36e5).toISOString().slice(0,10);res.writeHead(200,{...SEC,"content-type":"application/json; charset=utf-8","content-disposition":'attachment; filename="backup-'+day+'.json"',"cache-control":"no-store"});return res.end(buildBackup())}
+    if(P==="/admin/backup-mail")return send(res,200,await backupMail(true));
     if(P==="/admin/news-status")return send(res,200,{on:NEWS_ON,key:!!KEY,gemini:!!GKEY,mirror:mirrorSt,busy:newsBusy,busy_sec:newsBusy?Math.round((Date.now()-newsSince)/1000):0,last_result:newsLast,state:readJ(NEWS_S,{}),stored:readJ(NEWS_F,[]).length,feeds:NEWS_FEEDS.length});
     if(P==="/admin/news-run")return send(res,200,await newsRun(true));
     if(P==="/admin/news-list")return send(res,200,{items:readJ(NEWS_F,[]).map(x=>({id:x.id,ts:x.ts,title:x.title,type:x.type,src:x.src.title}))});

@@ -1673,7 +1673,7 @@ function histDraw(){const a=histGet();$("hist_l").innerHTML=a.length?a.map((x,i)
 $("histb").onclick=()=>{histDraw();$("hist").showModal()};$("hist_x").onclick=()=>$("hist").close();
 $("hist_c").onclick=()=>{if(histGet().length&&!confirm("ลบประวัติการตรวจทั้งหมดในเครื่องนี้?"))return;try{localStorage.removeItem("hist")}catch(e){}histDraw()};
 $("hist_l").onclick=e=>{const d=e.target.dataset.hd;if(d===undefined)return;const a=histGet();a.splice(+d,1);try{localStorage.setItem("hist",JSON.stringify(a))}catch(x){}histDraw()};
-async function claimRef(){try{const r=new URLSearchParams(location.search).get("ref");if(!CFG.api||!r||r===uid||localStorage.getItem("refd"))return;const rr=await fetch(CFG.api+"/referral",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref:r})});localStorage.setItem("refd","1");const d=await rr.json().catch(()=>({}));if(rr.ok&&d.credits!==undefined){cred=d.credits;showCr();$("ocrst").textContent="🎁 ได้เครดิตฟรีจากเพื่อนแล้ว!"}}catch(e){}}
+async function claimRef(){try{const r=new URLSearchParams(location.search).get("ref");if(!CFG.api||!r||r===uid||localStorage.getItem("refd"))return;const rr=await fetch(CFG.api+"/referral",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref:r})});if(rr.status!==403)localStorage.setItem("refd","1");const d=await rr.json().catch(()=>({}));if(rr.ok&&d.credits!==undefined){cred=d.credits;showCr();$("ocrst").textContent="🎁 ได้เครดิตฟรีจากเพื่อนแล้ว!"}}catch(e){}}
 $("refb").onclick=async()=>{const l=location.origin+location.pathname+"?ref="+encodeURIComponent(uid),tx="ลองเช็กสัญญาด้วย AI ฟรี รับเครดิตเพิ่มเมื่อเข้าผ่านลิงก์นี้: "+l;if(navigator.share){try{await navigator.share({text:tx});return}catch(e){}}try{await navigator.clipboard.writeText(tx);$("refb").textContent="✅ คัดลอกลิงก์แล้ว"}catch(e){prompt("คัดลอกลิงก์นี้",l)}};
 let RCPL=[];
 $("rcpb").onclick=async()=>{$("rcp").showModal();$("rcp_l").textContent="กำลังโหลด…";try{const d=await(await fetch(CFG.api+"/receipts?uid="+encodeURIComponent(uid))).json();RCPL=d.items||[];$("rcp_l").innerHTML=RCPL.length?RCPL.map((x,i)=>'<div class="df c">'+esc(x.no)+' · '+new Date(x.ts).toLocaleDateString("th-TH")+' · '+x.baht+' บาท · '+(x.days?'แพ็กเกจ '+x.days+' วัน':x.credits+' เครดิต')+' <button type="button" class="link" data-rc="'+i+'">เปิด/พิมพ์</button></div>').join(""):'<p class="hint">ยังไม่มีใบเสร็จ</p>'}catch(e){$("rcp_l").textContent="โหลดไม่สำเร็จ"}};
@@ -1853,6 +1853,7 @@ const rr=await fetch(CFG.api+"/analyze",{method:"POST",headers:{"Content-Type":"
 const d=await rr.json().catch(()=>({}));
 if(rr.status===402){progHide();openPay("เครดิตหมดแล้ว เติมเครดิตเพื่อตรวจต่อ");return}
 if(rr.status===403&&d.error==="tos"){progHide();needTos();return}
+if(rr.status===403&&d.error==="need_account"){progHide();$("err").textContent="";return}
 if(!rr.ok)throw{code:d.error||"fail"};
 cred=d.credits;if(d.passUntil!==undefined)passUntil=d.passUntil;window.NEXTRID=d.rid||"";res={text:d.result};
 }else{
@@ -2898,7 +2899,7 @@ animation:cgc-spin 16s linear infinite}
 var M=document.getElementById("acm"),B=document.getElementById("acb"),btn=document.getElementById("acct"),nav=document.getElementById("bnav"),tab=nav&&nav.querySelector('[data-a="acct"]');if(!btn)return;
 var P={mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/>',eye:'<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M3 3l18 18"/><path d="M10.6 6.2A9.6 9.6 0 0112 6c6.4 0 10 6 10 6a17 17 0 01-3.2 3.9M6.5 7.6A16.5 16.5 0 002 12s3.6 6 10 6c1.4 0 2.7-.3 3.8-.7"/>',user:'<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-3.9 3.7-6.2 7.5-6.2s6.9 2.3 7.5 6.2"/>',chev:'<path d="M9 6l6 6-6 6"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M21 13A9 9 0 1111 3a7 7 0 0010 10z"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5"/><circle cx="17" cy="17" r="3.5"/><path d="M17 15.5V17l1 .8"/>',coins:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8S10.5 3 8 4s0 4 4 4zM12 8s1.5-5 4-4 0 4-4 4z"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>',star:'<path d="M12 3l2.4 5.6L20 9.3l-4.4 3.9L17 19l-5-3-5 3 1.4-5.8L4 9.3l5.6-.7z"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',scale:'<path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-3 7a3.5 3.5 0 007 0z"/><path d="M19 7l-3 7a3.5 3.5 0 007 0z"/><path d="M8 21h8"/>'};
 P.shield='<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>';P.sync='<path d="M20 11a8 8 0 00-14-4M4 4v4h4"/><path d="M4 13a8 8 0 0014 4M20 20v-4h-4"/>';P.heart='<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/>';
-var GT=false; /* true = กำลังแสดงหน้า "สมัครบัญชีก่อนใช้งาน" (ปิดเองไม่ได้ จนกว่าจะสมัคร/เข้าสู่ระบบ) */
+var GT=false,GL=false; /* true = กำลังแสดงหน้า "สมัครบัญชีก่อนใช้งาน" (ปิดเองไม่ได้ จนกว่าจะสมัคร/เข้าสู่ระบบ) */
 var KI={free:"gift",topup:"plus",topup_pass:"star",use:"minus",pass_use:"minus",refund:"undo",refund_pass:"undo",adjust:"coins",referral:"gift"};
 var LB={free:"เครดิตฟรี",topup:"เติมเครดิต",topup_pass:"ซื้อแพ็กเกจรายเดือน",use:"ใช้ตรวจสัญญา",pass_use:"ใช้โควตาแพ็กเกจ",refund:"คืนเครดิต",refund_pass:"คืนโควตา",adjust:"ผู้ดูแลปรับ",referral:"โบนัสแนะนำเพื่อน"};
 var ER={bad_login:"อีเมลหรือรหัสผ่านไม่ถูกต้อง",bad_input:"อีเมลไม่ถูกต้อง หรือรหัสผ่านสั้นกว่า 8 ตัวอักษร",email_taken:"อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน",has_account:"เครื่องนี้มีบัญชีอยู่แล้ว ออกจากระบบก่อนจึงจะใช้บัญชี Google อื่นได้",bad_google:"ยืนยันกับ Google ไม่สำเร็จ ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่"};
@@ -2908,7 +2909,7 @@ function fmt(t){return t?new Date(t).toLocaleDateString("th-TH",{day:"numeric",m
 function post(u,o){return JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({uid:uid},o||{}))})}
 function has(){try{return localStorage.getItem("hasacct")==="1"}catch(e){return false}}if(tab)tab.classList.toggle("new",!has());
 function sync(){btn.style.display=nav&&getComputedStyle(nav).display!=="none"?"none":""}sync();window.addEventListener("resize",sync);
-function close(){if(GT)return;M.classList.remove("on");if(tab)tab.classList.remove("on");window.dispatchEvent(new Event("scroll"))}
+function close(){if(GT){if(GL)gateOff();return}M.classList.remove("on");if(tab)tab.classList.remove("on");window.dispatchEvent(new Event("scroll"))}
 document.addEventListener("keydown",function(e){if(e.key==="Escape")close()});M.onclick=function(e){if(e.target===M)close()};
 function bad(e){return e&&!/^http_2/.test(e)}
 function load(){B.textContent="กำลังโหลด…";post("/profile").then(function(p){bad(p.error)?(B.textContent=(/not_found|http_404|http_405/.test(p.error)?"เซิร์ฟเวอร์ยังเป็น index.js เวอร์ชันเก่า (ยังไม่มีระบบบัญชี) ต้องอัปโหลด index.js ใหม่แล้วรีสตาร์ตเซิร์ฟเวอร์":"โหลดไม่ได้ ลองใหม่อีกครั้ง")+" [รหัส: "+p.error+"]"):render(p)}).catch(function(){B.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"})}
@@ -2964,11 +2965,12 @@ function gateBody(p){
   ["heart","เป็นธรรมกับผู้ใช้ทุกคน","ช่วยป้องกันการใช้งานเกินปกติ เพื่อให้ระบบ AI เปิดให้บริการได้ต่อเนื่องและรวดเร็ว"]
  ].forEach(function(r){var li=el("li"),d=el("div");li.appendChild(ic(r[0],20));d.appendChild(el("b",null,r[1]));d.appendChild(el("small",null,r[2]));li.appendChild(d);u.appendChild(li)});
  w.appendChild(u);w.appendChild(form(p||{credits:0}));
+ if(GL){var lb=el("button","gtlater","ไว้ก่อน กลับไปแก้ข้อความ");lb.type="button";lb.onclick=gateOff;w.appendChild(lb)}
  w.appendChild(el("p","gthx","ขออภัยในความไม่สะดวก และขอบคุณที่เข้าใจนะ 🙏 เนื้อหาสัญญาที่ตรวจจะไม่ถูกบันทึกถาวร"));
  return w}
-function gateOn(p){if(GT)return;GT=true;window.__gateShown=true;B.textContent="";B.appendChild(gateBody(p));M.setAttribute("aria-label","สมัครบัญชีก่อนใช้งาน");M.classList.add("gate");M.classList.add("on");try{window.scrollTo(0,0)}catch(e){}}
-function gateOff(){if(!GT)return;GT=false;M.setAttribute("aria-label","บัญชีของฉัน");M.classList.remove("gate");M.classList.remove("on");release()}
-function gateNeed(){if(GT)return;post("/profile").then(function(p){if(p&&!bad(p.error)&&!p.email)gateOn(p);else if(p&&p.email)release()}).catch(function(){gateOn({credits:0})})}
+function gateOn(p){if(GT)return;GT=true;window.__gateShown=true;B.textContent="";B.appendChild(gateBody(p));M.setAttribute("aria-label","สมัครบัญชีก่อนใช้งาน");M.classList.add("gate");M.classList.add("on");if(!GL){try{window.scrollTo(0,0)}catch(e){}}}
+function gateOff(){if(!GT)return;GT=false;GL=false;M.setAttribute("aria-label","บัญชีของฉัน");M.classList.remove("gate");M.classList.remove("on");release()}
+function gateNeed(){if(GT)return;GL=true;post("/profile").then(function(p){if(p&&!bad(p.error)&&!p.email)gateOn(p);else if(p&&p.email)release()}).catch(function(){gateOn({credits:0})})}
 var hb=document.getElementById("hacct");
 function hdr(p){if(!hb)return;var ok=p&&p.email;hb.textContent="";hb.className=ok?"in":"out";
  if(!ok){hb.appendChild(ic("user",16));hb.appendChild(el("span",null,"เข้าสู่ระบบ"));try{localStorage.removeItem("hdr")}catch(e){}return}
@@ -2977,9 +2979,9 @@ function hdr(p){if(!hb)return;var ok=p&&p.email;hb.textContent="";hb.className=o
  hb.appendChild(av);hb.appendChild(el("span","hm",p.email));hb.title=p.email;try{localStorage.setItem("hdr",JSON.stringify({email:p.email,pic:p.pic||null}))}catch(e){}}
 if(hb){if(!CFG.api)hb.style.display="none";else{hb.onclick=openA;var c0=null;try{c0=JSON.parse(localStorage.getItem("hdr")||"null")}catch(e){}hdr(c0);
  if(c0&&c0.email)release();
- post("/profile").then(function(p){if(p&&!bad(p.error)){hdr(p);if(tab)tab.classList.toggle("new",!p.email);if(p.reqAcc&&!p.email)gateOn(p);else release()}else release()}).catch(function(){release()})}}
+ post("/profile").then(function(p){if(p&&!bad(p.error)){hdr(p);if(tab)tab.classList.toggle("new",!p.email);release()}else release()}).catch(function(){release()})}}
 if(!CFG.api)release();
-(function(){var of=window.fetch;if(!of||!CFG.api)return;window.fetch=function(){var q=of.apply(this,arguments);try{q.then(function(r){if(r&&r.status===403)r.clone().json().then(function(d){if(d&&d.error==="need_account")gateNeed()}).catch(function(){})}).catch(function(){})}catch(e){}return q}})();
+(function(){var of=window.fetch;if(!of||!CFG.api)return;window.fetch=function(){var q=of.apply(this,arguments);try{q.then(function(r){if(r&&r.status===403)r.clone().json().then(function(d){if(d&&d.error==="need_account"&&!/\/referral/.test(r.url||""))gateNeed()}).catch(function(){})}).catch(function(){})}catch(e){}return q}})();
 })();
 </script>
 
@@ -2996,6 +2998,9 @@ if(!CFG.api)release();
 #acb .gwhy b{display:block;font-size:14.5px;line-height:1.4}
 #acb .gwhy small{display:block;color:var(--mute);font-size:13px;line-height:1.5}
 #acb .gthx{text-align:center;color:var(--mute);font-size:13px;line-height:1.6;margin:12px 0 2px}
+
+#acb .gtlater{display:block;width:100%;margin:10px 0 0;padding:12px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:14px;cursor:pointer}
+#acb .gtlater:hover{border-color:var(--gold)}
 </style>
 </body>
 </html>

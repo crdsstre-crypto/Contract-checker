@@ -22,6 +22,41 @@ const MINB=+E.MIN_TOPUP||50,MAXB=+E.MAX_TOPUP||5000,RATE=b=>b>=500?14:b>=200?15:
 const DB_FILE=fp("data.json"),PAY=fp("payments.jsonl"),ORD=fp("orders.jsonl"),FB=fp("feedback.jsonl"),LAW=fp("lawyer_requests.jsonl"),USED=fp("slips_used.json");
 const PAGE=path.join(__dirname,"check_contract.html"),ADMINPAGE=path.join(__dirname,"admin.html");
 
+/* ---------- สำรองไฟล์ข้อมูลขึ้นฐานข้อมูลภายนอก (Upstash Redis ฟรี) ----------
+   ตั้ง env: UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN  (ถ้าไม่ตั้ง ระบบทำงานเหมือนเดิม)
+   - ตอนเริ่มเซิร์ฟเวอร์: ไฟล์ไหนไม่มีบนดิสก์ จะดึงกลับมาจากฐานข้อมูลก่อนโหลดข้อมูล
+   - ตอนมีการเขียนไฟล์: สำรองขึ้นฐานข้อมูลอัตโนมัติ (หน่วงเวลา 5 วินาที) */
+const UP_URL=(E.UPSTASH_REDIS_REST_URL||"").trim().replace(/\/+$/,""),UP_TOK=(E.UPSTASH_REDIS_REST_TOKEN||"").trim();
+const MIRROR=["data.json","slips_used.json","payments.jsonl","orders.jsonl","feedback.jsonl","lawyer_requests.jsonl","ledger.jsonl","news_samples.json","news_state.json"];
+const mirrorSt={on:!!(UP_URL&&UP_TOK),pushed:0,at:0,err:"",restored:[]};
+const mDirty=new Set();let mTimer=null,mBusy=false;
+if(mirrorSt.on){
+  try{fs.mkdirSync(DIR,{recursive:true})}catch(e){}
+  const RESTORE_SRC=`(async()=>{const fs=require("fs"),path=require("path"),U=process.env.CC_URL,T=process.env.CC_TOK,D=process.env.CC_DIR;
+const px=async c=>{const r=await fetch(U+"/pipeline",{method:"POST",headers:{authorization:"Bearer "+T,"content-type":"application/json"},body:JSON.stringify(c)});if(!r.ok)throw new Error("http "+r.status);return r.json()};
+for(const n of JSON.parse(process.env.CC_FILES)){const f=path.join(D,n);if(fs.existsSync(f))continue;
+try{const m=(await px([["GET","cc:"+n+":meta"]]))[0].result,k=+m;if(!(k>0))continue;const rs=await px(Array.from({length:k},(_,i)=>["GET","cc:"+n+":"+i]));fs.writeFileSync(f,Buffer.from(rs.map(x=>x.result||"").join(""),"base64"));console.log("[mirror] restored "+n)}catch(e){console.log("[mirror] restore "+n+" fail: "+String(e.message||e))}}})()`;
+  try{const o=require("child_process").execFileSync(process.execPath,["-e",RESTORE_SRC],{env:{...process.env,CC_URL:UP_URL,CC_TOK:UP_TOK,CC_DIR:DIR,CC_FILES:JSON.stringify(MIRROR)},timeout:60000,encoding:"utf8"});console.log(o.trim());mirrorSt.restored=(o.match(/restored [\w.]+/g)||[]).map(x=>x.slice(9))}
+  catch(e){console.log("[mirror] restore error:",String(e.message||e).slice(0,160));mirrorSt.err="restore: "+String(e.message||e).slice(0,80)}
+  const mark=p=>{try{const a=path.resolve(String(p)),n=path.basename(a);if(path.dirname(a)===path.resolve(DIR)&&MIRROR.includes(n))mDirty.add(n),mSched(5000)}catch(e){}};
+  const _w=fs.writeFileSync,_a=fs.appendFileSync,_r=fs.renameSync;
+  fs.writeFileSync=function(p,...a){const r=_w.call(fs,p,...a);mark(p);return r};
+  fs.appendFileSync=function(p,...a){const r=_a.call(fs,p,...a);mark(p);return r};
+  fs.renameSync=function(a,b){const r=_r.call(fs,a,b);mark(b);return r};
+  for(const n of MIRROR){try{if(fs.existsSync(fp(n)))mDirty.add(n)}catch(e){}} // อัปโหลดไฟล์ที่มีอยู่แล้วรอบแรก
+  mSched(8000);
+  process.on("SIGTERM",async()=>{try{await Promise.race([mirrorPush(),new Promise(r=>setTimeout(r,8000))])}catch(e){}process.exit(0)});
+}
+function mSched(ms){clearTimeout(mTimer);mTimer=setTimeout(()=>{mirrorPush()},ms)}
+const upx=async cmds=>{const r=await fetch(UP_URL+"/pipeline",{method:"POST",signal:AbortSignal.timeout(30000),headers:{authorization:"Bearer "+UP_TOK,"content-type":"application/json"},body:JSON.stringify(cmds)});if(!r.ok)throw new Error("upstash "+r.status+" "+(await r.text().catch(()=>"")).replace(/\s+/g," ").slice(0,100));const j=await r.json(),bad=j.find&&j.find(x=>x&&x.error);if(bad)throw new Error("upstash "+String(bad.error).slice(0,100));return j};
+async function mirrorPush(){if(!mirrorSt.on||mBusy)return;mBusy=true;
+  try{while(mDirty.size){const n=[...mDirty][0];let buf;try{buf=fs.readFileSync(fp(n))}catch(e){mDirty.delete(n);continue}
+    const b=buf.toString("base64"),parts=[];for(let i=0;i<b.length;i+=500000)parts.push(b.slice(i,i+500000));if(!parts.length)parts.push("");
+    const cmds=parts.map((p,i)=>["SET","cc:"+n+":"+i,p]);cmds.push(["SET","cc:"+n+":meta",String(parts.length)]);
+    await upx(cmds);mDirty.delete(n);mirrorSt.pushed++;mirrorSt.at=Date.now();mirrorSt.err=""}}
+  catch(e){mirrorSt.err=String(e.message||e).slice(0,160);console.log("[mirror] push fail:",mirrorSt.err);mSched(30000)}
+  finally{mBusy=false}}
+
 /* ---------- ที่เก็บข้อมูล ---------- */
 let db={};try{db=JSON.parse(fs.readFileSync(DB_FILE,"utf8"))}catch(e){}
 let used={};try{used=JSON.parse(fs.readFileSync(USED,"utf8"))}catch(e){}
@@ -202,7 +237,7 @@ const adminOK=(req,u)=>{const k=Buffer.from(String(req.headers["x-admin-key"]||u
    ดึงข่าวจาก RSS -> ให้ AI คัดเฉพาะข่าวที่เกี่ยวกับสัญญา -> สร้างสัญญาจำลอง (ไม่ใช้ชื่อจริง) + ผลตรวจ -> เก็บใน news_samples.json
    ทำงานเมื่อมีคนเปิดเว็บและข้อมูลเก่าเกิน NEWS_EVERY ชม. (ไม่ต้องมีตัวตั้งเวลา ใช้โฮสต์ฟรีที่หลับได้) + เช็กทุกชั่วโมงถ้าเซิร์ฟเวอร์ตื่นอยู่
    env: NEWS=0 ปิดทั้งระบบ, NEWS_EVERY(=6 ชม.), NEWS_DAILY(=4 ตัวอย่าง/วัน), NEWS_PER_RUN(=2), NEWS_MAX(=40 เก็บล่าสุด), NEWS_FEEDS (RSS คั่น ,) */
-const NEWS_ON=E.NEWS!=="0",NEWS_EVERY=(+E.NEWS_EVERY||6)*36e5,NEWS_DAILY=+E.NEWS_DAILY||4,NEWS_PER_RUN=Math.min(3,+E.NEWS_PER_RUN||2),NEWS_MAX=+E.NEWS_MAX||40;
+const NEWS_ON=E.NEWS!=="0",NEWS_EVERY=(+E.NEWS_EVERY||6)*36e5,NEWS_DAILY=+E.NEWS_DAILY||4,NEWS_PER_RUN=Math.min(3,+E.NEWS_PER_RUN||2),NEWS_MAX=+E.NEWS_MAX||500,NEWS_SHOW=+E.NEWS_SHOW||100;
 const NEWS_F=fp("news_samples.json"),NEWS_S=fp("news_state.json");
 const gn=q=>"https://news.google.com/rss/search?q="+encodeURIComponent(q+" when:7d")+"&hl=th&gl=TH&ceid=TH:th";
 const bn=q=>"https://www.bing.com/news/search?q="+encodeURIComponent(q)+"&format=rss&setmkt=th-TH";
@@ -276,7 +311,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(limited("ip"+ip,120))return send(res,429,{error:"rate_limited"});
 
   /* ----- GET ----- */
-  if(req.method==="GET"&&P==="/news-samples"){newsMaybe();const st=readJ(NEWS_S,{});return send(res,200,{ok:true,on:NEWS_ON&&!!KEY,updated:st.last||0,items:NEWS_ON?readJ(NEWS_F,[]).slice(-30).reverse():[]})}
+  if(req.method==="GET"&&P==="/news-samples"){newsMaybe();const st=readJ(NEWS_S,{});return send(res,200,{ok:true,on:NEWS_ON&&!!KEY,updated:st.last||0,items:NEWS_ON?readJ(NEWS_F,[]).slice(-NEWS_SHOW).reverse():[]})}
   if(req.method==="GET"&&P==="/auth/config")return send(res,200,{ok:true,google:GCID||null});
   if(req.method==="GET"&&P==="/auth/verify"){const m=db.__vt||{},k=hash(String(u.searchParams.get("t")||"")),e=m[k],y=e&&e.exp>Date.now()&&db[e.id];
     if(y){y.verified=Date.now();delete m[k];save()}
@@ -300,7 +335,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
       if(!x||!n||Math.abs(n)>1000)return send(res,400,{error:"bad"});x.credits=Math.max(0,x.credits+n);save();
       ap(PAY,{ts:Date.now(),uid:id,baht:0,credits:n,ref:"adj",how:"adjust",tx:""});led(id,"adjust",n,x.credits,"admin");return send(res,200,{credits:x.credits})}
     if(P==="/admin/ledger"){const q=cid(u.searchParams.get("uid"));return send(res,200,{items:rd(LED).filter(o=>!q||o.uid===q).slice(-200).reverse()})}
-    if(P==="/admin/news-status")return send(res,200,{on:NEWS_ON,key:!!KEY,gemini:!!GKEY,busy:newsBusy,busy_sec:newsBusy?Math.round((Date.now()-newsSince)/1000):0,last_result:newsLast,state:readJ(NEWS_S,{}),stored:readJ(NEWS_F,[]).length,feeds:NEWS_FEEDS.length});
+    if(P==="/admin/news-status")return send(res,200,{on:NEWS_ON,key:!!KEY,gemini:!!GKEY,mirror:mirrorSt,busy:newsBusy,busy_sec:newsBusy?Math.round((Date.now()-newsSince)/1000):0,last_result:newsLast,state:readJ(NEWS_S,{}),stored:readJ(NEWS_F,[]).length,feeds:NEWS_FEEDS.length});
     if(P==="/admin/news-run")return send(res,200,await newsRun(true));
     if(P==="/admin/news-list")return send(res,200,{items:readJ(NEWS_F,[]).map(x=>({id:x.id,ts:x.ts,title:x.title,type:x.type,src:x.src.title}))});
     if(P==="/admin/news-del"){const id=String(u.searchParams.get("id")||""),a=readJ(NEWS_F,[]),b=a.filter(x=>x.id!==id);fs.writeFileSync(NEWS_F,JSON.stringify(b));return send(res,200,{removed:a.length-b.length})}

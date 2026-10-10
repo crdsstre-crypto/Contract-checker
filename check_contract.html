@@ -1146,6 +1146,24 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 .sample.sx-live .sx-cta svg{animation:sx-nudge 4s ease-in-out infinite}
 }
 </style>
+<style>
+#smp .ph .link::before{content:none!important}
+/* ===== ธีมอวกาศ (แบบพอดี): ดาวระยิบ ดาวตก ออโรราจาง ๆ + สติกเกอร์สีประจำตัวอย่าง ===== */
+#smp .sl .si.stk:first-child{color:hsl(var(--h) 85% 68%);background:hsl(var(--h) 80% 60%/.14);box-shadow:inset 0 0 0 1px hsl(var(--h) 80% 65%/.32);transition:transform .25s,box-shadow .25s}
+#smp .sl:hover .si.stk:first-child{transform:rotate(-8deg) scale(1.1);box-shadow:inset 0 0 0 1px hsl(var(--h) 85% 70%/.6),0 0 16px -2px hsl(var(--h) 90% 60%/.55)}
+#smp .sl::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.10) 50%,transparent 65%);transform:translateX(-120%)}
+#smp .sl{position:relative;overflow:hidden}
+#smp .sl:hover::after{transform:translateX(120%);transition:transform .7s ease}
+#smp .types button[aria-pressed="true"]{animation:smglow 3.2s ease-in-out infinite}
+#smp .types button[aria-pressed="true"] .si{animation:smtw 3.2s ease-in-out infinite}
+#smp .pw::after{content:"";position:absolute;top:18px;left:-10%;width:90px;height:1.5px;pointer-events:none;border-radius:2px;background:linear-gradient(90deg,transparent,#fff);transform:rotate(18deg) translateX(-140px);opacity:0;animation:smshoot 8s 1.5s linear infinite}
+:root[data-theme="dark"] #smp .pw{background:radial-gradient(120% 70% at 85% -10%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 60% at -10% 40%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 260px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #smp .pw{background:radial-gradient(120% 70% at 85% -10%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 60% at -10% 40%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 260px)}}
+@keyframes smglow{0%,100%{box-shadow:0 0 0 1px var(--gold),0 6px 18px -10px var(--gold)}50%{box-shadow:0 0 0 1px var(--gold),0 8px 26px -6px var(--gold)}}
+@keyframes smtw{0%,100%{transform:scale(1)}50%{transform:scale(1.12) rotate(-4deg)}}
+@keyframes smshoot{0%{opacity:0;transform:rotate(18deg) translateX(-140px)}3%{opacity:1}12%{opacity:0;transform:rotate(18deg) translateX(520px)}100%{opacity:0;transform:rotate(18deg) translateX(520px)}}
+@media (prefers-reduced-motion:reduce){#smp .pw::after,#smp .types button[aria-pressed="true"],#smp .types button[aria-pressed="true"] .si,#smp .sl:hover::after{animation:none;transition:none}}
+</style>
 </head>
 <body>
 <div class="bg" aria-hidden="true">
@@ -1230,7 +1248,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 <button class="go" id="hok" type="button" style="width:100%;margin-top:10px">เข้าใจแล้ว เริ่มใช้งาน</button>
 </div></dialog>
 <dialog id="smp"><div class="pw">
-<div class="ph"><b>ตัวอย่างสัญญา</b><button class="link" id="sx" type="button">ปิด</button></div>
+<div class="ph"><span class="phi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h6"/><path d="M14 3v5h5"/><path d="M8 12h4M8 16h3"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg></span><b>ตัวอย่างสัญญา</b><button class="link" id="sx" type="button" aria-label="ปิด"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
 <p class="hint">เลือกหมวด แล้วกดตัวอย่างที่ใกล้เคียงกับสัญญาของคุณ</p>
 <div class="types" id="scat"></div><div id="slist"></div>
 </div></dialog>
@@ -1443,10 +1461,27 @@ function bindX(r,t){bindY(r,t);const b=$("cmpb");if(b)b.onclick=()=>doCmp(t,$("c
 let scat=TYPES[0];
 const total=Object.values(SAMPLES).reduce((a,l)=>a+l.length,0);
 $("demo").innerHTML='<span>⚡ <b>ยังไม่มีสัญญาให้ลอง?</b> ดูตัวอย่างผลตรวจจากสัญญาจริง '+total+' แบบ</span><em class="free">ฟรี ไม่เสียเครดิต</em>';
+const SI={pen:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 16l5.5-5.5 1.5 1.5L10.5 17.5 8.5 18z"/>',bank:'<path d="M3 9l9-5 9 5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/>',home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',dots:'<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>',doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/>',chev:'<path d="M9 6l6 6-6 6"/>'};
+/* สติกเกอร์ประจำตัวอย่างสัญญา: 1 ตัวอย่าง = 1 ไอคอน + 1 สี ไม่ซ้ำกัน (ลำดับตรงกับ SAMPLES) */
+const SIL=[
+'<path d="M12 3l6 8-6 10-6-10z"/><circle cx="12" cy="11" r="1.5"/><path d="M12 12.5V21"/>',
+'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.5l5 2.5-5 2.5z"/>',
+'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3 3 7 3s7-1.3 7-3v-6"/>',
+'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+'<path d="M4 16v-4l2-5h12l2 5v4z"/><path d="M4 12h16"/><path d="M6 16v3M18 16v3"/>',
+'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
+'<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.5 2.5 0 005 0 2.5 2.5 0 006 0 2.5 2.5 0 005 0"/><path d="M5 12v8h14v-8"/>',
+'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9"/><path d="M16 7l3 3"/><path d="M14 9l2 2"/>',
+'<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 016 0"/>',
+'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/>',
+'<circle cx="12" cy="6" r="2.5"/><circle cx="5.5" cy="17" r="2.5"/><circle cx="18.5" cy="17" r="2.5"/><path d="M11 8.3L6.5 14.8M13 8.3l4.5 6.5M8 17h8"/>'];
+const SHUE=[262,200,340,46,152,18,215,300,120,28,175,80];
+const sico=n=>'<svg class="si" viewBox="0 0 24 24" aria-hidden="true">'+SI[n]+'</svg>',scatIco=k=>/จ้าง/.test(k)?"pen":/กู้|ยืม/.test(k)?"bank":/เช่า/.test(k)?"home":"dots";
 function drawSmp(){
-$("scat").innerHTML=Object.keys(SAMPLES).map(k=>`<button type="button" data-c="${esc(k)}" aria-pressed="${k===scat}">${esc(k)}</button>`).join("");
-$("slist").innerHTML=SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}">${esc(x[0])}</button>`).join("")}
-$("demo").onclick=()=>{drawSmp();$("smp").showModal()};
+$("scat").innerHTML=Object.keys(SAMPLES).map((k,i)=>`<button type="button" data-c="${esc(k)}" aria-pressed="${k===scat}" style="--d:${(i*.05).toFixed(2)}s">${sico(scatIco(k))}<span>${esc(k)}</span></button>`).join("");
+$("slist").innerHTML='<div class="sdv">ตัวอย่างสัญญา</div>'+SAMPLES[scat].map((x,i)=>`<button type="button" class="sl" data-i="${i}" style="--d:${(.06+i*.05).toFixed(2)}s">${(g=>g>=0&&SIL[g]?'<svg class="si stk" style="--h:'+SHUE[g]+'" viewBox="0 0 24 24" aria-hidden="true">'+SIL[g]+'</svg>':sico("doc"))(Object.values(SAMPLES).flat().indexOf(x))}<span>${esc(x[0])}</span>${sico("chev")}</button>`).join("")}
+$("demo").onclick=()=>{drawSmp();const d=$("smp");d.classList.add("fresh");setTimeout(()=>d.classList.remove("fresh"),900);d.showModal()};
 $("sx").onclick=()=>$("smp").close();
 $("smp").addEventListener("click",e=>{if(e.target===$("smp")){$("smp").close();return}
 const b=e.target.closest("button");if(!b)return;
@@ -2489,6 +2524,37 @@ animation:cgc-spin 16s linear infinite}
 .flag:not(.open) .ftog::after{animation:cgf-chev 2.8s ease-in-out infinite}
 @keyframes cgf-chev{0%,100%{transform:rotate(45deg) translate(0,0)}50%{transform:rotate(45deg) translate(2px,2px)}}
 }
+</style>
+<style>
+#smp{overflow:hidden;border-color:color-mix(in srgb,var(--gold) 38%,var(--line));box-shadow:0 24px 60px -24px color-mix(in srgb,var(--gold) 50%,transparent)}
+#smp[open]{animation:smin .4s cubic-bezier(.2,.8,.2,1)}
+#smp::backdrop{background:rgba(2,6,18,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#smp .pw{position:relative;max-height:90vh;overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--card) 90%,var(--gold)) 0,var(--card) 170px)}
+#smp .pw::before{content:"";position:absolute;left:0;right:0;top:0;height:130px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 14% 26%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 78% 18%,#fff,transparent),radial-gradient(1.6px 1.6px at 90% 56%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 40% 66%,#fff,transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 18%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#smp .pw>:not(.ph){position:relative}
+#smp .ph{display:flex;align-items:center;gap:10px;justify-content:flex-start;background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#smp .ph b{flex:1;font-size:19px}
+#smp .phi{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);box-shadow:0 0 20px -6px var(--gold)}
+#smp .phi svg,#smp .si{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#smp .ph .link{margin:0;width:34px;height:34px;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));color:var(--gold);background:none;text-decoration:none;cursor:pointer;transition:transform .2s,background .2s}
+#smp .ph .link:hover{background:color-mix(in srgb,var(--gold) 14%,transparent);transform:rotate(90deg)}
+#smp .ph .link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#smp .hint{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;font-size:13.5px;color:var(--mute);background:color-mix(in srgb,var(--bg) 55%,transparent)}
+#smp .hint::before{content:"✦";color:var(--gold);font-size:14px}
+#smp .types button{flex-direction:row;align-items:center;gap:10px;padding:12px;font-size:14px;line-height:1.3;color:var(--ink)}
+#smp .types button .si{color:var(--gold);width:22px;height:22px}
+#smp .types button[aria-pressed="true"]{box-shadow:0 0 0 1px var(--gold),0 8px 24px -10px var(--gold)}
+#smp.fresh .types button{animation:slin .4s var(--d,0s) backwards}
+#smp .sdv{display:flex;align-items:center;gap:10px;margin:2px 0 10px;font-size:13.5px;font-weight:600;color:var(--mute)}
+#smp .sdv::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold)}#smp .sdv::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+#smp .sl{display:flex;align-items:center;gap:12px;padding:11px 12px;margin:0 0 10px;font-size:15px;line-height:1.35;border-radius:14px;background:var(--card);animation:slin .4s var(--d,0s) backwards;transition:border-color .2s,transform .15s,box-shadow .2s}
+#smp .sl>span{flex:1;min-width:0}
+#smp .sl .si:first-child{width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:11px;color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent)}
+#smp .sl .si:last-child{width:18px;height:18px;color:var(--mute);transition:transform .2s,color .2s}
+#smp .sl:hover{border-color:color-mix(in srgb,var(--gold) 55%,var(--line));box-shadow:0 8px 22px -14px var(--gold)}#smp .sl:hover .si:last-child{transform:translateX(3px);color:var(--gold)}
+#smp .sl:active{transform:scale(.98)}
+@keyframes smin{from{opacity:0;translate:0 24px}}@keyframes slin{from{opacity:0;translate:0 8px}}
+@media (prefers-reduced-motion:reduce){#smp[open],#smp .pw::before,#smp.fresh .types button,#smp .sl{animation:none}}
 </style>
 <style>
 #acm{position:fixed;inset:0;z-index:9999;background:rgba(2,6,18,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}

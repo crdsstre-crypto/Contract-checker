@@ -2490,64 +2490,110 @@ animation:cgc-spin 16s linear infinite}
 }
 </style>
 <style>
-#acm.on{animation:acfade .25s ease-out}#acm.on #acb{animation:acup .38s cubic-bezier(.2,.8,.2,1)}
-@keyframes acfade{from{background:rgba(0,0,0,0)}}@keyframes acup{from{transform:translateY(32px);opacity:0}}
+#acm{position:fixed;inset:0;z-index:9999;background:rgba(2,6,18,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}
+#acm.on{display:flex;animation:acfade .25s ease-out}
+#acb{position:relative;overflow:auto;width:min(520px,100%);max-height:90vh;box-sizing:border-box;color:var(--ink);font-size:15px;line-height:1.55;background:linear-gradient(180deg,color-mix(in srgb,var(--card) 90%,var(--gold)) 0,var(--card) 180px);border:1px solid color-mix(in srgb,var(--gold) 35%,var(--line));border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 50px -22px color-mix(in srgb,var(--gold) 45%,transparent)}
+#acm.on #acb{animation:acup .4s cubic-bezier(.2,.8,.2,1)}
+#acb::before{content:"";position:absolute;left:0;right:0;top:0;height:150px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 12% 24%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 80% 16%,#fff,transparent),radial-gradient(1.6px 1.6px at 92% 52%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 36% 64%,#fff,transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 20%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#acb>*{position:relative}
+#acb .ico{display:inline-flex;flex:none}
+#acb .ach{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+#acb .lg{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);box-shadow:0 0 22px -6px var(--gold)}
+#acb .tt{flex:1;min-width:0}#acb .tt b{display:block;font-size:18px}#acb .tt small{display:block;color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#acb .cl{width:34px;height:34px;padding:0;border-radius:50%;display:grid;place-items:center;color:var(--mute)}
+#acb button{font:inherit;cursor:pointer;color:var(--ink);background:none;border:1px solid var(--line);border-radius:99px;padding:9px 14px;transition:transform .15s,border-color .2s,background .2s}
+#acb button:active{transform:scale(.96)}
+#acb .acs{border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px;background:color-mix(in srgb,var(--gold) 6%,transparent);animation:acin .4s .06s backwards}
+#acb .crd{display:flex;align-items:center;gap:12px;color:var(--gold)}#acb .crd small{display:block;color:var(--mute);font-size:13px;line-height:1.2}#acb .crd b{font-size:26px;line-height:1.15;color:var(--ink)}
+#acb .meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:8px;color:var(--mute);font-size:13px}
+#acb .chip{border-radius:99px;padding:2px 10px;font-size:12px;border:1px solid currentColor}#acb .chip.ok{color:var(--ok,#3fae7a)}#acb .chip.wn{color:var(--gold)}
+#acb .thm{display:flex;align-items:center;gap:8px;margin-bottom:12px;color:var(--mute);font-size:14px}#acb .thm .ico:first-child{color:var(--gold)}
+#acb .fld{display:flex;align-items:center;gap:10px;padding:0 12px;margin:0 0 10px;color:var(--mute);border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--bg) 70%,transparent);transition:border-color .2s,box-shadow .2s;animation:acin .4s .12s backwards}
+#acb .fld:focus-within{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 22%,transparent)}
+#acb .fld input{flex:1;min-width:0;border:0;outline:0;background:none;padding:13px 0;font:inherit;color:var(--ink)}
+#acb .fld .eye{border:0;padding:6px;border-radius:50%;color:var(--mute)}
+#acb .row{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 6px}
+#acb .b1,#acb .b2{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px}
+#acb .b1{flex:1 1 auto;position:relative;overflow:hidden;border:0;font-weight:600;color:var(--on-gold,#1b1405);background:linear-gradient(135deg,var(--gold2),var(--gold));box-shadow:0 10px 24px -10px var(--gold)}
+#acb .b1::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.38) 50%,transparent 70%);transform:translateX(-120%);animation:acsh 5s ease-in-out 1.2s infinite}
+#acb .b2{border-color:color-mix(in srgb,var(--gold) 55%,var(--line));color:var(--ink)}
+#acb .err{color:var(--stamp);min-height:1.3em;font-size:14px}
+#acb .gdv{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;margin:10px 0 8px}#acb .gdv::before,#acb .gdv::after{content:"";flex:1;height:1px;background:var(--line)}
+#acb .gbx{display:flex;justify-content:center;min-height:44px;color-scheme:light}#acb .gw{animation:acin .4s .2s backwards}
+#acb .nt{display:flex;gap:10px;align-items:flex-start;color:var(--mute);font-size:13px;margin:10px 0 4px}#acb .nt .ico{margin-top:2px;color:var(--gold)}
+#acb .cx{border:1px solid var(--line);border-radius:16px;margin:14px 0 0;overflow:hidden;background:color-mix(in srgb,var(--bg) 50%,transparent);animation:acin .45s backwards}
+#acb .cxh{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+#acb .cxh .ci{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--gold);background:color-mix(in srgb,var(--gold) 13%,transparent)}
+#acb .cxh b{display:block;line-height:1.25}#acb .cxh small{display:block;color:var(--mute);font-size:12.5px;line-height:1.3}
+#acb .em{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 12px;color:var(--mute);font-size:13.5px}#acb .em .ico{color:var(--gold);opacity:.85;animation:acfl 4s ease-in-out infinite}
+#acb .hrw{padding:11px 14px;border-top:1px solid var(--line);animation:acin .35s backwards}#acb .hrw:first-of-type{border-top:0}
+#acb .hrw small{color:var(--mute)}#acb .lk{border:0;padding:4px 0;margin-top:2px;font-size:13px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+#acb .lr{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);animation:acin .35s backwards}#acb .lr:first-of-type{border-top:0}
+#acb .lr .ci2{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent)}
+#acb .lr .md{flex:1;min-width:0}#acb .lr small{display:block;color:var(--mute);font-size:12.5px}#acb .lr .am{font-weight:600}#acb .lr .am.p{color:var(--ok,#3fae7a)}
+@keyframes acfade{from{background:rgba(2,6,18,0)}}@keyframes acup{from{transform:translateY(32px);opacity:0}}
+@keyframes acin{from{opacity:0;transform:translateY(8px)}}@keyframes actw{50%{opacity:.55}}
+@keyframes acsh{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}@keyframes acfl{50%{transform:translateY(-4px)}}
 #bnav [data-a="acct"]{position:relative}#bnav [data-a="acct"].new::after{content:"";position:absolute;top:7px;left:calc(50% + 6px);width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--bg);animation:acdot 2.6s ease-in-out infinite}
 @keyframes acdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.65}}
 #bnav button[data-a="acct"] svg circle{transform-box:fill-box;transform-origin:center;animation:achead 15s ease-in-out 13s infinite}
 @keyframes achead{0%,88%,100%{transform:none}92%{transform:translateY(-1.6px) scale(1.12)}96%{transform:none}}
-#acb .acs{animation:acin .4s .08s backwards}#acb .hi{animation:acin .35s backwards}@keyframes acin{from{opacity:0;transform:translateY(6px)}}
-@media (prefers-reduced-motion:reduce){#acm.on,#acm.on #acb,#acb .acs,#acb .hi,#bnav [data-a="acct"].new::after,#bnav button[data-a="acct"] svg circle{animation:none}}
-#acm{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center}#acm.on{display:flex}
-#acb{background:var(--card);color:var(--ink);width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.55}
-#acb .ach{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px}#acb .acs{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:12px}
-#acb input{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
-#acb button{font:inherit;padding:9px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}#acb button.pri{background:var(--stamp);border-color:var(--stamp);color:#fff}
-#acb .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}#acb .err{color:var(--stamp);min-height:1.3em;font-size:14px}#acb .note{color:var(--mute);font-size:13px;margin:4px 0 12px}
-#acb .gdv{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;margin:12px 0 8px}#acb .gdv::before,#acb .gdv::after{content:"";flex:1;height:1px;background:var(--line)}#acb .gbx{display:flex;justify-content:center;min-height:44px;color-scheme:light}#acb .gw{animation:acin .4s .15s backwards}
-#acb .hi{border-top:1px solid var(--line);padding:10px 0}#acb .hi small{color:var(--mute)}#acb h3{font-size:15px;margin:14px 0 4px}
+@media (prefers-reduced-motion:reduce){#acm.on,#acm.on #acb,#acb *,#acb::before,#bnav [data-a="acct"].new::after,#bnav button[data-a="acct"] svg circle{animation:none!important}}
 </style>
 <div id="acm" role="dialog" aria-modal="true" aria-label="บัญชีของฉัน"><div id="acb"></div></div>
 <script>
 (function(){
 var M=document.getElementById("acm"),B=document.getElementById("acb"),btn=document.getElementById("acct"),nav=document.getElementById("bnav"),tab=nav&&nav.querySelector('[data-a="acct"]');if(!btn)return;
-function has(){try{return localStorage.getItem("hasacct")==="1"}catch(e){return false}}if(tab)tab.classList.toggle("new",!has());
-function sync(){btn.style.display=nav&&getComputedStyle(nav).display!=="none"?"none":""}sync();window.addEventListener("resize",sync); // แท็บล่างแสดงอยู่ (มือถือ) = ซ่อนปุ่มบัญชีในแถบเครดิต ไม่ให้ซ้ำ
+var P={mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/>',eye:'<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M3 3l18 18"/><path d="M10.6 6.2A9.6 9.6 0 0112 6c6.4 0 10 6 10 6a17 17 0 01-3.2 3.9M6.5 7.6A16.5 16.5 0 002 12s3.6 6 10 6c1.4 0 2.7-.3 3.8-.7"/>',user:'<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-3.9 3.7-6.2 7.5-6.2s6.9 2.3 7.5 6.2"/>',chev:'<path d="M9 6l6 6-6 6"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M21 13A9 9 0 1111 3a7 7 0 0010 10z"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5"/><circle cx="17" cy="17" r="3.5"/><path d="M17 15.5V17l1 .8"/>',coins:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8S10.5 3 8 4s0 4 4 4zM12 8s1.5-5 4-4 0 4-4 4z"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>',star:'<path d="M12 3l2.4 5.6L20 9.3l-4.4 3.9L17 19l-5-3-5 3 1.4-5.8L4 9.3l5.6-.7z"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',scale:'<path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-3 7a3.5 3.5 0 007 0z"/><path d="M19 7l-3 7a3.5 3.5 0 007 0z"/><path d="M8 21h8"/>'};
+var KI={free:"gift",topup:"plus",topup_pass:"star",use:"minus",pass_use:"minus",refund:"undo",refund_pass:"undo",adjust:"coins",referral:"gift"};
+var LB={free:"เครดิตฟรี",topup:"เติมเครดิต",topup_pass:"ซื้อแพ็กเกจรายเดือน",use:"ใช้ตรวจสัญญา",pass_use:"ใช้โควตาแพ็กเกจ",refund:"คืนเครดิต",refund_pass:"คืนโควตา",adjust:"ผู้ดูแลปรับ",referral:"โบนัสแนะนำเพื่อน"};
 var ER={bad_login:"อีเมลหรือรหัสผ่านไม่ถูกต้อง",bad_input:"อีเมลไม่ถูกต้อง หรือรหัสผ่านสั้นกว่า 8 ตัวอักษร",email_taken:"อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน",has_account:"เครื่องนี้มีบัญชีอยู่แล้ว ออกจากระบบก่อนจึงจะใช้บัญชี Google อื่นได้",bad_google:"ยืนยันกับ Google ไม่สำเร็จ ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่"};
+function ic(n,s){var d=document.createElement("span");d.className="ico";d.innerHTML='<svg viewBox="0 0 24 24" width="'+(s||18)+'" height="'+(s||18)+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';return d}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function fmt(t){return t?new Date(t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}):"-"}
 function post(u,o){return JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({uid:uid},o||{}))})}
-function close(){M.classList.remove("on");if(tab)tab.classList.remove("on");window.dispatchEvent(new Event("scroll"))}document.addEventListener("keydown",function(e){if(e.key==="Escape")close()});M.onclick=function(e){if(e.target===M)close()};
-function load(){B.textContent="กำลังโหลด…";post("/profile").then(function(p){p.error&&!/^http_2/.test(p.error)?(B.textContent=(/not_found|http_404|http_405/.test(p.error)?"เซิร์ฟเวอร์ยังเป็น index.js เวอร์ชันเก่า (ยังไม่มีระบบบัญชี) ต้องอัปโหลด index.js ใหม่แล้วรีสตาร์ตเซิร์ฟเวอร์":"โหลดไม่ได้ ลองใหม่อีกครั้ง")+" [รหัส: "+p.error+"]"):render(p)}).catch(function(){B.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"})}
-var of=window.fetch;window.fetch=function(){var a=arguments;return of.apply(this,a).then(function(r){if(r.status===403&&/\/(slip|order)/.test(String(a[0]))){r.clone().json().then(function(d){if(d&&d.error==="verify_email"){alert("ต้องสมัครบัญชีและยืนยันอีเมลก่อนเติมเครดิต");btn.click()}}).catch(function(){})}return r})};
+function has(){try{return localStorage.getItem("hasacct")==="1"}catch(e){return false}}if(tab)tab.classList.toggle("new",!has());
+function sync(){btn.style.display=nav&&getComputedStyle(nav).display!=="none"?"none":""}sync();window.addEventListener("resize",sync);
+function close(){M.classList.remove("on");if(tab)tab.classList.remove("on");window.dispatchEvent(new Event("scroll"))}
+document.addEventListener("keydown",function(e){if(e.key==="Escape")close()});M.onclick=function(e){if(e.target===M)close()};
+function bad(e){return e&&!/^http_2/.test(e)}
+function load(){B.textContent="กำลังโหลด…";post("/profile").then(function(p){bad(p.error)?(B.textContent=(/not_found|http_404|http_405/.test(p.error)?"เซิร์ฟเวอร์ยังเป็น index.js เวอร์ชันเก่า (ยังไม่มีระบบบัญชี) ต้องอัปโหลด index.js ใหม่แล้วรีสตาร์ตเซิร์ฟเวอร์":"โหลดไม่ได้ ลองใหม่อีกครั้ง")+" [รหัส: "+p.error+"]"):render(p)}).catch(function(){B.textContent="เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"})}
 function openA(){if(!CFG.api){alert("ต้องเปิดผ่านเซิร์ฟเวอร์ของคุณก่อน จึงจะใช้บัญชีได้");return}M.classList.add("on");if(tab){tab.classList.add("on");var hm=nav.querySelector('[data-a="home"]');hm&&hm.classList.remove("on")}load()}
 btn.onclick=openA;if(nav)nav.addEventListener("click",function(e){if(e.target.closest('button[data-a="acct"]'))openA()});
+var of=window.fetch;window.fetch=function(){var a=arguments;return of.apply(this,a).then(function(r){if(r.status===403&&/\/(slip|order)/.test(String(a[0]))){r.clone().json().then(function(d){if(d&&d.error==="verify_email"){alert("ต้องสมัครบัญชีและยืนยันอีเมลก่อนเติมเครดิต");btn.click()}}).catch(function(){})}return r})};
 var GID;function gis(box,p,er){if(!window.google||!google.accounts||!google.accounts.id){if(box.dataset.l)return;box.dataset.l="1";var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){box.dataset.l="";gis(box,p,er)};document.head.appendChild(sc);return}
- google.accounts.id.initialize({client_id:GID,callback:function(r){er.textContent="";post("/auth/google",{credential:r.credential}).then(function(d){if(d.error&&!/^http_2/.test(d.error)){er.textContent=ER[d.error]||"เข้าสู่ระบบด้วย Google ไม่สำเร็จ";return}
+ google.accounts.id.initialize({client_id:GID,callback:function(r){er.textContent="";post("/auth/google",{credential:r.credential}).then(function(d){if(bad(d.error)){er.textContent=ER[d.error]||"เข้าสู่ระบบด้วย Google ไม่สำเร็จ";return}
   if(d.uid&&d.uid!==uid){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีนี้ ดำเนินการต่อไหม?"))return;try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()}else load()}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}});
  google.accounts.id.renderButton(box,{type:"standard",theme:"outline",size:"large",shape:"pill",text:"signin_with",locale:"th",width:Math.min(300,Math.max(200,box.clientWidth||280))})}
-function gbox(f,p,er){var w=el("div","gw");w.style.display="none";var dv=el("div","gdv","หรือเข้าสู่ระบบด้วย"),bx=el("div","gbx");w.appendChild(dv);w.appendChild(bx);f.appendChild(w);
+function gbox(f,p,er){var w=el("div","gw"),bx=el("div","gbx");w.style.display="none";w.appendChild(el("div","gdv","หรือเข้าสู่ระบบด้วย"));w.appendChild(bx);f.appendChild(w);
  JR("/auth/config").then(function(c){if(!c||!c.google)return;GID=c.google;w.style.display="";gis(bx,p,er)}).catch(function(){})}
-function form(p){var f=el("div"),em=el("input"),pw=el("input"),er=el("div","err");em.type="email";em.placeholder="อีเมล";em.autocomplete="email";pw.type="password";pw.placeholder="รหัสผ่าน (อย่างน้อย 8 ตัว)";pw.autocomplete="current-password";
- var r=el("div","row"),a=el("button","pri","สมัครบัญชี (เก็บเครดิตนี้ไว้)"),b=el("button",null,"เข้าสู่ระบบ");
- function run(u,after){er.textContent="";var o={email:em.value.trim(),password:pw.value};(u==="/auth/login"?JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)}):post(u,o)).then(function(d){if(d.error&&!/^http_2/.test(d.error)){er.textContent=ER[d.error]||"ทำรายการไม่สำเร็จ";return}after(d)}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}
- a.onclick=function(){run("/auth/register",load)};
- b.onclick=function(){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีที่เข้าสู่ระบบ (ถ้าต้องการเก็บไว้ ให้กดสมัครแทน) ดำเนินการต่อไหม?"))return;
-  run("/auth/login",function(d){try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()})};
- r.appendChild(a);r.appendChild(b);f.appendChild(em);f.appendChild(pw);f.appendChild(r);f.appendChild(er);
- gbox(f,p,er);
- f.appendChild(el("div","note","สมัครแล้วจะเข้าสู่ระบบจากเครื่องอื่นเพื่อใช้เครดิตและดูประวัติเดิมได้ ระบบยังไม่มีการรีเซ็ตรหัสผ่านอัตโนมัติ หากลืมรหัสผ่านต้องติดต่อผู้ดูแล"));return f}
-function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","1"):localStorage.removeItem("hasacct")}catch(e){}if(tab)tab.classList.toggle("new",!p.email);var h=el("div","ach"),x=el("button",null,"ปิด");h.appendChild(el("b",null,"บัญชีของฉัน"));x.onclick=close;h.appendChild(x);B.appendChild(h);
- var s=el("div","acs");s.appendChild(el("div",null,p.email?"อีเมล: "+p.email:"ยังไม่ได้สมัครบัญชี (ใช้งานแบบไม่ระบุชื่อ)"));s.appendChild(el("div",null,"เริ่มใช้งาน: "+fmt(p.created)));if(p.email)s.appendChild(el("div",null,p.verified?"✓ ยืนยันอีเมลแล้ว":"อีเมลยังไม่ได้ยืนยัน"+(p.needVerify?" (ต้องยืนยันก่อนเติมเครดิต)":"")));
- s.appendChild(el("div",null,p.passUntil>Date.now()?"แพ็กเกจรายเดือนถึง "+fmt(p.passUntil)+" · เครดิตสำรอง "+p.credits:"เครดิตคงเหลือ: "+p.credits));B.appendChild(s);var tg=el("button",null,"🌓 สลับธีมสว่าง / มืด");tg.style.marginBottom="12px";tg.onclick=function(){var t=document.getElementById("theme");t&&t.click()};B.appendChild(tg);
- if(!p.email)B.appendChild(form(p));else{if(p.needVerify&&!p.verified){var rs=el("button","pri","ส่งอีเมลยืนยันอีกครั้ง");rs.onclick=function(){rs.disabled=true;post("/auth/resend").then(function(d){rs.textContent=d.ok?"ส่งแล้ว ตรวจกล่องจดหมาย (รวมสแปม)":"ส่งไม่สำเร็จ ลองใหม่ภายหลัง"})};B.appendChild(rs);B.appendChild(document.createTextNode(" "))}var o=el("button",null,"ออกจากระบบ");o.onclick=function(){try{localStorage.removeItem("uid");localStorage.removeItem("hasacct")}catch(e){}location.reload()};B.appendChild(o)}
- B.appendChild(el("h3",null,"ประวัติการตรวจสัญญา"));B.appendChild(el("div","note","เก็บเฉพาะสรุปผล ไม่เก็บเนื้อหาสัญญา และลบได้ทุกเมื่อ"));
- if(!p.hist.length)B.appendChild(el("div","note","ยังไม่มีประวัติ"));
- p.hist.forEach(function(v){var d=el("div","hi"),t=el("div");t.appendChild(el("b",null,v.type+" · "+v.score+"/10"));t.appendChild(el("small",null,"  "+fmt(v.ts)+(v.flags?" · จุดเสี่ยง "+v.flags+(v.high?" (สูง "+v.high+")":""):"")));d.appendChild(t);d.appendChild(el("div",null,v.summary));
-  var z=el("button",null,"ลบรายการนี้");z.onclick=function(){post("/history/delete",{hid:v.id}).then(load)};d.appendChild(z);B.appendChild(d)});
- B.appendChild(el("h3",null,"ประวัติเครดิต"));var LB={free:"เครดิตฟรี",topup:"เติมเครดิต",topup_pass:"ซื้อแพ็กเกจรายเดือน",use:"ใช้ตรวจสัญญา",pass_use:"ใช้โควตาแพ็กเกจ",refund:"คืนเครดิต",refund_pass:"คืนโควตา",adjust:"ผู้ดูแลปรับ",referral:"โบนัสแนะนำเพื่อน"};
- if(!(p.ledger||[]).length)B.appendChild(el("div","note","ยังไม่มีรายการ"));(p.ledger||[]).forEach(function(v){var d=el("div","hi");d.appendChild(el("b",null,(LB[v.kind]||v.kind)+(v.n?" "+(v.n>0?"+":"")+v.n:"")));d.appendChild(el("small",null,"  คงเหลือ "+v.bal+" · "+fmt(v.ts)));B.appendChild(d)});
- if(p.hist.length){var all=el("button",null,"ลบประวัติทั้งหมด");all.onclick=function(){if(confirm("ลบประวัติทั้งหมดใช่ไหม"))post("/history/delete",{}).then(load)};B.appendChild(all)}}
+function fld(i,t,ph,ac){var w=el("label","fld"),x=el("input");w.appendChild(ic(i));x.type=t;x.placeholder=ph;x.autocomplete=ac;w.appendChild(x);return[w,x]}
+function form(p){var f=el("div"),a=fld("mail","email","อีเมล","email"),b=fld("lock","password","รหัสผ่าน (อย่างน้อย 8 ตัว)","current-password"),em=a[1],pw=b[1],er=el("div","err");
+ var eb=el("button","eye");eb.type="button";eb.setAttribute("aria-label","แสดง/ซ่อนรหัสผ่าน");eb.appendChild(ic("eye"));eb.onclick=function(){var s=pw.type==="password";pw.type=s?"text":"password";eb.textContent="";eb.appendChild(ic(s?"eyeoff":"eye"))};b[0].appendChild(eb);
+ var r=el("div","row"),x=el("button","b1"),y=el("button","b2");x.type="button";y.type="button";
+ x.appendChild(ic("user",17));x.appendChild(document.createTextNode("สมัครบัญชี (เก็บเครดิตนี้ไว้)"));x.appendChild(ic("chev",16));y.appendChild(document.createTextNode("เข้าสู่ระบบ"));y.appendChild(ic("arrow",16));
+ function run(u,after){er.textContent="";var o={email:em.value.trim(),password:pw.value};(u==="/auth/login"?JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)}):post(u,o)).then(function(d){if(bad(d.error)){er.textContent=ER[d.error]||"ทำรายการไม่สำเร็จ";return}after(d)}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}
+ x.onclick=function(){run("/auth/register",load)};
+ y.onclick=function(){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีที่เข้าสู่ระบบ (ถ้าต้องการเก็บไว้ ให้กดสมัครแทน) ดำเนินการต่อไหม?"))return;run("/auth/login",function(d){try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()})};
+ f.appendChild(a[0]);f.appendChild(b[0]);r.appendChild(x);r.appendChild(y);f.appendChild(r);f.appendChild(er);gbox(f,p,er);
+ var n=el("div","nt");n.appendChild(ic("info",16));n.appendChild(el("span",null,"สมัครแล้วจะเข้าสู่ระบบจากเครื่องอื่นเพื่อใช้เครดิตและดูประวัติเดิมได้ ระบบยังไม่มีการรีเซ็ตรหัสผ่านอัตโนมัติ หากลืมรหัสผ่านต้องติดต่อผู้ดูแล"));f.appendChild(n);return f}
+function card(i,t,s,d){var c=el("div","cx"),h=el("div","cxh"),ci=el("span","ci"),m=el("div");c.style.animationDelay=d+"s";ci.appendChild(ic(i,19));m.appendChild(el("b",null,t));m.appendChild(el("small",null,s));h.appendChild(ci);h.appendChild(m);c.appendChild(h);return c}
+function empty(c,t){var e=el("div","em");e.appendChild(ic("doc",38));e.appendChild(el("span",null,t));c.appendChild(e)}
+function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","1"):localStorage.removeItem("hasacct")}catch(e){}if(tab)tab.classList.toggle("new",!p.email);
+ var h=el("div","ach"),lg=el("span","lg"),tt=el("div","tt"),cl=el("button","cl");lg.appendChild(ic("scale",22));tt.appendChild(el("b",null,"บัญชีของฉัน"));tt.appendChild(el("small",null,p.email||"ใช้งานแบบไม่ระบุชื่อ"));cl.type="button";cl.setAttribute("aria-label","ปิด");cl.appendChild(ic("x",16));cl.onclick=close;h.appendChild(lg);h.appendChild(tt);h.appendChild(cl);B.appendChild(h);
+ var pass=p.passUntil>Date.now(),s=el("div","acs"),cr=el("div","crd"),cv=el("div"),m=el("div","meta");cr.appendChild(ic("coins",24));cv.appendChild(el("small",null,pass?"แพ็กเกจรายเดือนถึง "+fmt(pass&&p.passUntil):"เครดิตคงเหลือ"));cv.appendChild(el("b",null,String(p.credits)+(pass?" (สำรอง)":"")));cr.appendChild(cv);s.appendChild(cr);
+ m.appendChild(el("span",null,"เริ่มใช้งาน "+fmt(p.created)));if(p.email)m.appendChild(el("span","chip "+(p.verified?"ok":"wn"),p.verified?"✓ ยืนยันอีเมลแล้ว":"ยังไม่ยืนยันอีเมล"+(p.needVerify?" (ต้องยืนยันก่อนเติมเครดิต)":"")));s.appendChild(m);B.appendChild(s);
+ var tg=el("button","thm");tg.type="button";tg.appendChild(ic("sun",17));tg.appendChild(el("span",null,"สลับธีมสว่าง / มืด"));tg.appendChild(ic("moon",17));tg.style.marginBottom="12px";tg.onclick=function(){var t=document.getElementById("theme");t&&t.click()};B.appendChild(tg);
+ if(!p.email)B.appendChild(form(p));else{var row=el("div","row");if(p.needVerify&&!p.verified){var rs=el("button","b1","ส่งอีเมลยืนยันอีกครั้ง");rs.type="button";rs.onclick=function(){rs.disabled=true;post("/auth/resend").then(function(d){rs.textContent=d.ok?"ส่งแล้ว ตรวจกล่องจดหมาย (รวมสแปม)":"ส่งไม่สำเร็จ ลองใหม่ภายหลัง"})};row.appendChild(rs)}
+  var o=el("button","b2","ออกจากระบบ");o.type="button";o.onclick=function(){try{localStorage.removeItem("uid");localStorage.removeItem("hasacct")}catch(e){}location.reload()};row.appendChild(o);B.appendChild(row)}
+ var hc=card("doc","ประวัติการตรวจสัญญา","เก็บเฉพาะสรุปผล ไม่เก็บเนื้อหาสัญญา และลบได้ทุกเมื่อ",.15);B.appendChild(hc);
+ if(!p.hist.length)empty(hc,"ยังไม่มีประวัติ");
+ p.hist.forEach(function(v,i){var d=el("div","hrw"),t=el("div");d.style.animationDelay=(.2+i*.04)+"s";t.appendChild(el("b",null,v.type+" · "+v.score+"/10"));t.appendChild(el("small",null,"  "+fmt(v.ts)+(v.flags?" · จุดเสี่ยง "+v.flags+(v.high?" (สูง "+v.high+")":""):"")));d.appendChild(t);d.appendChild(el("div",null,v.summary));
+  var z=el("button","lk","ลบรายการนี้");z.type="button";z.onclick=function(){post("/history/delete",{hid:v.id}).then(load)};d.appendChild(z);hc.appendChild(d)});
+ if(p.hist.length){var all=el("button","lk","ลบประวัติทั้งหมด");all.type="button";all.style.margin="6px 14px 12px";all.onclick=function(){if(confirm("ลบประวัติทั้งหมดใช่ไหม"))post("/history/delete",{}).then(load)};hc.appendChild(all)}
+ var lc=card("coins","ประวัติเครดิต","ทุกการเติม ใช้ และคืน มีบันทึกย้อนตรวจได้",.25);B.appendChild(lc);
+ if(!(p.ledger||[]).length)empty(lc,"ยังไม่มีรายการ");
+ (p.ledger||[]).forEach(function(v,i){var d=el("div","lr"),c2=el("span","ci2"),md=el("div","md"),am=el("div","am"+(v.n>0?" p":""));d.style.animationDelay=(.3+i*.04)+"s";c2.appendChild(ic(KI[v.kind]||"coins",15));md.appendChild(el("div",null,LB[v.kind]||v.kind));md.appendChild(el("small",null,fmt(v.ts)+" · คงเหลือ "+v.bal));am.textContent=v.n?(v.n>0?"+":"")+v.n:"";d.appendChild(c2);d.appendChild(md);d.appendChild(am);lc.appendChild(d)})}
 })();
 </script>
 

@@ -2504,6 +2504,7 @@ animation:cgc-spin 16s linear infinite}
 #acb input{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 #acb button{font:inherit;padding:9px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}#acb button.pri{background:var(--stamp);border-color:var(--stamp);color:#fff}
 #acb .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}#acb .err{color:var(--stamp);min-height:1.3em;font-size:14px}#acb .note{color:var(--mute);font-size:13px;margin:4px 0 12px}
+#acb .gdv{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;margin:12px 0 8px}#acb .gdv::before,#acb .gdv::after{content:"";flex:1;height:1px;background:var(--line)}#acb .gbx{display:flex;justify-content:center;min-height:44px;color-scheme:light}#acb .gw{animation:acin .4s .15s backwards}
 #acb .hi{border-top:1px solid var(--line);padding:10px 0}#acb .hi small{color:var(--mute)}#acb h3{font-size:15px;margin:14px 0 4px}
 </style>
 <div id="acm" role="dialog" aria-modal="true" aria-label="บัญชีของฉัน"><div id="acb"></div></div>
@@ -2512,7 +2513,7 @@ animation:cgc-spin 16s linear infinite}
 var M=document.getElementById("acm"),B=document.getElementById("acb"),btn=document.getElementById("acct"),nav=document.getElementById("bnav"),tab=nav&&nav.querySelector('[data-a="acct"]');if(!btn)return;
 function has(){try{return localStorage.getItem("hasacct")==="1"}catch(e){return false}}if(tab)tab.classList.toggle("new",!has());
 function sync(){btn.style.display=nav&&getComputedStyle(nav).display!=="none"?"none":""}sync();window.addEventListener("resize",sync); // แท็บล่างแสดงอยู่ (มือถือ) = ซ่อนปุ่มบัญชีในแถบเครดิต ไม่ให้ซ้ำ
-var ER={bad_login:"อีเมลหรือรหัสผ่านไม่ถูกต้อง",bad_input:"อีเมลไม่ถูกต้อง หรือรหัสผ่านสั้นกว่า 8 ตัวอักษร",email_taken:"อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน",has_account:"เครื่องนี้มีบัญชีอยู่แล้ว",rate_limited:"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่"};
+var ER={bad_login:"อีเมลหรือรหัสผ่านไม่ถูกต้อง",bad_input:"อีเมลไม่ถูกต้อง หรือรหัสผ่านสั้นกว่า 8 ตัวอักษร",email_taken:"อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน",has_account:"เครื่องนี้มีบัญชีอยู่แล้ว ออกจากระบบก่อนจึงจะใช้บัญชี Google อื่นได้",bad_google:"ยืนยันกับ Google ไม่สำเร็จ ลองใหม่อีกครั้ง",rate_limited:"ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่"};
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function fmt(t){return t?new Date(t).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}):"-"}
 function post(u,o){return JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({uid:uid},o||{}))})}
@@ -2521,6 +2522,12 @@ function load(){B.textContent="กำลังโหลด…";post("/profile").
 var of=window.fetch;window.fetch=function(){var a=arguments;return of.apply(this,a).then(function(r){if(r.status===403&&/\/(slip|order)/.test(String(a[0]))){r.clone().json().then(function(d){if(d&&d.error==="verify_email"){alert("ต้องสมัครบัญชีและยืนยันอีเมลก่อนเติมเครดิต");btn.click()}}).catch(function(){})}return r})};
 function openA(){if(!CFG.api){alert("ต้องเปิดผ่านเซิร์ฟเวอร์ของคุณก่อน จึงจะใช้บัญชีได้");return}M.classList.add("on");if(tab){tab.classList.add("on");var hm=nav.querySelector('[data-a="home"]');hm&&hm.classList.remove("on")}load()}
 btn.onclick=openA;if(nav)nav.addEventListener("click",function(e){if(e.target.closest('button[data-a="acct"]'))openA()});
+var GID;function gis(box,p,er){if(!window.google||!google.accounts||!google.accounts.id){if(box.dataset.l)return;box.dataset.l="1";var sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=function(){box.dataset.l="";gis(box,p,er)};document.head.appendChild(sc);return}
+ google.accounts.id.initialize({client_id:GID,callback:function(r){er.textContent="";post("/auth/google",{credential:r.credential}).then(function(d){if(d.error&&!/^http_2/.test(d.error)){er.textContent=ER[d.error]||"เข้าสู่ระบบด้วย Google ไม่สำเร็จ";return}
+  if(d.uid&&d.uid!==uid){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีนี้ ดำเนินการต่อไหม?"))return;try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()}else load()}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}});
+ google.accounts.id.renderButton(box,{type:"standard",theme:"outline",size:"large",shape:"pill",text:"signin_with",locale:"th",width:Math.min(300,Math.max(200,box.clientWidth||280))})}
+function gbox(f,p,er){var w=el("div","gw");w.style.display="none";var dv=el("div","gdv","หรือเข้าสู่ระบบด้วย"),bx=el("div","gbx");w.appendChild(dv);w.appendChild(bx);f.appendChild(w);
+ JR("/auth/config").then(function(c){if(!c||!c.google)return;GID=c.google;w.style.display="";gis(bx,p,er)}).catch(function(){})}
 function form(p){var f=el("div"),em=el("input"),pw=el("input"),er=el("div","err");em.type="email";em.placeholder="อีเมล";em.autocomplete="email";pw.type="password";pw.placeholder="รหัสผ่าน (อย่างน้อย 8 ตัว)";pw.autocomplete="current-password";
  var r=el("div","row"),a=el("button","pri","สมัครบัญชี (เก็บเครดิตนี้ไว้)"),b=el("button",null,"เข้าสู่ระบบ");
  function run(u,after){er.textContent="";var o={email:em.value.trim(),password:pw.value};(u==="/auth/login"?JR(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)}):post(u,o)).then(function(d){if(d.error&&!/^http_2/.test(d.error)){er.textContent=ER[d.error]||"ทำรายการไม่สำเร็จ";return}after(d)}).catch(function(){er.textContent="เชื่อมต่อไม่ได้"})}
@@ -2528,6 +2535,7 @@ function form(p){var f=el("div"),em=el("input"),pw=el("input"),er=el("div","err"
  b.onclick=function(){if(p.credits>0&&!confirm("เครดิต "+p.credits+" ที่ใช้อยู่แบบไม่ระบุชื่อบนเครื่องนี้จะไม่ถูกรวมเข้ากับบัญชีที่เข้าสู่ระบบ (ถ้าต้องการเก็บไว้ ให้กดสมัครแทน) ดำเนินการต่อไหม?"))return;
   run("/auth/login",function(d){try{localStorage.setItem("uid",d.uid)}catch(e){}location.reload()})};
  r.appendChild(a);r.appendChild(b);f.appendChild(em);f.appendChild(pw);f.appendChild(r);f.appendChild(er);
+ gbox(f,p,er);
  f.appendChild(el("div","note","สมัครแล้วจะเข้าสู่ระบบจากเครื่องอื่นเพื่อใช้เครดิตและดูประวัติเดิมได้ ระบบยังไม่มีการรีเซ็ตรหัสผ่านอัตโนมัติ หากลืมรหัสผ่านต้องติดต่อผู้ดูแล"));return f}
 function render(p){B.textContent="";try{p.email?localStorage.setItem("hasacct","1"):localStorage.removeItem("hasacct")}catch(e){}if(tab)tab.classList.toggle("new",!p.email);var h=el("div","ach"),x=el("button",null,"ปิด");h.appendChild(el("b",null,"บัญชีของฉัน"));x.onclick=close;h.appendChild(x);B.appendChild(h);
  var s=el("div","acs");s.appendChild(el("div",null,p.email?"อีเมล: "+p.email:"ยังไม่ได้สมัครบัญชี (ใช้งานแบบไม่ระบุชื่อ)"));s.appendChild(el("div",null,"เริ่มใช้งาน: "+fmt(p.created)));if(p.email)s.appendChild(el("div",null,p.verified?"✓ ยืนยันอีเมลแล้ว":"อีเมลยังไม่ได้ยืนยัน"+(p.needVerify?" (ต้องยืนยันก่อนเติมเครดิต)":"")));

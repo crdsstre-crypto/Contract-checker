@@ -1210,6 +1210,149 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 #gen .row{flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){#gen .gx,#gen #g_x svg{transition:none}}
 </style>
+<style>
+/* ===== หน้าต่าง "ประวัติการตรวจ" (ธีมเดียวกับสร้างสัญญา) ===== */
+/* ===== หน้าต่าง "สร้างสัญญาฉบับแฟร์": ธีมอวกาศ แอนิเมชันเบาๆ ไอคอนไม่ซ้ำ ===== */
+#hist{max-height:90vh;max-height:90dvh;border-color:color-mix(in srgb,var(--gold) 38%,var(--line));box-shadow:0 24px 60px -24px color-mix(in srgb,var(--gold) 50%,transparent)}
+#hist[open]{animation:smin .4s cubic-bezier(.2,.8,.2,1)}
+#hist::backdrop{background:rgba(2,6,18,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#hist::before{content:"";position:absolute;left:0;right:0;top:0;height:150px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 12% 22%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 82% 16%,#fff,transparent),radial-gradient(1.6px 1.6px at 92% 58%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 30% 70%,#fff,transparent),radial-gradient(1.2px 1.2px at 66% 40%,var(--gold),transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#hist>*{position:relative}
+#hist .gh{text-align:center;padding:4px 0 6px}
+#hist .gh h2{margin:6px 0 2px;font-size:22px}
+#hist .gh p{margin:0 0 6px;font-size:13px;color:var(--mute)}
+#hist .gorb{position:relative;display:inline-grid;place-items:center;width:52px;height:52px;color:var(--gold)}
+#hist .gorb svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--gold) 55%,transparent))}
+#hist .gorb::before{content:"";position:absolute;inset:3px -10px;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-radius:50%;transform:rotate(-18deg) scaleY(.42);animation:gorb 9s linear infinite}
+#hist .gorb::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:gsat 9s linear infinite}
+#hist .gl{display:flex;align-items:center;gap:8px;animation:slin .4s var(--d,0s) backwards}
+#hist .gi{width:18px;height:18px;flex:none;padding:3px;box-sizing:content-box;border-radius:8px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;background:color-mix(in srgb,var(--gold) 12%,transparent)}
+#hist input,#hist select{transition:border-color .2s,box-shadow .25s}
+#hist input:focus,#hist select:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 20%,transparent),0 0 18px -4px var(--gold)}
+#hist .go{position:relative;overflow:hidden;transition:transform .15s,box-shadow .25s}
+#hist .go::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);animation:acsh 4.5s ease-in-out infinite}
+#hist .go:active{transform:scale(.97)}
+#hist .acts2 button,#hist .acts2 a{transition:transform .15s,border-color .2s}
+#hist .acts2 button:active,#hist .acts2 a:active{transform:scale(.96)}
+#hist .draft:not([hidden]){animation:slin .45s backwards}
+:root[data-theme="dark"] #hist{background:radial-gradient(120% 60% at 85% -8%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 50% at -10% 35%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 300px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hist{background:radial-gradient(120% 60% at 85% -8%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 50% at -10% 35%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 300px)}}
+@keyframes gorb{to{transform:rotate(342deg) scaleY(.42)}}
+@keyframes gsat{0%{transform:rotate(0) translateX(36px) scaleY(.42)}100%{transform:rotate(360deg) translateX(36px) scaleY(.42)}}
+@media (prefers-reduced-motion:reduce){#hist[open],#hist::before,#hist .gorb::before,#hist .gorb::after,#hist .gl,#hist .go::after,#hist .draft{animation:none}}
+/* ปุ่มปิดของหน้าต่างสร้างสัญญา: ให้เห็นชัด ทั้งมุมขวาบน (ลอยตามตอนเลื่อน) และปุ่มล่าง */
+#hist .gxw{position:sticky;top:0;z-index:5;height:0;text-align:right;overflow:visible}
+#hist .gx{position:relative;top:-4px;right:-4px;width:40px;height:40px;padding:0;display:inline-grid;place-items:center;border-radius:50%;cursor:pointer;color:var(--gold);background:color-mix(in srgb,#0c1530 82%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1.5px solid color-mix(in srgb,var(--gold) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 12%,transparent),0 6px 18px -6px rgba(0,0,0,.6);transition:transform .25s,background .2s,box-shadow .25s}
+#hist .gx svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+#hist .gx:hover,#hist .gx:focus-visible{transform:rotate(90deg);background:color-mix(in srgb,var(--gold) 22%,#0c1530);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent),0 0 18px -2px var(--gold)}
+#hist .gx:active{transform:rotate(90deg) scale(.92)}
+#hist #g_x{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px 14px;box-sizing:border-box;border-radius:14px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;color:var(--ink);background:color-mix(in srgb,var(--gold) 8%,transparent);border:1.5px solid color-mix(in srgb,var(--gold) 55%,var(--line));transition:transform .15s,background .2s,box-shadow .25s}
+#hist #g_x svg{width:16px;height:16px;fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;transition:transform .3s}
+#hist #g_x::before{content:none!important}
+#hist #g_x:hover{background:color-mix(in srgb,var(--gold) 16%,transparent);box-shadow:0 0 18px -6px var(--gold)}
+#hist #g_x:hover svg{transform:rotate(90deg)}
+#hist #g_x:active{transform:scale(.97)}
+#hist .row{flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){#hist .gx,#hist #g_x svg{transition:none}}
+
+#hist #hq{margin:4px 0 12px;padding-left:42px;border-radius:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d6b56d' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px 50%/18px,color-mix(in srgb,var(--bg) 70%,transparent)}
+#hist #hist_c{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--mute);font-size:14px;padding:8px 4px;transition:color .2s}
+#hist #hist_c svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#hist #hist_c:hover{color:var(--stamp)}
+#hist .row{margin-top:8px}
+#hist .row .go{width:100%;margin:0;position:relative;overflow:hidden}
+#hist .row .go::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);animation:acsh 4.5s ease-in-out infinite}
+#hist .hr{display:flex;align-items:flex-start;gap:12px;padding:12px;margin:0 0 10px;border-radius:14px;background:var(--card);border:1px solid var(--line);animation:slin .4s backwards;transition:border-color .2s,box-shadow .25s}
+#hist .hr:hover{border-color:color-mix(in srgb,var(--gold) 50%,var(--line));box-shadow:0 8px 22px -14px var(--gold)}
+#hist .hr-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px solid color-mix(in srgb,var(--gold) 28%,transparent)}
+#hist .hr-ic .si{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#hist .hr-b{flex:1;min-width:0}
+#hist .hr-t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#hist .hr-chip{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid currentColor}
+#hist .hr-chip.hi{color:#ff8a7a;background:rgba(255,120,100,.10)}#hist .hr-chip.md{color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}#hist .hr-chip.lo{color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+#hist .hr small{display:block;margin:3px 0 4px;color:var(--mute);font-size:12.5px}
+#hist .hr p{margin:0;font-size:14px;line-height:1.5}
+#hist .hr-del{flex:none;margin:0;font-size:13px;color:var(--mute);text-decoration:none;padding:4px 10px;border-radius:99px;border:1px solid var(--line);transition:color .2s,border-color .2s}
+#hist .hr-del:hover{color:var(--stamp);border-color:var(--stamp)}
+#hist .hr-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 14px;color:var(--mute)}
+#hist .hr-art{position:relative;display:grid;place-items:center;width:84px;height:84px;color:var(--gold);animation:hrfl 5s ease-in-out infinite}
+#hist .hr-art svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--gold) 50%,transparent))}
+#hist .hr-art::before{content:"";position:absolute;inset:14px -14px;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:50%;transform:rotate(-18deg) scaleY(.4)}
+#hist .hr-et{display:flex;align-items:center;gap:12px;width:100%;justify-content:center;font-size:15px}
+#hist .hr-et::before,#hist .hr-et::after{content:"";flex:0 1 70px;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold) 55%,transparent))}#hist .hr-et::after{transform:scaleX(-1)}
+@keyframes hrfl{50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){#hist .hr,#hist .hr-art,#hist .row .go::after{animation:none}}
+</style>
+<style>
+/* ===== หน้าต่าง "เติมเครดิต": ธีมอวกาศ (ไม่แตะระบบชำระเงิน) ===== */
+#pay{border-color:color-mix(in srgb,var(--gold) 38%,var(--line));box-shadow:0 24px 60px -24px color-mix(in srgb,var(--gold) 50%,transparent)}
+#pay[open]{animation:smin .4s cubic-bezier(.2,.8,.2,1)}
+#pay::backdrop{background:rgba(2,6,18,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#pay .pw{position:relative}
+#pay .pw>:not(.ph){position:relative}
+#pay .pw::before{content:"";position:absolute;left:0;right:0;top:0;height:170px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 12% 24%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 80% 16%,#fff,transparent),radial-gradient(1.6px 1.6px at 92% 58%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 32% 72%,#fff,transparent),radial-gradient(1.2px 1.2px at 62% 44%,var(--gold),transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#pay .pw::after{content:"";position:absolute;top:70px;left:-10%;width:90px;height:1.5px;pointer-events:none;border-radius:2px;background:linear-gradient(90deg,transparent,#fff);transform:rotate(18deg) translateX(-140px);opacity:0;animation:smshoot 9s 2.5s linear infinite}
+:root[data-theme="dark"] #pay .pw{background:radial-gradient(120% 50% at 85% -6%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 40% at -10% 30%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 340px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #pay .pw{background:radial-gradient(120% 50% at 85% -6%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 40% at -10% 30%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 340px)}}
+#pay .ph{display:flex;align-items:center;gap:12px;justify-content:flex-start;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#pay .payorb{position:relative;flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 38%,transparent);box-shadow:0 0 20px -6px var(--gold)}
+#pay .payorb svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#pay .payorb::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:payorb 7s linear infinite}
+@keyframes payorb{0%{transform:rotate(0) translateX(27px)}100%{transform:rotate(360deg) translateX(27px)}}
+#pay .ptt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#pay .ptt b{font-size:20px;line-height:1.2}
+#pay .ptt small{font-size:12.5px;font-weight:400;color:var(--mute);font-family:inherit}
+#pay #px{flex:none;width:40px;height:40px;border-radius:50%;color:var(--gold);background:color-mix(in srgb,#0c1530 82%,transparent);border:1.5px solid color-mix(in srgb,var(--gold) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 12%,transparent);transition:transform .25s,box-shadow .25s,background .2s}
+#pay #px::before{font-size:16px;font-weight:700}
+#pay #px:hover{transform:rotate(90deg);background:color-mix(in srgb,var(--gold) 22%,#0c1530);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent),0 0 18px -2px var(--gold)}
+#pay .packs button.pk .pk-ic{position:absolute;top:34px;right:12px;width:20px;height:20px;padding:7px;box-sizing:content-box;border-radius:12px;fill:none;stroke:hsl(var(--h) 85% 70%);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;background:hsl(var(--h) 80% 60%/.14);box-shadow:inset 0 0 0 1px hsl(var(--h) 80% 65%/.3);transition:transform .3s,box-shadow .3s}
+#pay .packs button.pk[aria-pressed="true"] .pk-ic{box-shadow:inset 0 0 0 1px hsl(var(--h) 85% 70%/.65),0 0 16px -2px hsl(var(--h) 90% 60%/.6);animation:pkfl 3.6s ease-in-out infinite}
+@media(hover:hover){#pay .packs button.pk:hover .pk-ic{transform:rotate(-8deg) scale(1.08)}}
+#pay .packs button.pk.pk[aria-pressed="true"]{animation:pk .3s cubic-bezier(.3,1.5,.5,1),smglow 3.2s .3s ease-in-out infinite}
+@keyframes pkfl{50%{transform:translateY(-3px) rotate(-5deg)}}
+#pay .types button{display:flex;align-items:center;justify-content:center;gap:8px}
+#pay .types .mi{width:20px;height:20px;flex:none;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#pay .types button[aria-pressed="true"]{box-shadow:0 0 0 1px var(--gold),0 8px 24px -10px var(--gold)}
+#pay .sec .sn{box-shadow:0 0 12px -2px var(--gold)}
+#pay #pbody .go{position:relative;overflow:hidden}
+#pay #pbody .go::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);animation:acsh 4.5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#pay[open],#pay .pw::before,#pay .pw::after,#pay .payorb::after,#pay .packs button.pk[aria-pressed="true"],#pay .packs button.pk[aria-pressed="true"] .pk-ic,#pay #pbody .go::after{animation:none}}
+</style>
+<style>
+/* ===== หน้าต่าง "วิธีใช้งาน": ธีมอวกาศ ===== */
+#how{border-color:color-mix(in srgb,var(--gold) 38%,var(--line));box-shadow:0 24px 60px -24px color-mix(in srgb,var(--gold) 50%,transparent)}
+#how[open]{animation:smin .4s cubic-bezier(.2,.8,.2,1)}
+#how::backdrop{background:rgba(2,6,18,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#how .pw{position:relative}
+#how .pw>:not(.ph){position:relative}
+#how .pw::before{content:"";position:absolute;left:0;right:0;top:0;height:170px;pointer-events:none;background:radial-gradient(1.6px 1.6px at 12% 24%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 80% 16%,#fff,transparent),radial-gradient(1.6px 1.6px at 92% 58%,var(--gold),transparent),radial-gradient(1.2px 1.2px at 32% 72%,#fff,transparent),radial-gradient(120% 90% at 50% -25%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 70%);animation:actw 5s ease-in-out infinite}
+#how .pw::after{content:"";position:absolute;top:60px;left:-10%;width:90px;height:1.5px;pointer-events:none;border-radius:2px;background:linear-gradient(90deg,transparent,#fff);transform:rotate(18deg) translateX(-140px);opacity:0;animation:smshoot 9s 2s linear infinite}
+:root[data-theme="dark"] #how .pw{background:radial-gradient(120% 50% at 85% -6%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 40% at -10% 30%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 340px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #how .pw{background:radial-gradient(120% 50% at 85% -6%,rgba(80,110,255,.20),transparent 60%),radial-gradient(90% 40% at -10% 30%,rgba(160,90,255,.10),transparent 60%),linear-gradient(180deg,#0c1530 0,var(--card) 340px)}}
+#how .ph{display:flex;align-items:center;gap:12px;justify-content:flex-start;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#how .ph b{flex:1}
+#how .howorb{position:relative;flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 38%,transparent);box-shadow:0 0 20px -6px var(--gold)}
+#how .howorb svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#how .howorb::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:payorb 7s linear infinite}
+#how #hx{flex:none;width:40px;height:40px;border-radius:50%;color:var(--gold);background:color-mix(in srgb,#0c1530 82%,transparent);border:1.5px solid color-mix(in srgb,var(--gold) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 12%,transparent);transition:transform .25s,box-shadow .25s,background .2s}
+#how #hx::before{font-size:16px;font-weight:700}
+#how #hx:hover{transform:rotate(90deg);background:color-mix(in srgb,var(--gold) 22%,#0c1530);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent),0 0 18px -2px var(--gold)}
+#how .hs li{grid-template-columns:auto auto 1fr;align-items:start;position:relative;overflow:hidden;animation:slin .45s calc(.08s + var(--i,0)*.09s) backwards;transition:border-color .2s,transform .2s,box-shadow .25s}
+#how .hs li::before{grid-row:1/3;animation:howpulse 3.6s calc(var(--i,0)*.6s) ease-in-out infinite}
+#how .hs li .hico{grid-row:1/3;grid-column:2;width:22px;height:22px;padding:8px;box-sizing:content-box;border-radius:14px;fill:none;stroke:hsl(var(--h) 85% 72%);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;background:hsl(var(--h) 80% 60%/.14);box-shadow:inset 0 0 0 1px hsl(var(--h) 80% 65%/.32);transition:transform .3s,box-shadow .3s}
+#how .hs li>b{grid-column:3;grid-row:1}
+#how .hs li:active{transform:scale(.985)}
+@media(hover:hover){#how .hs li:hover{border-color:color-mix(in srgb,var(--gold) 50%,var(--line));transform:translateY(-2px);box-shadow:0 10px 24px -14px var(--gold)}#how .hs li:hover .hico{transform:rotate(-8deg) scale(1.08);box-shadow:inset 0 0 0 1px hsl(var(--h) 85% 70%/.6),0 0 16px -2px hsl(var(--h) 90% 60%/.55)}}
+#how .hint{display:flex;gap:8px;align-items:flex-start}
+#how .hint::before{content:"i";flex:none;display:grid;place-items:center;width:18px;height:18px;margin-top:2px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font:700 11px/1 serif;font-style:italic}
+#how #hok{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s}
+#how #hok .harr{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+#how #hok:hover .harr{transform:translateX(4px)}
+#how #hok:active{transform:scale(.97)}
+#how #hok::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);animation:acsh 4.5s ease-in-out infinite}
+@keyframes howpulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 14px -2px color-mix(in srgb,var(--gold) 55%,transparent)}}
+@media (prefers-reduced-motion:reduce){#how[open],#how .pw::before,#how .pw::after,#how .howorb::after,#how .hs li,#how .hs li::before,#how #hok::after{animation:none}}
+</style>
 </head>
 <body>
 <div class="bg" aria-hidden="true">
@@ -1286,12 +1429,12 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 </main>
 <div id="sbar" hidden><div><b id="sbn">สัญญา</b><span>✓ พร้อมตรวจ</span></div><button type="button" id="sgo">ตรวจสัญญา</button></div>
 <dialog id="how"><div class="pw">
-<div class="ph"><b>วิธีใช้งาน</b><button class="link" id="hx" type="button">ปิด</button></div>
-<ol class="hs"><li><b>เลือกประเภทสัญญา</b><br>จ้างฟรีแลนซ์ กู้ยืมเงิน เช่า หรืออื่น ๆ เพื่อให้ตรวจตรงจุด</li>
-<li><b>วางข้อความหรือถ่ายรูป</b><br>วางข้อความ ถ่ายรูป อัปโหลด PDF หรือกด “ลองดูตัวอย่างสัญญา” เพื่อลองก่อน</li>
-<li><b>กดตรวจสัญญา</b><br>ได้คะแนนความปลอดภัย จุดน่ากลัวที่ไฮไลต์ในสัญญา วิธีแก้ประโยค และวิธีเจรจา</li></ol>
+<div class="ph"><span class="howorb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5.5C5.5 4.5 9 4.5 12 6c3-1.5 6.5-1.5 9-.5V19c-2.5-1-6-1-9 .5-3-1.5-6.5-1.5-9-.5z"/><path d="M12 6v13.5M6 9h3M6 12h3M15 9h3M15 12h3"/></svg></span><b>วิธีใช้งาน</b><button class="link" id="hx" type="button" aria-label="ปิด">ปิด</button></div>
+<ol class="hs"><li style="--h:262;--i:0"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h5"/><path d="M14 3v5h5v2"/><path d="M8.5 11h5M8.5 15h3"/><path d="M15 14l5 2.5-2.3.9-.9 2.3z"/></svg><b>เลือกประเภทสัญญา</b><br>จ้างฟรีแลนซ์ กู้ยืมเงิน เช่า หรืออื่น ๆ เพื่อให้ตรวจตรงจุด</li>
+<li style="--h:200;--i:1"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M3.5 16.5l5-4.5 4 3.5 3-2.5 5 4"/></svg><b>วางข้อความหรือถ่ายรูป</b><br>วางข้อความ ถ่ายรูป อัปโหลด PDF หรือกด “ลองดูตัวอย่างสัญญา” เพื่อลองก่อน</li>
+<li style="--h:152;--i:2"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><b>กดตรวจสัญญา</b><br>ได้คะแนนความปลอดภัย จุดน่ากลัวที่ไฮไลต์ในสัญญา วิธีแก้ประโยค และวิธีเจรจา</li></ol>
 <p class="hint">ตรวจ 1 ครั้งใช้ 1 เครดิต ผลเป็นข้อมูลประกอบเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมาย</p>
-<button class="go" id="hok" type="button" style="width:100%;margin-top:10px">เข้าใจแล้ว เริ่มใช้งาน</button>
+<button class="go" id="hok" type="button" style="width:100%;margin-top:10px">เข้าใจแล้ว เริ่มใช้งาน <svg class="harr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
 </div></dialog>
 <dialog id="smp"><div class="pw">
 <div class="ph"><span class="phi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h6"/><path d="M14 3v5h5"/><path d="M8 12h4M8 16h3"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></svg></span><b>ตัวอย่างสัญญา</b><button class="link" id="sx" type="button" aria-label="ปิด"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -1299,7 +1442,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 <div class="types" id="scat"></div><div id="slist"></div>
 </div></dialog>
 <dialog id="pay"><div class="pw">
-<div class="ph"><b>เติมเครดิต</b><button class="link" id="px" type="button">ปิด</button></div>
+<div class="ph"><span class="payorb" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3 3 7 3s7-1.3 7-3v-6"/></svg></span><span class="ptt"><b>เติมเครดิต</b><small>เลือกแพ็กเกจที่ต้องการเติม เพื่อใช้งานบริการของเรา</small></span><button class="link" id="px" type="button" aria-label="ปิด">ปิด</button></div>
 <p class="hint" id="pbal"></p><p class="err" id="pmsg"></p>
 <button class="link" id="rcpb" type="button" style="display:none">🧾 ใบเสร็จของฉัน</button>
 <label class="tosl"><input type="checkbox" id="pay_cb"> ฉันยอมรับ<a href="#" id="pay_tos">ข้อกำหนดการใช้งาน</a> รวมถึงข้อจำกัดความรับผิด (สูงสุดไม่เกินจำนวนเงินที่ชำระในช่วง 30 วันก่อนเกิดเหตุ) และเครดิตไม่สามารถขอคืนเงินได้ เว้นแต่ระบบขัดข้อง</label>
@@ -1313,7 +1456,7 @@ background:linear-gradient(180deg,transparent 0 45%,color-mix(in srgb,var(--gold
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <dialog id="dsc" class="dlg"><h2 style="margin-top:0">⚖️ ข้อกำหนดการใช้งาน โปรดอ่านก่อน</h2><ul><li><b>เว็บนี้เป็นเครื่องมือช่วยอำนวยความสะดวกด้วย AI เท่านั้น</b> ไม่ใช่สำนักงานกฎหมาย และ AI ไม่ใช่ทนายความผู้มีใบอนุญาต</li><li>ผลวิเคราะห์ <b>ห้ามนำไปใช้เป็นหลักฐานอ้างอิงทางกฎหมายในชั้นศาล</b> หรือต่อหน่วยงานรัฐ</li><li>AI อาจผิดพลาดหรือแต่งข้อมูลได้ คุณต้องตรวจสอบเองและปรึกษาทนายความสำหรับเรื่องสำคัญ</li><li>ข้อความสัญญาที่ส่งตรวจจะถูกส่งให้ผู้ให้บริการ AI ภายนอก (Anthropic) เพื่อวิเคราะห์ เว็บนี้ไม่บันทึกเนื้อหาสัญญาถาวร และคุณลบข้อมูลของคุณได้ที่เมนู “ข้อมูลของฉัน”</li><li>ผู้ให้บริการจำกัดความรับผิดเท่าที่กฎหมายอนุญาต และไม่ตัดสิทธิ์ของคุณตามกฎหมายที่ไม่อาจสละได้</li></ul><button type="button" class="link" id="tos_open">อ่านข้อกำหนดและนโยบายความเป็นส่วนตัวฉบับเต็ม</button><label style="display:block;margin:12px 0"><input type="checkbox" id="dsc_cb"> ฉันอ่านและยอมรับข้อกำหนดการใช้งานและนโยบายความเป็นส่วนตัว (เวอร์ชัน 1.2)</label><p class="hint">เมื่อกดยอมรับ ระบบจะบันทึกเวอร์ชันของข้อกำหนดและเวลาที่คุณยอมรับ</p><button type="button" class="go" id="dsc_ok" disabled>ยอมรับและใช้งานต่อ</button></dialog>
 <dialog id="tos" class="dlg"><div id="tos_b"></div><button type="button" class="go" id="tos_x">ปิด</button></dialog>
-<dialog id="hist" class="dlg"><h2 style="margin-top:0">🕘 ประวัติการตรวจ</h2><p class="hint">เก็บเฉพาะสรุปผลความเสี่ยงในเครื่องของคุณ ไม่เก็บเนื้อหาสัญญา</p><div id="hist_l"></div><div class="row"><button type="button" class="link" id="hist_c">ล้างทั้งหมด</button><button type="button" class="go" id="hist_x">ปิด</button></div></dialog>
+<dialog id="hist" class="dlg"><div class="gxw"><button type="button" class="gx" aria-label="ปิดหน้าต่าง" onclick="document.getElementById('hist').close()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="gh"><span class="gorb" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><h2>ประวัติการตรวจ</h2><p>เก็บเฉพาะสรุปผลความเสี่ยงในเครื่องของคุณ ไม่เก็บเนื้อหาสัญญา</p></div><div id="hist_l"></div><div class="row"><button type="button" class="link" id="hist_c"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>ล้างทั้งหมด</button><button type="button" class="go" id="hist_x">ปิด</button></div></dialog>
 <dialog id="law" class="dlg"><h2 style="margin-top:0">👩‍⚖️ ขอให้ทนายความตรวจซ้ำ</h2><p>ส่งคำขอให้ทีมงานติดต่อกลับเพื่อประสานทนายความตรวจสัญญาแบบละเอียด บริการนี้ไม่ใช่การตรวจด้วย AI</p><div class="disc"><b>ก่อนส่งคำขอ โปรดทราบ</b><ul><li><b>ข้อมูลที่ส่ง:</b> ชื่อ ช่องทางติดต่อ และรายละเอียดที่คุณกรอก รวมถึงเฉพาะรายการที่คุณติ๊กแนบด้านล่างเท่านั้น</li><li><b>ผู้รับข้อมูล:</b> ทีมงานเว็บไซต์ และทนายความหรือสำนักงานกฎหมายที่ทีมงานประสานให้ตรวจสัญญานี้</li><li><b>ค่าใช้จ่าย:</b> การส่งคำขอไม่มีค่าใช้จ่ายและไม่ผูกมัด ค่าบริการของทนายความจะแจ้งและตกลงกับคุณก่อนเริ่มงาน</li><li><b>ค่าตอบแทนการประสานงาน:</b> <span id="law_d"></span></li><li><b>ระยะเวลาเก็บ:</b> คำขอถูกลบอัตโนมัติเมื่อครบ 180 วัน หรือลบก่อนได้ที่เมนู “ข้อมูลของฉัน”</li></ul></div><label>ชื่อ</label><input id="law_n"><label>ช่องทางติดต่อ (LINE / เบอร์ / อีเมล)</label><input id="law_c"><label>รายละเอียดเพิ่มเติม</label><textarea id="law_t" rows="2"></textarea><label style="font-weight:400"><input type="checkbox" id="law_s"> แนบสรุปผลการตรวจ (คะแนนและจุดเสี่ยง)</label><label style="font-weight:400"><input type="checkbox" id="law_x"> แนบข้อความสัญญา (ปิดบังข้อมูลส่วนตัวแล้วถ้าเปิดตัวเลือกไว้)</label><label style="font-weight:400"><input type="checkbox" id="law_cb"> ฉันได้อ่านรายละเอียดด้านบน และยินยอมให้ส่งข้อมูลที่เลือกไว้ให้ทีมงานและทนายความที่ทีมงานประสาน เพื่อติดต่อกลับเรื่องนี้เท่านั้น</label><p class="err" id="law_msg"></p><div class="row"><button type="button" class="go" id="law_go">ส่งคำขอ</button><button type="button" class="link" id="law_x2">ปิด</button></div></dialog>
 <dialog id="md" class="dlg mdw"><h2 style="margin-top:0">🔐 ข้อมูลของฉัน</h2><p class="hint">ขอดูสำเนาหรือลบข้อมูลของคุณได้เองที่นี่</p><div class="row"><button type="button" class="go" id="md_ex">⬇️ ดาวน์โหลดข้อมูลของฉัน</button></div><div class="danger"><b>ลบข้อมูลของฉัน</b><p class="hint">ลบบัญชีเครดิต บันทึกการยอมรับข้อกำหนด รายงานข้อผิดพลาด คำสั่งซื้อ และคำขอทนายของคุณบนเซิร์ฟเวอร์ รวมถึงข้อมูลในเครื่องนี้ รายการชำระเงินที่ต้องเก็บตามกฎหมายจะถูกตัดการเชื่อมโยงกับคุณ ไม่สามารถกู้คืนได้</p><label><input type="checkbox" id="md_cb"> ฉันเข้าใจว่าเครดิตและแพ็กเกจที่เหลือจะหายและกู้คืนไม่ได้</label><button type="button" class="go" id="md_del" disabled>ลบข้อมูลทั้งหมด</button></div><div class="row"><button type="button" class="link" id="md_loc">ล้างเฉพาะข้อมูลในเครื่องนี้</button><button type="button" class="link" id="md_x">ปิด</button></div><p class="hint" id="md_msg"></p></dialog>
 <dialog id="rcp" class="dlg"><h2 style="margin-top:0">🧾 ใบเสร็จรับเงิน</h2><label>ชื่อผู้ซื้อ (ถ้าต้องการให้ออกในนาม)</label><input id="rcp_b"><div id="rcp_l"></div><p class="hint">เป็นใบเสร็จรับเงิน ไม่ใช่ใบกำกับภาษี</p><button type="button" class="go" id="rcp_x">ปิด</button></dialog>
@@ -1498,9 +1641,9 @@ R(/(^|\D)(\d{10,12})(?!\d)/g,"[เลขบัญชี]",1);return{text:t,n}}
 if(location.protocol==="http:"&&!/^(localhost|127\.|\[::1\]|)$/.test(location.hostname))location.replace("https:"+location.href.slice(5));
 function histGet(){try{return JSON.parse(localStorage.getItem("hist")||"[]")}catch(e){return[]}}
 function histSave(r){try{const fl=r.red_flags||[],a=histGet();a.unshift({d:Date.now(),ty:type,sc:r.safety_score,hi:fl.filter(x=>x.level==="high").length,md:fl.filter(x=>x.level==="medium").length,sm:String(r.summary||"").slice(0,160)});localStorage.setItem("hist",JSON.stringify(a.slice(0,50)))}catch(e){}}
-function histDraw(){const a=histGet();$("hist_l").innerHTML=a.length?a.map((x,i)=>'<div class="df c"><b>'+esc(x.ty)+'</b> · '+new Date(x.d).toLocaleDateString("th-TH")+' · เสี่ยง '+Math.round((10-(+x.sc||0))*10)+'% ('+x.hi+' สูง / '+x.md+' ระวัง)<br>'+esc(x.sm)+' <button type="button" class="link" data-hd="'+i+'">ลบ</button></div>').join(""):'<p class="hint">ยังไม่มีประวัติ</p>'}
+function histDraw(){const a=histGet();$("hist_l").innerHTML=a.length?a.map((x,i)=>{const r=Math.round((10-(+x.sc||0))*10),lv=r>=70?"hi":r>=40?"md":"lo";return '<div class="df c hr"><span class="hr-ic">'+sico(scatIco(x.ty))+'</span><div class="hr-b"><div class="hr-t"><b>'+esc(x.ty)+'</b><span class="hr-chip '+lv+'">เสี่ยง '+r+'%</span></div><small>'+new Date(x.d).toLocaleDateString("th-TH")+' · '+x.hi+' สูง / '+x.md+' ระวัง</small><p>'+esc(x.sm)+'</p></div><button type="button" class="link hr-del" data-hd="'+i+'">ลบ</button></div>'}).join(""):'<div class="hr-empty"><span class="hr-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h4"/><path d="M14 3v5h5v2"/><path d="M8.5 12h5M8.5 16h2"/><circle cx="17" cy="17" r="4"/><path d="M17 15v2l1.4.9"/></svg></span><span class="hr-et">ยังไม่มีประวัติ</span></div>'}
 $("histb").onclick=()=>{histDraw();$("hist").showModal()};$("hist_x").onclick=()=>$("hist").close();
-$("hist_c").onclick=()=>{try{localStorage.removeItem("hist")}catch(e){}histDraw()};
+$("hist_c").onclick=()=>{if(histGet().length&&!confirm("ลบประวัติการตรวจทั้งหมดในเครื่องนี้?"))return;try{localStorage.removeItem("hist")}catch(e){}histDraw()};
 $("hist_l").onclick=e=>{const d=e.target.dataset.hd;if(d===undefined)return;const a=histGet();a.splice(+d,1);try{localStorage.setItem("hist",JSON.stringify(a))}catch(x){}histDraw()};
 async function claimRef(){try{const r=new URLSearchParams(location.search).get("ref");if(!CFG.api||!r||r===uid||localStorage.getItem("refd"))return;const rr=await fetch(CFG.api+"/referral",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,ref:r})});localStorage.setItem("refd","1");const d=await rr.json().catch(()=>({}));if(rr.ok&&d.credits!==undefined){cred=d.credits;showCr();$("ocrst").textContent="🎁 ได้เครดิตฟรีจากเพื่อนแล้ว!"}}catch(e){}}
 $("refb").onclick=async()=>{const l=location.origin+location.pathname+"?ref="+encodeURIComponent(uid),tx="ลองเช็กสัญญาด้วย AI ฟรี รับเครดิตเพิ่มเมื่อเข้าผ่านลิงก์นี้: "+l;if(navigator.share){try{await navigator.share({text:tx});return}catch(e){}}try{await navigator.clipboard.writeText(tx);$("refb").textContent="✅ คัดลอกลิงก์แล้ว"}catch(e){prompt("คัดลอกลิงก์นี้",l)}};
@@ -1798,11 +1941,15 @@ const tl=(i,v)=>i+String(v.length).padStart(2,"0")+v;
 function ppay(id,amt){id=id.replace(/\D/g,"");const t=id.length>=15?"03":id.length>=13?"02":"01",v=t==="01"?"0066"+id.slice(1):id;const p=tl("00","01")+tl("01","12")+tl("29",tl("00","A000000677010111")+tl(t,v))+tl("53","764")+tl("54",amt.toFixed(2))+tl("58","TH")+"6304";return p+crc(p)}
 function drawPay(){
 const P=CFG.packs[pk];
+/* สติกเกอร์แพ็กเกจเติมเครดิต: ธีมอวกาศ 1 แพ็กเกจ = 1 ไอคอน + 1 สี ไม่ซ้ำกัน (ลำดับตรงกับ CFG.packs) และไอคอนช่องทางชำระเงิน */
+const PKI=['<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>','<path d="M12 3c3 2 5 5.5 5 9l-2.5 3h-5L7 12c0-3.5 2-7 5-9z"/><circle cx="12" cy="10" r="1.6"/><path d="M9.5 15L7 19l3-1M14.5 15l2.5 4-3-1M12 17v4"/>','<path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 0010.5 10.5z"/>','<circle cx="12" cy="12" r="4.8"/><ellipse cx="12" cy="12" rx="10" ry="3.4" transform="rotate(-20 12 12)"/>','<circle cx="16.5" cy="7.5" r="3.5"/><path d="M14 10L4 20M12.5 8.5L5 11M15.5 11.5L13 19"/>','<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>','<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/><path d="M5 19h14"/>'];
+const PKH=[48,200,265,330,20,165,45];
+const MTI=['<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><path d="M14 14h2.5v2.5H14zM19 14v.01M14 19.5v.01M17 18.5h3.5V21"/>','<path d="M3 9l9-5 9 5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>','<path d="M3 7a2 2 0 012-2h13v4"/><path d="M3 7v11a2 2 0 002 2h15V9H5a2 2 0 01-2-2z"/><circle cx="16.5" cy="14.5" r="1"/>'];
 $("packs").innerHTML=CFG.packs.map((x,i)=>{const mo=!!x.days,cls=mo?"best":x.b===100?"pop":"",tag=mo?"แพ็กเกจรายเดือนสุดคุ้ม":x.b===50?"เริ่มต้น":x.b===100?"ยอดนิยม":"เติมเพิ่ม",
 main=mo?"ตรวจได้วันละ "+CFG.passDaily+" ครั้ง นาน "+x.days+" วัน":x.c+" เครดิต",
 sub=mo?"เฉลี่ยต่ำสุด ≈ "+(x.b/(CFG.passDaily*x.days)).toFixed(0)+" ฿ ต่อครั้ง ถ้าใช้ครบทุกวัน":"≈ "+(x.b/(x.c/CFG.cost)).toFixed(1)+" ฿ ต่อการตรวจ 1 ครั้ง";
-return `<button type="button" class="pk ${cls}" style="--i:${i}${mo?";grid-column:1/-1":""}" data-p="${i}" aria-pressed="${i===pk}"><i class="pk-tag">${tag}</i><b class="pk-price">${x.b}<small>฿${mo?" / "+x.days+" วัน":""}</small></b><span class="pk-main">${main}</span><span class="pk-sub">${sub}</span></button>`}).join("");
-$("meth").innerHTML=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney"].map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===mt}">${m}</button>`).join("");
+return `<button type="button" class="pk ${cls}" style="--i:${i}${mo?";grid-column:1/-1":""};--h:${PKH[i%7]}" data-p="${i}" aria-pressed="${i===pk}"><i class="pk-tag">${tag}</i>${PKI[i%7]?'<svg class="pk-ic" viewBox="0 0 24 24" aria-hidden="true">'+PKI[i%7]+'</svg>':""}<b class="pk-price">${x.b}<small>฿${mo?" / "+x.days+" วัน":""}</small></b><span class="pk-main">${main}</span><span class="pk-sub">${sub}</span></button>`}).join("");
+$("meth").innerHTML=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney"].map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===mt}"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true">${MTI[i]}</svg>${m}</button>`).join("");
 const mn=["พร้อมเพย์ QR","โอนบัญชีธนาคาร","TrueMoney Wallet"][mt];
 const sumH=`<div class="sum"><div><small>ยอดที่ต้องชำระ</small><b>${P.b} ฿</b></div><div><small>${P.days?"สิทธิ์ที่ได้รับ":"เครดิตที่ได้รับ"}</small><b>${P.days?P.days+" วัน":P.c+" เครดิต"}</b></div></div><p class="stat" id="pst">สถานะ: รอการชำระเงิน — เครดิตจะเพิ่มหลังตรวจสอบการชำระเงินสำเร็จเท่านั้น</p>`;
 let h=sumH;

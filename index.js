@@ -11,7 +11,7 @@ const E=process.env,DIR=E.DATA_DIR||__dirname,fp=n=>path.join(DIR,n);
 const PORT=+E.PORT||3000,RAWKEY=E.ANTHROPIC_API_KEY||"",KEY=RAWKEY.trim().replace(/^['"“”]+|['"“”]+$/g,"").replace(/\s+/g,""),ADMIN=E.ADMIN_KEY||"",MODEL=E.MODEL||"claude-sonnet-5-5";
 const API_URL=E.API_URL||"https://api.anthropic.com/v1/messages",SLIP_URL=E.SLIPOK_URL||"https://api.slipok.com/api/line/apikey/";
 const FREE=E.FREE!==undefined?+E.FREE:1,COST=+E.COST||1,REF_BONUS=E.REF_BONUS!==undefined?+E.REF_BONUS:1,REF_MAX=+E.REF_MAX||10,NEW_PER_IP=+E.NEW_PER_IP||5;
-const TOSV=E.TOS_VERSION||"1.2",TOS_REQ=E.TOS_REQUIRED!=="0";
+const TOSV=E.TOS_VERSION||"1.2",TOS_REQ=E.TOS_REQUIRED!=="0"; const REQ_ACC=E.REQUIRE_ACCOUNT!=="0"; /* ต้องสมัครบัญชี (อีเมลหรือ Google) ก่อนใช้ฟีเจอร์ที่ใช้ AI/เครดิต — ตั้ง REQUIRE_ACCOUNT=0 เพื่อปิด */ const ACC_GATED=new Set(["/analyze","/ask","/chat","/chat/start","/tts","/spend","/order","/slip","/referral","/lawyer-request"]);
 const PASS_BAHT=+E.PASS_BAHT||790,PASS_DAYS=+E.PASS_DAYS||30,PASS_DAILY=+E.PASS_DAILY||2; // แพ็กเกจรายเดือน (ตรวจได้สูงสุดต่อวัน)
 const TTS_KEY=E.GOOGLE_TTS_KEY||"",TTS_VOICE=E.GOOGLE_TTS_VOICE||"th-TH-Chirp3-HD-Achernar",TTS_URL=E.GOOGLE_TTS_URL||"https://texttospeech.googleapis.com/v1/text:synthesize",TTS_DAILY=+E.TTS_DAILY||10;
 const EL_KEY=E.ELEVENLABS_API_KEY||"",EL_VOICE=E.ELEVENLABS_VOICE_ID||"",EL_MODEL=E.ELEVENLABS_MODEL||"eleven_v3",EL_URL=E.ELEVENLABS_URL||"https://api.elevenlabs.io/v1/text-to-speech",EL_BASE=E.ELEVENLABS_BASE||"https://api.elevenlabs.io";
@@ -457,6 +457,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
   if(P==="/auth/google"){if(!GCID)return send(res,501,{error:"google_off"});if(limited("gg"+ip,15,9e5))return send(res,429,{error:"rate_limited"});
     const r=await googleLogin(b.credential,id,ip);return send(res,r.c,r.o)}
   const x=getUser(id,ip);if(!x)return send(res,400,{error:"uid"});
+  if(REQ_ACC&&!x.email&&ACC_GATED.has(P))return send(res,403,{error:"need_account"}); // ยังไม่ได้สมัครบัญชี: หน้าเว็บจะแสดงหน้าสมัครให้เอง
 
   if(P==="/auth/register"){const em=String(b.email||"").trim().toLowerCase(),pw=String(b.password||"");
     if(!emOK(em)||pw.length<8||pw.length>100)return send(res,400,{error:"bad_input"});if(x.pw)return send(res,409,{error:"has_account"});
@@ -464,7 +465,7 @@ http.createServer(async(req,res)=>{res.org=req.headers.origin||"";try{
     const sl=crypto.randomBytes(16).toString("hex"),h=(await scr(pw,sl)).toString("hex");if(m[eh(em)]||x.pw)return send(res,409,{error:"email_taken"}); // เช็กซ้ำหลัง await กันสมัครพร้อมกัน
     x.email=em;x.pw={s:sl,h};m[eh(em)]=id;save();if(MAILK)sendVerify(x,id).catch(e=>console.log("ส่งอีเมลยืนยันไม่สำเร็จ:",e.message));return send(res,200,{ok:true,email:em,mail:!!MAILK})}
   if(P==="/auth/resend"){if(!MAILK||!x.email||x.verified)return send(res,400,{error:"bad"});if(limited("vr"+id,3,36e5))return send(res,429,{error:"rate_limited"});try{await sendVerify(x,id);return send(res,200,{ok:true})}catch(e){console.log("ส่งอีเมลไม่สำเร็จ:",e.message);return send(res,502,{error:"mail_failed"})}}
-  if(P==="/profile")return send(res,200,{ok:true,pic:x.pic||null,verified:!!x.verified,needVerify:NEEDV&&!!MAILK,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
+  if(P==="/profile")return send(res,200,{ok:true,pic:x.pic||null,verified:!!x.verified,needVerify:NEEDV&&!!MAILK,reqAcc:REQ_ACC,ledger:rd(LED).filter(o=>o.uid===id).slice(-30).reverse(),email:x.email||null,created:x.created||0,tos:(x.tos&&x.tos.v)||null,credits:x.credits,passUntil:x.passUntil||0,hist:x.hist||[]});
   if(P==="/history/delete"){x.hist=b.hid?(x.hist||[]).filter(h=>h.id!==String(b.hid)):[];save();return send(res,200,{ok:true})}
 
   if(P==="/accept"){if(b.v!==TOSV)return send(res,400,{error:"version"});x.tos={v:TOSV,ts:Date.now()};save();return send(res,200,{ok:true})}
